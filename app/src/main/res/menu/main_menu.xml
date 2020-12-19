@@ -3,9 +3,17 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/mainScreen"
+            android:title="Hlavná obrazovka"
+            android:icon="@drawable/mainscreen_icon"/>
+        <item
             android:id="@+id/profile"
             android:title="Profil"
             android:icon="@drawable/profile_icon"/>
+        <item
+            android:id="@+id/schema"
+            android:title="Scenáre"
+            android:icon="@drawable/schemas_icon"/>
         <item
             android:id="@+id/settings"
             android:title="Nastavenia"

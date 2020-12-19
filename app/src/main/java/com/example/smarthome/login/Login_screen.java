@@ -1,4 +1,4 @@
-package com.example.smarthome.appLogin;
+package com.example.smarthome.login;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,10 +7,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.example.smarthome.MainActivity;
+import com.example.smarthome.Main_screen;
 import com.example.smarthome.R;
 
-public class Login extends AppCompatActivity
+public class Login_screen extends AppCompatActivity
 {
     private Button lBtn;
 
@@ -18,7 +18,7 @@ public class Login extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_login_screen);
 
         lBtn = (Button) findViewById(R.id.loginBtn);
 
@@ -27,7 +27,7 @@ public class Login extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                startActivity(new Intent(getApplicationContext(), Main_screen.class));
             }
         });
     }
