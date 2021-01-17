@@ -1,5 +1,15 @@
 <resources>
     <string name="app_name">SmartHome</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string-array name="rooms">
+        <item>Typ miestnosti</item>
+        <item>Kuchyňa</item>
+        <item>Spálňa</item>
+        <item>Obývačka</item>
+        <item>Detská Izba</item>
+        <item>Kúpeľňa</item>
+    </string-array>
 </resources>
