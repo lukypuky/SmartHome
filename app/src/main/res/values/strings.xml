@@ -6,10 +6,14 @@
 
     <string-array name="rooms">
         <item>Typ miestnosti</item>
+        <item>Garáž</item>
+        <item>Jedáleň</item>
         <item>Kuchyňa</item>
-        <item>Spálňa</item>
-        <item>Obývačka</item>
-        <item>Detská Izba</item>
         <item>Kúpeľňa</item>
+        <item>Obývačka</item>
+        <item>Pracovňa</item>
+        <item>Spálňa</item>
+        <item>Záhrada</item>
+        <item>Iné</item>
     </string-array>
 </resources>

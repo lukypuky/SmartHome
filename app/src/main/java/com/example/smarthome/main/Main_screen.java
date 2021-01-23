@@ -20,6 +20,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -47,16 +48,21 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     private Button saveRoom;
     private Button unsaveRoom;
 
-    //miestnosti
+    //zoznam miestnosti
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter; // bridge medzi datami a recycler view
     private RecyclerView.LayoutManager mLayoutManager;
+
+    private ArrayList<RoomItem> roomList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
+
+        createRoomList();
+        buildRecycleView();
 
         //tlacidlo na pridanie novej miestnosti
         addRoom = (Button) findViewById(R.id.addRoom);
@@ -69,14 +75,6 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
             }
         });
 
-        //miesnosti ktore si vie user pridat
-        ArrayList<RoomItem> roomList = new ArrayList<>();
-        roomList.add(new RoomItem(R.drawable.kitchen,"Kuchyňa","blabla"));
-        roomList.add(new RoomItem(R.drawable.kitchen,"Kuchyňa","baaaaaaaaaa"));
-        roomList.add(new RoomItem(R.drawable.kitchen,"Kuchyňa","ggggggggggg"));
-        roomList.add(new RoomItem(R.drawable.kitchen,"Kuchyňa","base qwfqwfasla"));
-        roomList.add(new RoomItem(R.drawable.livingroom,"Obývačka","asdasdas"));
-
         //plocha pre miestnosti v domacnosti
         mRecyclerView = findViewById(R.id.mainRecyclerView);
         mRecyclerView.setHasFixedSize(true);
@@ -84,6 +82,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         mAdapter = new RoomAdapter(roomList);
 
         mRecyclerView.setLayoutManager(mLayoutManager);
+        new ItemTouchHelper(roomToRemove).attachToRecyclerView(mRecyclerView);
         mRecyclerView.setAdapter(mAdapter);
 
         //bocny navigacny panel
@@ -144,6 +143,56 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         return true;
     }
 
+    //prida miestnost na index 0 v arrayliste
+    public void insertRoom(EditText roomName, int roomType)
+    {
+        String name = roomName.getText().toString();
+        int position = 0;
+
+        switch (roomType)
+        {
+            case 1:
+                roomList.add(position, new RoomItem(R.drawable.garage,name, "pocet modulov:"));
+                break;
+            case 2:
+                roomList.add(position, new RoomItem(R.drawable.dinningroom,name, "pocet modulov:"));
+                break;
+            case 3:
+                roomList.add(position, new RoomItem(R.drawable.kitchen,name, "pocet modulov:"));
+                break;
+            case 4:
+                roomList.add(position, new RoomItem(R.drawable.bathroom,name, "pocet modulov:"));
+                break;
+            case 5:
+                roomList.add(position, new RoomItem(R.drawable.livingroom,name, "pocet modulov:"));
+                break;
+            case 6:
+                roomList.add(position, new RoomItem(R.drawable.office,name, "pocet modulov:"));
+                break;
+            case 7:
+                roomList.add(position, new RoomItem(R.drawable.bedroom,name, "pocet modulov:"));
+                break;
+            case 8:
+                roomList.add(position, new RoomItem(R.drawable.garden,name, "pocet modulov:"));
+                break;
+            case 9:
+                roomList.add(position, new RoomItem(R.drawable.defaultroom,name, "pocet modulov:"));
+                break;
+        }
+
+        mAdapter.notifyItemInserted(position);
+    }
+
+    public void createRoomList()
+    {
+        roomList = new ArrayList<>();
+    }
+
+    public void buildRecycleView()
+    {
+
+    }
+
     //metoda na pridanie novej miestnosti v domacnosti
     public void addRoomDialog()
     {
@@ -160,35 +209,75 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
                 getResources().getStringArray(R.array.rooms));
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
         roomType.setAdapter(adapter);
 
         addRoomDialog.setView(contactPopupView);
         dialog = addRoomDialog.create();
         dialog.show();
 
+        //potvrdenie pridania miestnosti
         saveRoom.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
+                int roomTypeInt = 0;
+
+                //ak sa nevyplnil nazov miestnosti -> message
                 if (roomName.getText().toString().isEmpty())
                 {
                     Toast.makeText(Main_screen.this, "Zadajte názov pre miestnosť", Toast.LENGTH_SHORT).show();
                 }
 
+                //ak sa nezvolil typ miestnosti -> message
                 else if(roomType.getSelectedItem().toString().equals("Typ miestnosti"))
                 {
                     Toast.makeText(Main_screen.this, "Zvoľte typ miestnosti", Toast.LENGTH_SHORT).show();
-                    //vypis message nech sa zvoli miestnost
                 }
 
+                //ak je vsetko vyplnene, pridaj miestnost do arraylistu
                 else
                 {
+                    switch (roomType.getSelectedItem().toString())
+                    {
+                        case "Garáž":
+                            roomTypeInt = 1;
+                            break;
+                        case "Jedáleň":
+                            roomTypeInt = 2;
+                            break;
+                        case "Kuchyňa":
+                            roomTypeInt = 3;
+                            break;
+                        case "Kúpeľňa":
+                            roomTypeInt = 4;
+                            break;
+                        case "Obývačka":
+                            roomTypeInt = 5;
+                            break;
+                        case "Pracovňa":
+                            roomTypeInt = 6;
+                            break;
+                        case "Spálňa":
+                            roomTypeInt = 7;
+                            break;
+                        case "Záhrada":
+                            roomTypeInt = 8;
+                            break;
+                        case "Iné":
+                            roomTypeInt = 9;
+                            break;
+                    }
+
+                    insertRoom(roomName, roomTypeInt);
                     Toast.makeText(Main_screen.this, "Miestnosť pridaná", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
                 }
             }
         });
 
+        //zrusenie pridania miestnosti
         unsaveRoom.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -198,4 +287,21 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
             }
         });
     }
+
+    //mazanie izieb (with swap right)
+    ItemTouchHelper.SimpleCallback roomToRemove = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT)
+    {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target)
+        {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
+        {
+            roomList.remove(viewHolder.getAdapterPosition());
+            mAdapter.notifyDataSetChanged();
+        }
+    };
 }
