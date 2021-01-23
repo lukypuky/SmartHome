@@ -9,18 +9,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SmartHome">
-        <activity android:name=".schemas.Schemas_screen"></activity>
+        <activity android:name=".main.AddRoom_popup"></activity>
+        <activity android:name=".schemas.Schemas_screen" />
         <activity android:name=".settings.Settings_screen" />
         <activity android:name=".profile.Profile_screen" />
         <activity android:name=".registration.Registration_screen" />
+        <activity android:name=".main.Main_screen" />
         <activity android:name=".login.Login_screen">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".Main_screen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

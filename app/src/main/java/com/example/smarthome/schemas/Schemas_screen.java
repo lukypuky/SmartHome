@@ -11,7 +11,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import com.example.smarthome.Main_screen;
+import com.example.smarthome.main.Main_screen;
 import com.example.smarthome.R;
 import com.example.smarthome.profile.Profile_screen;
 import com.example.smarthome.settings.Settings_screen;

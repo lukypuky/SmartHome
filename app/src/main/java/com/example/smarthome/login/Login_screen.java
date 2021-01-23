@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.example.smarthome.Main_screen;
+import com.example.smarthome.main.Main_screen;
 import com.example.smarthome.R;
 
 public class Login_screen extends AppCompatActivity
