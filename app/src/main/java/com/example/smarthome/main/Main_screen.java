@@ -28,6 +28,7 @@ import com.example.smarthome.R;
 import com.example.smarthome.profile.Profile_screen;
 import com.example.smarthome.schemas.Schemas_screen;
 import com.example.smarthome.settings.Settings_screen;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     private Toolbar toolbar;
 
     //pridanie miestnosti
-    private Button addRoom;
+    private FloatingActionButton addRoom;
     private AlertDialog.Builder addRoomDialog;
     private AlertDialog dialog;
     private EditText roomName;
@@ -64,7 +65,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         buildRecycleView();
 
         //tlacidlo na pridanie novej miestnosti
-        addRoom = (Button) findViewById(R.id.addRoom);
+        addRoom = (FloatingActionButton) findViewById(R.id.addRoom);
         addRoom.setOnClickListener(new View.OnClickListener()
         {
             @Override
