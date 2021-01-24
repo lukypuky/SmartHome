@@ -45,8 +45,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     private AlertDialog dialog;
     private EditText roomName;
     private Spinner roomType;
-    private Button saveRoom;
-    private Button unsaveRoom;
+    private Button saveRoom, unsaveRoom;
 
     //zoznam miestnosti
     private RecyclerView mRecyclerView;

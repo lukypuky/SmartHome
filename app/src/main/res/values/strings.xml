@@ -3,6 +3,13 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="registrova_sa">Registrovať sa</string>
+    <string name="potvrdenie_hesla">Potvrdenie hesla</string>
+    <string name="heslo">Heslo</string>
+    <string name="n_zov_dom_cnosti">Názov domácnosti</string>
+    <string name="meno_pou_vate_a">Meno Používateľa</string>
+    <string name="email">Email</string>
+    <string name="u_m_et_prihl_s_sa">Už máš účet ? Prihlás sa</string>
 
     <string-array name="rooms">
         <item>Typ miestnosti</item>
