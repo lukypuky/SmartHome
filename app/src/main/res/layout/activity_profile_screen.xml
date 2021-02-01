@@ -24,7 +24,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/menu_bg">
+            android:background="@drawable/blue_bg">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -75,14 +75,120 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/textView6"
+                android:id="@+id/profileNameTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="144dp"
-                android:text="Meno"
+                android:layout_marginTop="145dp"
+                android:text="Meno používateľa"
+                android:textColor="#249FE2"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toTopOf="@+id/profileHomeTag"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/profileName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="145dp"
+                android:text="BeastMaster64"
+                android:textSize="16sp"
+                app:layout_constraintStart_toEndOf="@+id/profileNameTag"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/profileHomeTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="15dp"
+                android:text="Názov domácnosti"
+                android:textColor="#249FE2"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toTopOf="@+id/profileEmailTag"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/profileNameTag" />
+
+            <TextView
+                android:id="@+id/profileHome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="19dp"
+                android:layout_marginTop="15dp"
+                android:text="BeastMaster64House"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toTopOf="@+id/profileEmail"
+                app:layout_constraintStart_toEndOf="@+id/profileHomeTag"
+                app:layout_constraintTop_toBottomOf="@+id/profileName" />
+
+            <TextView
+                android:id="@+id/profileEmailTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="15dp"
+                android:text="Email"
+                android:textColor="#249FE2"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toTopOf="@+id/profileRoleTag"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/profileHomeTag" />
+
+            <TextView
+                android:id="@+id/profileEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="113dp"
+                android:layout_marginTop="15dp"
+                android:text="beastmaster64@gmail.com"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toTopOf="@+id/profileRole"
+                app:layout_constraintStart_toEndOf="@+id/profileEmailTag"
+                app:layout_constraintTop_toBottomOf="@+id/profileHome" />
+
+            <TextView
+                android:id="@+id/profileRoleTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="15dp"
+                android:text="Používateľská rola"
+                android:textColor="#249FE2"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/profileEmailTag" />
+
+            <TextView
+                android:id="@+id/profileRole"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="KingInTheCastle"
+                android:textSize="16sp"
+                app:layout_constraintStart_toEndOf="@+id/profileRoleTag"
+                app:layout_constraintTop_toBottomOf="@+id/profileEmail" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/editProfile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:layout_margin="16dp"
+                android:src="@drawable/edit_icon"/>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </RelativeLayout>
 </androidx.drawerlayout.widget.DrawerLayout>

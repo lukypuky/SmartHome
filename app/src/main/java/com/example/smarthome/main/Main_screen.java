@@ -300,8 +300,32 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
         {
-            roomList.remove(viewHolder.getAdapterPosition());
-            mAdapter.notifyDataSetChanged();
+            //builder na potvrdenie zmazania
+            AlertDialog.Builder builder = new AlertDialog.Builder(Main_screen.this);
+            builder.setCancelable(true);
+            builder.setMessage("Naozaj chcete odstrániť túto miestnosť '" + roomList.get(viewHolder.getAdapterPosition()).getText1().toUpperCase() + "' ?");
+            builder.setPositiveButton("Áno", new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    roomList.remove(viewHolder.getAdapterPosition());
+                    mAdapter.notifyDataSetChanged();
+                }
+            });
+
+            builder.setNegativeButton("Nie", new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    dialog.dismiss();
+                    mAdapter.notifyDataSetChanged();
+                }
+            });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
     };
 }
