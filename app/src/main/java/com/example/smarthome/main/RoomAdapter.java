@@ -26,9 +26,9 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         public RoomViewHolder(@NonNull View itemView)
         {
             super(itemView);
-            mImageView = itemView.findViewById(R.id.imageView);
-            mTextView1 = itemView.findViewById(R.id.textView);
-            mTextView2 = itemView.findViewById(R.id.textView2);
+            mImageView = itemView.findViewById(R.id.roomImageView);
+            mTextView1 = itemView.findViewById(R.id.roomTextView);
+            mTextView2 = itemView.findViewById(R.id.roomTextView2);
         }
     }
 
@@ -41,7 +41,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     @Override
     public RoomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.newroom_item, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.new_room_item, parent, false);
         RoomViewHolder rvh = new RoomViewHolder(v);
         return rvh;
     }

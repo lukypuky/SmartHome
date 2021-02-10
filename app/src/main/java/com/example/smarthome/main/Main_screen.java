@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -62,7 +61,6 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         setContentView(R.layout.activity_main_screen);
 
         createRoomList();
-        buildRecycleView();
 
         //tlacidlo na pridanie novej miestnosti
         addRoom = (FloatingActionButton) findViewById(R.id.addRoom);
@@ -89,7 +87,6 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-
         navigationView.bringToFront(); //pri kliknuti na menu nam menu nezmizne
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
@@ -186,11 +183,6 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     public void createRoomList()
     {
         roomList = new ArrayList<>();
-    }
-
-    public void buildRecycleView()
-    {
-
     }
 
     //metoda na pridanie novej miestnosti v domacnosti
@@ -300,8 +292,32 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
         {
-            roomList.remove(viewHolder.getAdapterPosition());
-            mAdapter.notifyDataSetChanged();
+            //builder na potvrdenie zmazania
+            AlertDialog.Builder builder = new AlertDialog.Builder(Main_screen.this);
+            builder.setCancelable(true);
+            builder.setMessage("Naozaj chcete odstrániť túto miestnosť '" + roomList.get(viewHolder.getAdapterPosition()).getText1().toUpperCase() + "' ?");
+            builder.setPositiveButton("Áno", new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    roomList.remove(viewHolder.getAdapterPosition());
+                    mAdapter.notifyDataSetChanged();
+                }
+            });
+
+            builder.setNegativeButton("Nie", new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    dialog.dismiss();
+                    mAdapter.notifyDataSetChanged();
+                }
+            });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
     };
 }
