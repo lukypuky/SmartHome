@@ -31,9 +31,10 @@ public class SchemaAdapter extends RecyclerView.Adapter<SchemaAdapter.SchemaView
         }
     }
 
+    //konstruktor
     public SchemaAdapter(ArrayList<SchemaItem> schemaList)
     {
-        mSchemaList = schemaList;
+        this.mSchemaList = schemaList;
     }
 
     @NonNull

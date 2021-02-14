@@ -33,6 +33,12 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
 
+        setNavigationView();
+    }
+
+    //bocny navigacny panel
+    public void setNavigationView()
+    {
         navigationView.bringToFront();
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);

@@ -69,7 +69,13 @@ public class Schemas_screen extends AppCompatActivity implements NavigationView.
             }
         });
 
-        //plocha pre schemy v domacnosti
+        setRecyclerView();
+        setNavigationView();
+    }
+
+    //plocha pre schemy v domacnosti
+    public void  setRecyclerView()
+    {
         mRecyclerView = findViewById(R.id.schemaRecyclerView);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
@@ -78,8 +84,11 @@ public class Schemas_screen extends AppCompatActivity implements NavigationView.
         mRecyclerView.setLayoutManager(mLayoutManager);
         new ItemTouchHelper(schemaToRemove).attachToRecyclerView(mRecyclerView);
         mRecyclerView.setAdapter(mAdapter);
+    }
 
-        //bocny navigacny panel
+    //bocny navigacny panel
+    public void setNavigationView()
+    {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         toolbar = (Toolbar) findViewById(R.id.toolbar);

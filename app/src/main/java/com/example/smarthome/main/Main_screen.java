@@ -10,6 +10,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -32,8 +34,9 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 
-public class Main_screen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
+public class Main_screen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, RoomAdapter.OnRoomListener
 {
+    private static final String TAG = "Main_screen";
     //menu
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -73,17 +76,26 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
             }
         });
 
-        //plocha pre miestnosti v domacnosti
+        setRecyclerView();
+        setNavigationView();
+    }
+
+    //plocha pre miestnosti v domacnosti
+    public void setRecyclerView()
+    {
         mRecyclerView = findViewById(R.id.mainRecyclerView);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
-        mAdapter = new RoomAdapter(roomList);
+        mAdapter = new RoomAdapter(roomList, this);
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         new ItemTouchHelper(roomToRemove).attachToRecyclerView(mRecyclerView);
         mRecyclerView.setAdapter(mAdapter);
+    }
 
-        //bocny navigacny panel
+    //bocny navigacny panel
+    public void setNavigationView()
+    {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -320,4 +332,15 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
             dialog.show();
         }
     };
+
+    @Override
+    public void onRoomClick(int position)
+    {
+        Log.d(TAG, "onRoomClick: clicked." + position);
+
+        Intent intent = new Intent(this, Room_screen.class);
+        intent.putExtra("roomName", String.valueOf(roomList.get(position).getText1()));
+        intent.putExtra("roomImg", String.valueOf(roomList.get(position).getImageResource()));
+        startActivity(intent);
+    }
 }
