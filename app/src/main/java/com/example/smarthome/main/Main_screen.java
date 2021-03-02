@@ -10,7 +10,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,14 +26,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smarthome.R;
 import com.example.smarthome.profile.Profile_screen;
-import com.example.smarthome.schemas.Schemas_screen;
+import com.example.smarthome.scenarios.Scenario_screen;
 import com.example.smarthome.settings.Settings_screen;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 
-public class Main_screen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, RoomAdapter.OnRoomListener
+public class Main_screen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Room_adapter.OnRoomListener
 {
     private static final String TAG = "Main_screen";
     //menu
@@ -55,7 +54,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     private RecyclerView.Adapter mAdapter; // bridge medzi datami a recycler view
     private RecyclerView.LayoutManager mLayoutManager;
 
-    private ArrayList<RoomItem> roomList;
+    private ArrayList<Room_item> roomList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -86,7 +85,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         mRecyclerView = findViewById(R.id.mainRecyclerView);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
-        mAdapter = new RoomAdapter(roomList, this);
+        mAdapter = new Room_adapter(roomList, this);
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         new ItemTouchHelper(roomToRemove).attachToRecyclerView(mRecyclerView);
@@ -138,9 +137,9 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
                 Intent profile_intent = new Intent(Main_screen.this, Profile_screen.class);
                 startActivity(profile_intent);
                 break;
-            case R.id.schema:
-                Intent schema_intent = new Intent(Main_screen.this,Schemas_screen.class);
-                startActivity(schema_intent);
+            case R.id.scenario:
+                Intent scenario_intent = new Intent(Main_screen.this, Scenario_screen.class);
+                startActivity(scenario_intent);
                 break;
             case R.id.settings:
                 Intent settings_intent = new Intent(Main_screen.this, Settings_screen.class);
@@ -161,31 +160,31 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         switch (roomType)
         {
             case 1:
-                roomList.add(position, new RoomItem(R.drawable.garage,name, "pocet modulov:"));
+                roomList.add(position, new Room_item(R.drawable.garage,name, "pocet modulov:"));
                 break;
             case 2:
-                roomList.add(position, new RoomItem(R.drawable.dinningroom,name, "pocet modulov:"));
+                roomList.add(position, new Room_item(R.drawable.dinningroom,name, "pocet modulov:"));
                 break;
             case 3:
-                roomList.add(position, new RoomItem(R.drawable.kitchen,name, "pocet modulov:"));
+                roomList.add(position, new Room_item(R.drawable.kitchen,name, "pocet modulov:"));
                 break;
             case 4:
-                roomList.add(position, new RoomItem(R.drawable.bathroom,name, "pocet modulov:"));
+                roomList.add(position, new Room_item(R.drawable.bathroom,name, "pocet modulov:"));
                 break;
             case 5:
-                roomList.add(position, new RoomItem(R.drawable.livingroom,name, "pocet modulov:"));
+                roomList.add(position, new Room_item(R.drawable.livingroom,name, "pocet modulov:"));
                 break;
             case 6:
-                roomList.add(position, new RoomItem(R.drawable.office,name, "pocet modulov:"));
+                roomList.add(position, new Room_item(R.drawable.office,name, "pocet modulov:"));
                 break;
             case 7:
-                roomList.add(position, new RoomItem(R.drawable.bedroom,name, "pocet modulov:"));
+                roomList.add(position, new Room_item(R.drawable.bedroom,name, "pocet modulov:"));
                 break;
             case 8:
-                roomList.add(position, new RoomItem(R.drawable.garden,name, "pocet modulov:"));
+                roomList.add(position, new Room_item(R.drawable.garden,name, "pocet modulov:"));
                 break;
             case 9:
-                roomList.add(position, new RoomItem(R.drawable.defaultroom,name, "pocet modulov:"));
+                roomList.add(position, new Room_item(R.drawable.defaultroom,name, "pocet modulov:"));
                 break;
         }
 

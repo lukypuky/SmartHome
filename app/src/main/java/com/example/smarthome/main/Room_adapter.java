@@ -13,10 +13,10 @@ import com.example.smarthome.R;
 
 import java.util.ArrayList;
 
-public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder>
+public class Room_adapter extends RecyclerView.Adapter<Room_adapter.RoomViewHolder>
 {
-    private ArrayList<RoomItem> mRoomList;
-    private  OnRoomListener mOnRoomListener;
+    private ArrayList<Room_item> mRoomList;
+    private OnRoomListener mOnRoomListener;
 
     public static class RoomViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
@@ -43,7 +43,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     }
 
     //konstruktor
-    public RoomAdapter(ArrayList<RoomItem> roomList, OnRoomListener onRoomListener)
+    public Room_adapter(ArrayList<Room_item> roomList, OnRoomListener onRoomListener)
     {
         this.mRoomList = roomList;
         this.mOnRoomListener = onRoomListener;
@@ -61,7 +61,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     @Override
     public void onBindViewHolder(@NonNull RoomViewHolder holder, int position)
     {
-        RoomItem currentItem = mRoomList.get(position);
+        Room_item currentItem = mRoomList.get(position);
 
         holder.mImageView.setImageResource(currentItem.getImageResource());
         holder.mTextView1.setText(currentItem.getText1());

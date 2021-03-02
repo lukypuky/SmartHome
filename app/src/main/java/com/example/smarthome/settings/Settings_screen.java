@@ -14,7 +14,7 @@ import android.view.MenuItem;
 import com.example.smarthome.main.Main_screen;
 import com.example.smarthome.R;
 import com.example.smarthome.profile.Profile_screen;
-import com.example.smarthome.schemas.Schemas_screen;
+import com.example.smarthome.scenarios.Scenario_screen;
 import com.google.android.material.navigation.NavigationView;
 
 public class Settings_screen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
@@ -75,9 +75,9 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
                 Intent profile_intent = new Intent(Settings_screen.this, Profile_screen.class);
                 startActivity(profile_intent);
                 break;
-            case R.id.schema:
-                Intent schema_intent = new Intent(Settings_screen.this, Schemas_screen.class);
-                startActivity(schema_intent);
+            case R.id.scenario:
+                Intent scenario_intent = new Intent(Settings_screen.this, Scenario_screen.class);
+                startActivity(scenario_intent);
                 break;
             case R.id.settings:
                 break;

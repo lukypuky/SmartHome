@@ -11,9 +11,9 @@
             android:title="Profil"
             android:icon="@drawable/profile_icon"/>
         <item
-            android:id="@+id/schema"
+            android:id="@+id/scenario"
             android:title="Scenáre"
-            android:icon="@drawable/schemas_icon"/>
+            android:icon="@drawable/scenario_icon"/>
         <item
             android:id="@+id/settings"
             android:title="Nastavenia"

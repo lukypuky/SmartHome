@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".schemas.Schemas_screen"
+    tools:context=".scenarios.Scenario_screen"
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
@@ -48,7 +49,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/textView"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/toolbar"
-                app:srcCompat="@drawable/schemas_icon" />
+                app:srcCompat="@drawable/scenario_icon" />
 
             <TextView
                 android:id="@+id/textView"
@@ -70,7 +71,7 @@
         android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/schemaRecyclerView"
+            android:id="@+id/scenarioRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="120dp"
@@ -87,7 +88,7 @@
             android:layout_height="match_parent">
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/addSchema"
+                android:id="@+id/addScenario"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|right"

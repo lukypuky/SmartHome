@@ -1,11 +1,16 @@
-package com.example.smarthome.schemas;
+package com.example.smarthome.scenarios;
 
-public class SchemaItem
+public class Scenario_item extends android.app.Activity
 {
     private int mimageResource;
     private String mtext;
 
-    public SchemaItem(int imageResource, String text)
+    public Scenario_item()
+    {
+
+    }
+
+    public Scenario_item(int imageResource, String text)
     {
         mimageResource = imageResource;
         mtext = text;
