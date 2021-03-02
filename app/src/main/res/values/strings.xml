@@ -1,15 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">SmartHome</string>
-
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="registrova_sa">Registrovať sa</string>
-    <string name="potvrdenie_hesla">Potvrdenie hesla</string>
-    <string name="heslo">Heslo</string>
-    <string name="n_zov_dom_cnosti">Názov domácnosti</string>
-    <string name="meno_pou_vate_a">Meno Používateľa</string>
-    <string name="email">Email</string>
-    <string name="u_m_et_prihl_s_sa">Už máš účet ? Prihlás sa</string>
+
+    <!--Login screen-->
+    <string name="login_username">Meno používateľa</string>
+    <string name="login_password">Heslo</string>
+    <string name="login_button">Prihlásiť sa</string>
+    <string name="login_registration">Vytvoriť novú domácnosť</string>
+    <string name="login_connect_to_household">Pripojiť sa už k existujúcej domácnosti</string>
+
+    <!--Registration screen-->
+    <string name="registration_username">Meno používateľa</string>
+    <string name="registration_housename">Názov domácnosti</string>
+    <string name="registration_email">Email</string>
+    <string name="registration_password">Heslo</string>
+    <string name="registration_confirm_password">Potvrdenie hesla</string>
+    <string name="registration_button">Registrovať sa</string>
+    <string name="registration_login">Už máš účet? Prihlás sa.</string>
+
+    <!-- Menu-->
+    <string name="main_screen">Hlavná obrazovka</string>
+    <string name="profile_screen">Profil</string>
+    <string name="scenario_screen">Scenáre</string>
+    <string name="settings_screen">Nastavenia</string>
+    <string name="logout">Odhlásiť sa</string>
+
+    <!--Main screen-->
+    <string name="main_roomname">Názov miestnosti</string>
+    <string name="main_add">Pridať</string>
+    <string name="main_back">Späť</string>
+
+    <!--Profile screen-->
+    <string name="profile_title">Profil</string>
+    <string name="profile_username">Meno používateľa</string>
+    <string name="profile_household">Názov domácnosti</string>
+    <string name="profile_email">Email</string>
+    <string name="profile_role">Používateľská rola</string>
+
+    <!--Scenarios screen-->
+    <string name="scenario_title">Scenáre</string>
+    <string name="scenario_name">Názov scenára</string>
+    <string name="scenario_add">Pridať</string>
+    <string name="scenario_back">Späť</string>
+
+    <!-- Settings screen-->
+    <string name="settings_title">Nastavenia</string>
+    <string name="setting_language">Jazyk aplikácie:</string>
+    <string name="settings_choosen_language">Slovenský</string>
 
     <string-array name="rooms">
         <item>Typ miestnosti</item>
@@ -28,8 +67,13 @@
         <item>Typ zariadenia</item>
         <item>Alarm</item>
         <item>Kúrenie</item>
-        <item>Svetlo</item>
+        <item>Svetlá</item>
         <item>Teplomer</item>
         <item>Žalúzie</item>
+    </string-array>
+
+    <string-array name="languages">
+        <item>Slovenský</item>
+        <item>English</item>
     </string-array>
 </resources>

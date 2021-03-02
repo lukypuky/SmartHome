@@ -57,7 +57,7 @@
                 android:layout_height="45dp"
                 android:layout_marginTop="20dp"
                 android:fontFamily="@font/baloo"
-                android:text="Profil"
+                android:text="@string/profile_title"
                 android:textSize="30sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/imageView7"
@@ -81,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="145dp"
-                android:text="Meno používateľa"
+                android:text="@string/profile_username"
                 android:textColor="#249FE2"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toTopOf="@+id/profileHomeTag"
@@ -92,11 +92,11 @@
                 android:id="@+id/profileName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
+                android:layout_marginStart="190dp"
                 android:layout_marginTop="145dp"
                 android:text="Lukas"
                 android:textSize="16sp"
-                app:layout_constraintStart_toEndOf="@+id/profileNameTag"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -105,7 +105,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="15dp"
-                android:text="Názov domácnosti"
+                android:text="@string/profile_household"
                 android:textColor="#249FE2"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toTopOf="@+id/profileEmailTag"
@@ -116,12 +116,12 @@
                 android:id="@+id/profileHome"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="19dp"
+                android:layout_marginStart="190dp"
                 android:layout_marginTop="15dp"
                 android:text="Lukasov_Dom"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toTopOf="@+id/profileEmail"
-                app:layout_constraintStart_toEndOf="@+id/profileHomeTag"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/profileName" />
 
             <TextView
@@ -130,7 +130,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="15dp"
-                android:text="Email"
+                android:text="@string/profile_email"
                 android:textColor="#249FE2"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toTopOf="@+id/profileRoleTag"
@@ -141,12 +141,12 @@
                 android:id="@+id/profileEmail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="113dp"
+                android:layout_marginStart="190dp"
                 android:layout_marginTop="15dp"
                 android:text="lukash.baca@gmail.com"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toTopOf="@+id/profileRole"
-                app:layout_constraintStart_toEndOf="@+id/profileEmailTag"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/profileHome" />
 
             <TextView
@@ -155,7 +155,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="15dp"
-                android:text="Používateľská rola"
+                android:text="@string/profile_role"
                 android:textColor="#249FE2"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -165,11 +165,11 @@
                 android:id="@+id/profileRole"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="190dp"
                 android:layout_marginTop="16dp"
                 android:text="Admin"
                 android:textSize="16sp"
-                app:layout_constraintStart_toEndOf="@+id/profileRoleTag"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/profileEmail" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
