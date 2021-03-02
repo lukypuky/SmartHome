@@ -214,7 +214,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         saveDevice = (Button) contactPopupView.findViewById(R.id.saveDeviceButton);
         unsaveDevice = (Button) contactPopupView.findViewById(R.id.unsaveDeviceButton);
 
-        deviceType = (Spinner) contactPopupView.findViewById(R.id.deviceType);
+        deviceType = (Spinner) contactPopupView.findViewById(R.id.roomType);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(Room_screen.this,
                 android.R.layout.simple_spinner_item,
                 getResources().getStringArray(R.array.devices));

@@ -57,7 +57,7 @@
                 android:layout_height="45dp"
                 android:layout_marginTop="20dp"
                 android:fontFamily="@font/baloo"
-                android:text="Scenáre"
+                android:text="@string/scenario_title"
                 android:textSize="30sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/imageView3"
