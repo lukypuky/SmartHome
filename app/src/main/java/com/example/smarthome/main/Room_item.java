@@ -1,11 +1,16 @@
 package com.example.smarthome.main;
 
-public class RoomItem
+public class Room_item extends android.app.Activity
 {
     private int mimageResource;
     private String mtext1, mtext2;
 
-    public RoomItem(int imageResource, String text1, String text2)
+    public Room_item()
+    {
+
+    }
+
+    public Room_item(int imageResource, String text1, String text2)
     {
         mimageResource = imageResource;
         mtext1 = text1;

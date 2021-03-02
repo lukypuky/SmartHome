@@ -15,26 +15,16 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/roomTextView"
+            android:id="@+id/scenarioTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/roomImageView"
+            android:layout_below="@id/scenarioImageView"
             android:layout_centerHorizontal="true"
             android:textSize="20sp"
             android:fontFamily="@font/baloo" />
 
-        <TextView
-            android:id="@+id/roomTextView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/roomTextView"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="-5dp"
-            android:fontFamily="@font/baloo"
-            android:textSize="15sp" />
-
         <ImageView
-            android:id="@+id/roomImageView"
+            android:id="@+id/scenarioImageView"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_centerHorizontal="true"

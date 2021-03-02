@@ -9,9 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SmartHome">
-        <activity android:name=".schemas.AddSchema_popup"></activity>
-        <activity android:name=".main.AddRoom_popup" />
-        <activity android:name=".schemas.Schemas_screen" />
+        <activity android:name=".main.Device_item"/>
+        <activity android:name=".main.Room_screen" />
+        <activity android:name=".scenarios.Scenario_screen" />
         <activity android:name=".settings.Settings_screen" />
         <activity android:name=".profile.Profile_screen" />
         <activity android:name=".registration.Registration_screen" />

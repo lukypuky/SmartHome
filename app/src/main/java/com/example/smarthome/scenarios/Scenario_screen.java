@@ -1,4 +1,4 @@
-package com.example.smarthome.schemas;
+package com.example.smarthome.scenarios;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -29,57 +29,66 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 
-public class Schemas_screen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
+public class Scenario_screen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
 {
     //menu
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private Toolbar toolbar;
 
-    //pridanie schemy
-    private FloatingActionButton addSchema;
-    private AlertDialog.Builder addSchemaDialog;
+    //pridanie scenara
+    private FloatingActionButton addScenario;
+    private AlertDialog.Builder addScenarioDialog;
     private AlertDialog dialog;
-    private EditText schemaName;
-    private Button saveSchema, unsaveSchema;
+    private EditText scenarioName;
+    private Button saveScenario, unsaveScenario;
 
-    //zoznam schem
+    //zoznam scenarov
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter; // bridge medzi datami a recycler view
     private RecyclerView.LayoutManager mLayoutManager;
 
-    private ArrayList<SchemaItem> schemaList;
+    private ArrayList<Scenario_item> scenarioList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_schemas_screen);
+        setContentView(R.layout.activity_scenarios_screen);
 
-        createSchemaList();
+        createScenarioList();
 
-        //tlacidlo na pridanie novej schemy
-        addSchema= (FloatingActionButton) findViewById(R.id.addSchema);
-        addSchema.setOnClickListener(new View.OnClickListener()
+        //tlacidlo na pridanie noveho scenara
+        addScenario= (FloatingActionButton) findViewById(R.id.addScenario);
+        addScenario.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                addSchemaDialog();
+                addScenarioDialog();
             }
         });
 
-        //plocha pre schemy v domacnosti
-        mRecyclerView = findViewById(R.id.schemaRecyclerView);
+        setRecyclerView();
+        setNavigationView();
+    }
+
+    //plocha pre scenare v domacnosti
+    public void  setRecyclerView()
+    {
+        mRecyclerView = findViewById(R.id.scenarioRecyclerView);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
-        mAdapter = new SchemaAdapter(schemaList);
+        mAdapter = new Scenario_adapter(scenarioList);
 
         mRecyclerView.setLayoutManager(mLayoutManager);
-        new ItemTouchHelper(schemaToRemove).attachToRecyclerView(mRecyclerView);
+        new ItemTouchHelper(scenarioToRemove).attachToRecyclerView(mRecyclerView);
         mRecyclerView.setAdapter(mAdapter);
+    }
 
-        //bocny navigacny panel
+    //bocny navigacny panel
+    public void setNavigationView()
+    {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -91,8 +100,8 @@ public class Schemas_screen extends AppCompatActivity implements NavigationView.
         //umozni nam klikat v menu
         navigationView.setNavigationItemSelectedListener(this);
 
-        //pri spusteni appky bude zakliknuta defaultne schema screena
-        navigationView.setCheckedItem(R.id.schema);
+        //pri spusteni appky bude zakliknuta defaultne scenar screena
+        navigationView.setCheckedItem(R.id.scenario);
     }
 
     @Override
@@ -114,17 +123,17 @@ public class Schemas_screen extends AppCompatActivity implements NavigationView.
         switch (item.getItemId())
         {
             case R.id.mainScreen:
-                Intent main_intent = new Intent(Schemas_screen.this, Main_screen.class);
+                Intent main_intent = new Intent(Scenario_screen.this, Main_screen.class);
                 startActivity(main_intent);
                 break;
             case R.id.profile:
-                Intent profile_intent = new Intent(Schemas_screen.this, Profile_screen.class);
+                Intent profile_intent = new Intent(Scenario_screen.this, Profile_screen.class);
                 startActivity(profile_intent);
                 break;
-            case R.id.schema:
+            case R.id.scenario:
                 break;
             case R.id.settings:
-                Intent settings_intent = new Intent(Schemas_screen.this, Settings_screen.class);
+                Intent settings_intent = new Intent(Scenario_screen.this, Settings_screen.class);
                 startActivity(settings_intent);
                 break;
         }
@@ -133,59 +142,59 @@ public class Schemas_screen extends AppCompatActivity implements NavigationView.
         return true;
     }
 
-    public void createSchemaList()
+    public void createScenarioList()
     {
-        schemaList = new ArrayList<>();
+        scenarioList = new ArrayList<>();
     }
 
-    //prida schemu na index 0 v arrayliste
-    public void insertSchema(EditText schemaName)
+    //prida scenar na index 0 v arrayliste
+    public void insertScenario(EditText scenarioName)
     {
-        String name = schemaName.getText().toString();
+        String name = scenarioName.getText().toString();
         int position = 0;
 
-        schemaList.add(position, new SchemaItem(R.drawable.schemas_icon,name));
+        scenarioList.add(position, new Scenario_item(R.drawable.scenario_icon,name));
         mAdapter.notifyItemInserted(position);
     }
 
-    //metoda na pridanie novej schemy v domacnosti
-    public void addSchemaDialog()
+    //metoda na pridanie noveho scenara v domacnosti
+    public void addScenarioDialog()
     {
-        addSchemaDialog = new AlertDialog.Builder(Schemas_screen.this);
-        View contactPopupView = getLayoutInflater().inflate(R.layout.activity_add_schema_popup, null);
+        addScenarioDialog = new AlertDialog.Builder(Scenario_screen.this);
+        View contactPopupView = getLayoutInflater().inflate(R.layout.activity_add_scenario_popup, null);
 
-        schemaName = (EditText) contactPopupView.findViewById(R.id.schemaName);
-        saveSchema = (Button) contactPopupView.findViewById(R.id.saveSchemaButton);
-        unsaveSchema = (Button) contactPopupView.findViewById(R.id.unsaveSchemaButton);
+        scenarioName = (EditText) contactPopupView.findViewById(R.id.scenarioName);
+        saveScenario = (Button) contactPopupView.findViewById(R.id.saveScenarioButton);
+        unsaveScenario = (Button) contactPopupView.findViewById(R.id.unsaveScenarioButton);
 
-        addSchemaDialog.setView(contactPopupView);
-        dialog = addSchemaDialog.create();
+        addScenarioDialog.setView(contactPopupView);
+        dialog = addScenarioDialog.create();
         dialog.show();
 
-        //potvrdenie pridania schemy
-        saveSchema.setOnClickListener(new View.OnClickListener()
+        //potvrdenie pridania scenara
+        saveScenario.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                //ak sa nevyplnil nazov schemy -> message
-                if (schemaName.getText().toString().isEmpty())
+                //ak sa nevyplnil nazov scenara -> message
+                if (scenarioName.getText().toString().isEmpty())
                 {
-                    Toast.makeText(Schemas_screen.this, "Zadajte názov pre schému", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Scenario_screen.this, "Zadajte názov pre scenár", Toast.LENGTH_SHORT).show();
                 }
 
-                //ak je vsetko vyplnene, pridaj schemu do arraylistu
+                //ak je vsetko vyplnene, pridaj scenar do arraylistu
                 else
                 {
-                    insertSchema(schemaName);
-                    Toast.makeText(Schemas_screen.this, "Schéma pridaná", Toast.LENGTH_SHORT).show();
+                    insertScenario(scenarioName);
+                    Toast.makeText(Scenario_screen.this, "Scenár pridaný", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }
             }
         });
 
-        //zrusenie pridania schemy
-        unsaveSchema.setOnClickListener(new View.OnClickListener()
+        //zrusenie pridania scenara
+        unsaveScenario.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -195,8 +204,8 @@ public class Schemas_screen extends AppCompatActivity implements NavigationView.
         });
     }
 
-    //mazanie schem (with swap right)
-    ItemTouchHelper.SimpleCallback schemaToRemove = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT)
+    //mazanie scenara (with swap right)
+    ItemTouchHelper.SimpleCallback scenarioToRemove = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT)
     {
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target)
@@ -208,15 +217,15 @@ public class Schemas_screen extends AppCompatActivity implements NavigationView.
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
         {
             //builder na potvrdenie zmazania
-            AlertDialog.Builder builder = new AlertDialog.Builder(Schemas_screen.this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(Scenario_screen.this);
             builder.setCancelable(true);
-            builder.setMessage("Naozaj chcete odstrániť túto schému '" + schemaList.get(viewHolder.getAdapterPosition()).getText().toUpperCase() + "' ?");
+            builder.setMessage("Naozaj chcete odstrániť tento scenár '" + scenarioList.get(viewHolder.getAdapterPosition()).getText().toUpperCase() + "' ?");
             builder.setPositiveButton("Áno", new DialogInterface.OnClickListener()
             {
                 @Override
                 public void onClick(DialogInterface dialog, int which)
                 {
-                    schemaList.remove(viewHolder.getAdapterPosition());
+                    scenarioList.remove(viewHolder.getAdapterPosition());
                     mAdapter.notifyDataSetChanged();
                 }
             });

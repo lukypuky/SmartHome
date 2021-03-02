@@ -23,4 +23,13 @@
         <item>Záhrada</item>
         <item>Iné</item>
     </string-array>
+
+    <string-array name="devices">
+        <item>Typ zariadenia</item>
+        <item>Alarm</item>
+        <item>Kúrenie</item>
+        <item>Svetlo</item>
+        <item>Teplomer</item>
+        <item>Žalúzie</item>
+    </string-array>
 </resources>

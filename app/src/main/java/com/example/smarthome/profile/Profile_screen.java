@@ -13,7 +13,7 @@ import android.view.MenuItem;
 
 import com.example.smarthome.main.Main_screen;
 import com.example.smarthome.R;
-import com.example.smarthome.schemas.Schemas_screen;
+import com.example.smarthome.scenarios.Scenario_screen;
 import com.example.smarthome.settings.Settings_screen;
 import com.google.android.material.navigation.NavigationView;
 
@@ -33,6 +33,12 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
 
+        setNavigationView();
+    }
+
+    //bocny navigacny panel
+    public void setNavigationView()
+    {
         navigationView.bringToFront();
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
@@ -68,9 +74,9 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
                 break;
             case R.id.profile:
                 break;
-            case R.id.schema:
-                Intent schema_intent = new Intent(Profile_screen.this, Schemas_screen.class);
-                startActivity(schema_intent);
+            case R.id.scenario:
+                Intent scenario_intent = new Intent(Profile_screen.this, Scenario_screen.class);
+                startActivity(scenario_intent);
                 break;
             case R.id.settings:
                 Intent settings_intent = new Intent(Profile_screen.this, Settings_screen.class);
