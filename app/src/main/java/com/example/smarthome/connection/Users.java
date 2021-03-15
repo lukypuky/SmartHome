@@ -2,7 +2,7 @@ package com.example.smarthome.connection;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Post
+public class Users
 {
     @SerializedName("id")
     private int userId;

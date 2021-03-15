@@ -15,7 +15,6 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
 
-        <activity android:name=".main.Test" />
         <activity android:name=".main.Device_item" />
         <activity android:name=".main.Room_screen" />
         <activity android:name=".scenarios.Scenario_screen" />
