@@ -63,9 +63,8 @@ public class Room_adapter extends RecyclerView.Adapter<Room_adapter.RoomViewHold
     {
         Room_item currentItem = mRoomList.get(position);
 
-        holder.mImageView.setImageResource(currentItem.getImageResource());
-        holder.mTextView1.setText(currentItem.getText1());
-        holder.mTextView2.setText(currentItem.getText2());
+        holder.mImageView.setImageResource(currentItem.getMimageResource());
+        holder.mTextView1.setText(currentItem.getRoomName());
     }
 
     @Override
