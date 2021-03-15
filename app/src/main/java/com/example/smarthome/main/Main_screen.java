@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,13 +26,23 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smarthome.R;
+import com.example.smarthome.connection.Api;
+import com.example.smarthome.connection.Rooms;
 import com.example.smarthome.profile.Profile_screen;
 import com.example.smarthome.scenarios.Scenario_screen;
 import com.example.smarthome.settings.Settings_screen;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Main_screen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Room_adapter.OnRoomListener
 {
@@ -56,16 +67,29 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
 
     private ArrayList<Room_item> roomList;
 
+    //api
+    private Api api;
+
+    private List<Rooms> rooms;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
 
+        //pripojenie sa na api
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://147.175.121.237/api2/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        api = retrofit.create(Api.class);
+
         createRoomList();
 
         //tlacidlo na pridanie novej miestnosti
-        addRoom = (FloatingActionButton) findViewById(R.id.addRoom);
+        addRoom = findViewById(R.id.addRoom);
         addRoom.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -75,6 +99,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
             }
         });
 
+        getRooms();
         setRecyclerView();
         setNavigationView();
     }
@@ -126,6 +151,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     }
 
     //prepinanie medzi obrazovkami v menu
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item)
     {
@@ -152,43 +178,35 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     }
 
     //prida miestnost na index 0 v arrayliste
-    public void insertRoom(EditText roomName, int roomType)
+    public void insertRoom(EditText roomName, String roomType)
     {
         String name = roomName.getText().toString();
-        int position = 0;
 
-        switch (roomType)
+        Rooms room = new Rooms(name, roomType, 1);
+
+        Call<Rooms> call = api.postRoom(name, roomType, 1);
+
+        call.enqueue(new Callback<Rooms>()
         {
-            case 1:
-                roomList.add(position, new Room_item(R.drawable.garage,name, "pocet modulov:"));
-                break;
-            case 2:
-                roomList.add(position, new Room_item(R.drawable.dinningroom,name, "pocet modulov:"));
-                break;
-            case 3:
-                roomList.add(position, new Room_item(R.drawable.kitchen,name, "pocet modulov:"));
-                break;
-            case 4:
-                roomList.add(position, new Room_item(R.drawable.bathroom,name, "pocet modulov:"));
-                break;
-            case 5:
-                roomList.add(position, new Room_item(R.drawable.livingroom,name, "pocet modulov:"));
-                break;
-            case 6:
-                roomList.add(position, new Room_item(R.drawable.office,name, "pocet modulov:"));
-                break;
-            case 7:
-                roomList.add(position, new Room_item(R.drawable.bedroom,name, "pocet modulov:"));
-                break;
-            case 8:
-                roomList.add(position, new Room_item(R.drawable.garden,name, "pocet modulov:"));
-                break;
-            case 9:
-                roomList.add(position, new Room_item(R.drawable.defaultroom,name, "pocet modulov:"));
-                break;
-        }
+            @Override
+            public void onResponse(Call<Rooms> call, Response<Rooms> response)
+            {
+                if (!response.isSuccessful())
+                {
+                    System.out.println("call = " + call + ", response = " + response);
+                }
+            }
 
-        mAdapter.notifyItemInserted(position);
+            @Override
+            public void onFailure(Call<Rooms> call, Throwable t)
+            {
+                System.out.println("call = " + call + ", t = " + t);
+            }
+        });
+
+        Intent main_intent = new Intent(Main_screen.this, Main_screen.class);
+        startActivity(main_intent);
+//        mAdapter.notifyItemInserted(roomList.size());
     }
 
     public void createRoomList()
@@ -202,11 +220,11 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         addRoomDialog = new AlertDialog.Builder(Main_screen.this);
         View contactPopupView = getLayoutInflater().inflate(R.layout.activity_add_room_popup, null);
 
-        roomName = (EditText) contactPopupView.findViewById(R.id.roomName);
-        saveRoom = (Button) contactPopupView.findViewById(R.id.saveRoomButton);
-        unsaveRoom = (Button) contactPopupView.findViewById(R.id.unsaveRoomButton);
+        roomName = contactPopupView.findViewById(R.id.roomName);
+        saveRoom = contactPopupView.findViewById(R.id.saveRoomButton);
+        unsaveRoom = contactPopupView.findViewById(R.id.unsaveRoomButton);
 
-        roomType = (Spinner) contactPopupView.findViewById(R.id.roomType);
+        roomType = contactPopupView.findViewById(R.id.roomType);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(Main_screen.this,
                 android.R.layout.simple_spinner_item,
                 getResources().getStringArray(R.array.rooms));
@@ -225,7 +243,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
             @Override
             public void onClick(View v)
             {
-                int roomTypeInt = 0;
+                String roomTypeString = "";
 
                 //ak sa nevyplnil nazov miestnosti -> message
                 if (roomName.getText().toString().isEmpty())
@@ -245,35 +263,35 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
                     switch (roomType.getSelectedItem().toString())
                     {
                         case "Garáž":
-                            roomTypeInt = 1;
+                            roomTypeString = "garaz";
                             break;
                         case "Jedáleň":
-                            roomTypeInt = 2;
+                            roomTypeString = "jedalen";
                             break;
                         case "Kuchyňa":
-                            roomTypeInt = 3;
+                            roomTypeString = "kuchyna";
                             break;
                         case "Kúpeľňa":
-                            roomTypeInt = 4;
+                            roomTypeString = "kupelna";
                             break;
                         case "Obývačka":
-                            roomTypeInt = 5;
+                            roomTypeString = "obyvacka";
                             break;
                         case "Pracovňa":
-                            roomTypeInt = 6;
+                            roomTypeString = "pracovna";
                             break;
                         case "Spálňa":
-                            roomTypeInt = 7;
+                            roomTypeString = "spalna";
                             break;
                         case "Záhrada":
-                            roomTypeInt = 8;
+                            roomTypeString = "zahrada";
                             break;
                         case "Iné":
-                            roomTypeInt = 9;
+                            roomTypeString = "ine";
                             break;
                     }
 
-                    insertRoom(roomName, roomTypeInt);
+                    insertRoom(roomName, roomTypeString);
                     Toast.makeText(Main_screen.this, "Miestnosť pridaná", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }
@@ -306,12 +324,18 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
             //builder na potvrdenie zmazania
             AlertDialog.Builder builder = new AlertDialog.Builder(Main_screen.this);
             builder.setCancelable(true);
-            builder.setMessage("Naozaj chcete odstrániť túto miestnosť '" + roomList.get(viewHolder.getAdapterPosition()).getText1().toUpperCase() + "' ?");
+            builder.setMessage("Naozaj chcete odstrániť túto miestnosť '" + roomList.get(viewHolder.getAdapterPosition()).getRoomName().toUpperCase() + "' ?");
             builder.setPositiveButton("Áno", new DialogInterface.OnClickListener()
             {
                 @Override
                 public void onClick(DialogInterface dialog, int which)
                 {
+                    int id_household = roomList.get(viewHolder.getAdapterPosition()).getId_household();
+                    int id_room = roomList.get(viewHolder.getAdapterPosition()).getId_room();
+
+                    deleteRoom(id_room, id_household);
+
+                    //refresh recycleviewra
                     roomList.remove(viewHolder.getAdapterPosition());
                     mAdapter.notifyDataSetChanged();
                 }
@@ -332,14 +356,96 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         }
     };
 
+    public void deleteRoom(int id_room, int id_household)
+    {
+        Call<Void> call = api.deleteRoom(id_room, id_household);
+
+        call.enqueue(new Callback<Void>()
+        {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response)
+            {
+                System.out.println("call = " + call + ", response = " + response);
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t)
+            {
+                System.out.println("call = " + call + ", t = " + t);
+            }
+        });
+    }
+
     @Override
     public void onRoomClick(int position)
     {
         Log.d(TAG, "onRoomClick: clicked." + position);
 
         Intent intent = new Intent(this, Room_screen.class);
-        intent.putExtra("roomName", String.valueOf(roomList.get(position).getText1()));
-        intent.putExtra("roomImg", String.valueOf(roomList.get(position).getImageResource()));
+        intent.putExtra("roomName", String.valueOf(roomList.get(position).getRoomName()));
+        intent.putExtra("roomImg", String.valueOf(roomList.get(position).getMimageResource()));
         startActivity(intent);
+    }
+
+    //getne vsetky miestnosti pre danu domacnost
+    public void getRooms()
+    {
+        Call<List<Rooms>> call = api.getRooms(1);
+
+        call.enqueue(new Callback<List<Rooms>>()
+        {
+            @Override
+            public void onResponse(Call<List<Rooms>> call, Response<List<Rooms>> response)
+            {
+                if (!response.isSuccessful())
+                {
+                    System.out.println("call = " + call + ", response = " + response);
+                    return;
+                }
+
+                rooms = response.body();
+                final int position = 0;
+
+                for (Rooms room: rooms)
+                {
+                    int image = getRoomImage(room.getRoomType());
+                    roomList.add(position, new Room_item(image, room.getRoomName(), 1, room.getRoomId()));
+                    mAdapter.notifyItemInserted(position);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Rooms>> call, Throwable t)
+            {
+                System.out.println("call = " + call + ", t = " + t);
+            }
+        });
+    }
+
+    //metoda ktora vrati obrazok pre miestnot na zaklade typu miestnosti
+    public int getRoomImage(String type)
+    {
+        switch (type)
+        {
+            case "garaz":
+                return R.drawable.garage;
+            case "jedalen":
+                return R.drawable.dinningroom;
+            case "kuchyna":
+                return R.drawable.kitchen;
+            case "kupelna":
+                return R.drawable.bathroom;
+            case "obyvacka":
+                return R.drawable.livingroom;
+            case "pracovna":
+                return R.drawable.office;
+            case "spalna":
+                return R.drawable.bedroom;
+            case "zahrada":
+                return R.drawable.garden;
+            case "ine":
+                return R.drawable.defaultroom;
+        }
+        return 0;
     }
 }
