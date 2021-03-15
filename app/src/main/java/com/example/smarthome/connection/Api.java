@@ -27,6 +27,7 @@ public interface Api
 //    @GET("rooms.php")
 //    Call<Rooms> getRoom(@Query("id_household") int id_household);
     //comment
+    ///commnet2
 
     //insert miestnosti do DB
     @FormUrlEncoded
