@@ -26,6 +26,7 @@ public interface Api
 //    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
 //    @GET("rooms.php")
 //    Call<Rooms> getRoom(@Query("id_household") int id_household);
+    //comment
 
     //insert miestnosti do DB
     @FormUrlEncoded
