@@ -6,6 +6,8 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
+    android:elevation="2dp"
     tools:context=".main.Room_screen"
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
@@ -16,7 +18,8 @@
         android:id="@+id/nav_view"
         app:headerLayout="@layout/header"
         app:menu="@menu/main_menu"
-        android:layout_gravity="start"/>
+        android:layout_gravity="start">
+    </com.google.android.material.navigation.NavigationView>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -41,23 +44,24 @@
 
             <ImageView
                 android:id="@+id/roomImage"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="15dp"
                 android:padding="5dp"
                 android:src="@mipmap/ic_launcher"
                 app:layout_constraintEnd_toStartOf="@+id/textView"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/toolbar"/>
+                app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
             <TextView
                 android:id="@+id/roomText"
                 android:layout_width="0dp"
                 android:layout_height="45dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="22dp"
                 android:fontFamily="@font/baloo"
-                android:textSize="30sp"
+                android:textSize="25sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/roomImage"
                 app:layout_constraintTop_toBottomOf="@+id/toolbar" />
@@ -92,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|right"
                 android:layout_margin="16dp"
-                android:src="@drawable/add_icon"/>
+                android:src="@drawable/add_icon" />
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
     </RelativeLayout>
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -4,23 +4,23 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/mainScreen"
-            android:title="Hlavná obrazovka"
+            android:title="@string/main_screen"
             android:icon="@drawable/mainscreen_icon"/>
         <item
             android:id="@+id/profile"
-            android:title="Profil"
+            android:title="@string/profile_screen"
             android:icon="@drawable/profile_icon"/>
         <item
             android:id="@+id/scenario"
-            android:title="Scenáre"
+            android:title="@string/scenario_screen"
             android:icon="@drawable/scenario_icon"/>
         <item
             android:id="@+id/settings"
-            android:title="Nastavenia"
+            android:title="@string/settings_screen"
             android:icon="@drawable/settings_icon"/>
         <item
             android:id="@+id/logout"
-            android:title="Odhlásiť sa"
+            android:title="@string/logout"
             android:icon="@drawable/logout_icon"/>
     </group>
 </menu>
