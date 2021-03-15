@@ -13,19 +13,19 @@ import retrofit2.http.Query;
 
 public interface Api
 {
-//    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
-//    @GET("users.php")
-//    Call<List<Users>> getUsers();
+    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+    @GET("users.php")
+    Call<List<Users>> getUsers();
 
     //getne vsetky miestnosti na zaklade ID domacnosti
     @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
     @GET("rooms.php")
     Call<List<Rooms>> getRooms(@Query("id_household") int id_household);
 
-//    //getne 1 miestnost na zaklade ID domacnosti
-//    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
-//    @GET("rooms.php")
-//    Call<Rooms> getRoom(@Query("id_household") int id_household);
+    //getne 1 miestnost na zaklade ID domacnosti
+    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+    @GET("rooms.php")
+    Call<Rooms> getRoom(@Query("id_household") int id_household);
 
     //insert miestnosti do DB
     @FormUrlEncoded
