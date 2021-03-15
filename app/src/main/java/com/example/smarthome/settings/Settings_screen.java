@@ -1,21 +1,39 @@
 package com.example.smarthome.settings;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.smarthome.main.Main_screen;
 import com.example.smarthome.R;
 import com.example.smarthome.profile.Profile_screen;
 import com.example.smarthome.scenarios.Scenario_screen;
 import com.google.android.material.navigation.NavigationView;
+
+import java.util.Locale;
 
 public class Settings_screen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
 {
@@ -51,6 +69,7 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
 
         setNavigationView();
     }
+
 
 //    public void changeLanguage()
 //    {
