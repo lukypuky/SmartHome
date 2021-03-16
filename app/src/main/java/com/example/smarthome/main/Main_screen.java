@@ -10,7 +10,9 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
@@ -27,7 +30,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smarthome.R;
 import com.example.smarthome.connection.Api;
+import com.example.smarthome.connection.Login;
 import com.example.smarthome.connection.Rooms;
+import com.example.smarthome.connection.SessionManagement;
+import com.example.smarthome.connection.Users;
+import com.example.smarthome.login.Login_screen;
 import com.example.smarthome.profile.Profile_screen;
 import com.example.smarthome.scenarios.Scenario_screen;
 import com.example.smarthome.settings.Settings_screen;
@@ -47,6 +54,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class Main_screen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Room_adapter.OnRoomListener
 {
     private static final String TAG = "Main_screen";
+
     //menu
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -69,8 +77,13 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
 
     //api
     private Api api;
-
     private List<Rooms> rooms;
+
+    //data z login screeny
+    private TextView homeName, userName;
+    private int householdId;
+
+    private String stringHomeName, stringUserName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -86,6 +99,28 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
 
         api = retrofit.create(Api.class);
 
+        //session
+        SessionManagement sessionManagement = new SessionManagement(Main_screen.this);
+        Login login =  sessionManagement.getLoginSession();
+
+//        System.out.println("STATUS " + login.getStatus());
+//        System.out.println("USER ID " + login.getUserId());
+//        System.out.println("USER NAME " + login.getUsername());
+//        System.out.println("ROLE " + login.getRole());
+//        System.out.println("HOUSEHOLD " + login.getHouseholdName());
+//        System.out.println("HOUSEHOLD ID "+ login.getHouseholdId());
+
+        //nastavenie HomeName v headeri appky
+        homeName = findViewById(R.id.mainHomeName);
+        homeName.setText(login.getHouseholdName());
+
+        //nastavenie UserName v headeri appky
+        userName = findViewById(R.id.mainUserName);
+        userName.setText(login.getUsername());
+
+//        //nastavenie id_household
+        householdId = login.getHouseholdId();
+
         createRoomList();
 
         //tlacidlo na pridanie novej miestnosti
@@ -97,6 +132,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
             {
                 addRoomDialog();
             }
+
         });
 
         getRooms();
@@ -120,9 +156,9 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     //bocny navigacny panel
     public void setNavigationView()
     {
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+        toolbar = findViewById(R.id.toolbar);
         navigationView.bringToFront(); //pri kliknuti na menu nam menu nezmizne
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
@@ -171,20 +207,21 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
                 Intent settings_intent = new Intent(Main_screen.this, Settings_screen.class);
                 startActivity(settings_intent);
                 break;
+            case R.id.logout:
+                logout();
+                break;
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    //prida miestnost na index 0 v arrayliste
+    //prida miestnost do DB
     public void insertRoom(EditText roomName, String roomType)
     {
         String name = roomName.getText().toString();
 
-        Rooms room = new Rooms(name, roomType, 1);
-
-        Call<Rooms> call = api.postRoom(name, roomType, 1);
+        Call<Rooms> call = api.postRoom(name, roomType, householdId);
 
         call.enqueue(new Callback<Rooms>()
         {
@@ -206,7 +243,12 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
 
         Intent main_intent = new Intent(Main_screen.this, Main_screen.class);
         startActivity(main_intent);
-//        mAdapter.notifyItemInserted(roomList.size());
+
+//        Intent intent = new Intent(Main_screen.this, Main_screen.class);
+//        intent.putExtra("HOUSEHOLDNAME", (Parcelable) homeName);
+//        intent.putExtra("HOUSEHOLDID", householdId);
+//        intent.putExtra("USERNAME", (Parcelable) userName);
+//        startActivity(intent);
     }
 
     public void createRoomList()
@@ -390,7 +432,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     //getne vsetky miestnosti pre danu domacnost
     public void getRooms()
     {
-        Call<List<Rooms>> call = api.getRooms(1);
+        Call<List<Rooms>> call = api.getRooms(householdId);
 
         call.enqueue(new Callback<List<Rooms>>()
         {
@@ -409,7 +451,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
                 for (Rooms room: rooms)
                 {
                     int image = getRoomImage(room.getRoomType());
-                    roomList.add(position, new Room_item(image, room.getRoomName(), 1, room.getRoomId()));
+                    roomList.add(position, new Room_item(image, room.getRoomName(), householdId, room.getRoomId()));
                     mAdapter.notifyItemInserted(position);
                 }
             }
@@ -448,4 +490,43 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         }
         return 0;
     }
+
+    public void logout()
+    {
+        SessionManagement sessionManagement = new SessionManagement(Main_screen.this);
+        sessionManagement.removeSession();
+
+        moveToLoginScreen();
+    }
+
+    public void moveToLoginScreen()
+    {
+        Intent intent = new Intent(Main_screen.this, Login_screen.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
+
+//    public void saveData()
+//    {
+//        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
+//
+//        editor.putString(HOUSEHOLD, homeName.getText().toString());
+//        editor.putString(USERNAME, userName.getText().toString());
+//
+//        editor.apply();
+//    }
+//
+//    public void loadData()
+//    {
+//        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+//        stringHomeName = sharedPreferences.getString("HOUSEHOLD", "");
+//        stringUserName = sharedPreferences.getString("USERNAME", "");
+//    }
+//
+//    public void updateViews()
+//    {
+//        homeName.setText(stringHomeName);
+//        userName.setText(stringUserName);
+//    }
 }

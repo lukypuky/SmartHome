@@ -22,7 +22,6 @@ public class Users
     @SerializedName("id_household")
     private int userHouseholdId;
 
-
     public int getUserId() {
         return userId;
     }

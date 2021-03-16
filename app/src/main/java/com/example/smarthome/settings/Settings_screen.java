@@ -70,7 +70,6 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
         setNavigationView();
     }
 
-
 //    public void changeLanguage()
 //    {
 //        //pole jazykov

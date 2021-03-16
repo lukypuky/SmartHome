@@ -49,7 +49,7 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="32dp"
                 android:fontFamily="@font/baloo"
-                android:text="My Home"
+                android:text=""
                 android:textSize="22sp"
                 app:layout_constraintEnd_toStartOf="@+id/imageView"
                 app:layout_constraintStart_toStartOf="parent"

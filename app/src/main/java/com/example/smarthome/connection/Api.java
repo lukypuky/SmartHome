@@ -15,7 +15,9 @@ public interface Api
 {
     @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
     @GET("users.php")
-    Call<List<Users>> getUsers();
+    Call<Users> getUser(@Query("id") int userId,
+                        @Query("id_household") int id_household
+    );
 
     //getne vsetky miestnosti na zaklade ID domacnosti
     @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
@@ -26,8 +28,6 @@ public interface Api
 //    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
 //    @GET("rooms.php")
 //    Call<Rooms> getRoom(@Query("id_household") int id_household);
-    //comment
-    ///commnet2
 
     //insert miestnosti do DB
     @FormUrlEncoded
@@ -47,4 +47,33 @@ public interface Api
             @Field("id") int id_room,
             @Field("id_household") int id_household
     );
+
+    //prihlasenie
+    @FormUrlEncoded
+    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+    @POST("login.php")
+    Call<Login> loginUser(
+            @Field("username") String userName,
+            @Field("password") String password
+    );
+
+    //pridanie domacnosti do DB pri registracii
+//    @FormUrlEncoded
+//    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+//    @POST("rooms.php")
+//    Call<Rooms> postHousehold(
+//            @Field("name") String householdName
+//    );
+
+    //pridanie usera a do DB pri registracii
+//    @FormUrlEncoded
+//    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+//    @POST("users.php")
+//    Call<Rooms> postUser(
+//            @Field("username") String roomName,
+//            @Field("email") String roomTyp,
+//            @Field("password") String password,
+//            @Field("role") int role,
+//            @Field("id_household") int id_household
+//    );
 }
