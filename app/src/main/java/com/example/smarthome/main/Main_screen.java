@@ -59,6 +59,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private Toolbar toolbar;
+    private TextView headerHousehold, headerUsername;
 
     //pridanie miestnosti
     private FloatingActionButton addRoom;
@@ -73,17 +74,16 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     private RecyclerView.Adapter mAdapter; // bridge medzi datami a recycler view
     private RecyclerView.LayoutManager mLayoutManager;
 
+    //miestnosti
     private ArrayList<Room_item> roomList;
+    private List<Rooms> rooms;
 
     //api
     private Api api;
-    private List<Rooms> rooms;
 
     //data z login screeny
     private TextView homeName, userName;
     private int householdId;
-
-    private String stringHomeName, stringUserName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -91,35 +91,13 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
 
-        //pripojenie sa na api
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://147.175.121.237/api2/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        api = retrofit.create(Api.class);
+        apiConnection();
 
         //session
         SessionManagement sessionManagement = new SessionManagement(Main_screen.this);
         Login login =  sessionManagement.getLoginSession();
 
-//        System.out.println("STATUS " + login.getStatus());
-//        System.out.println("USER ID " + login.getUserId());
-//        System.out.println("USER NAME " + login.getUsername());
-//        System.out.println("ROLE " + login.getRole());
-//        System.out.println("HOUSEHOLD " + login.getHouseholdName());
-//        System.out.println("HOUSEHOLD ID "+ login.getHouseholdId());
-
-        //nastavenie HomeName v headeri appky
-        homeName = findViewById(R.id.mainHomeName);
-        homeName.setText(login.getHouseholdName());
-
-        //nastavenie UserName v headeri appky
-        userName = findViewById(R.id.mainUserName);
-        userName.setText(login.getUsername());
-
-//        //nastavenie id_household
-        householdId = login.getHouseholdId();
+        setScreenValues(login);
 
         createRoomList();
 
@@ -137,7 +115,18 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
 
         getRooms();
         setRecyclerView();
-        setNavigationView();
+        setNavigationView(login);
+    }
+
+    //pripojenie sa na api
+    public void apiConnection()
+    {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://147.175.121.237/api2/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        api = retrofit.create(Api.class);
     }
 
     //plocha pre miestnosti v domacnosti
@@ -154,11 +143,21 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     }
 
     //bocny navigacny panel
-    public void setNavigationView()
+    public void setNavigationView(Login login)
     {
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         toolbar = findViewById(R.id.toolbar);
+
+        //nastavenie nazvu domacnosti a pouzivatela v headri menu
+        View headerView = navigationView.getHeaderView(0);
+
+        headerHousehold = headerView.findViewById(R.id.headerHousehold);
+        headerUsername = headerView.findViewById(R.id.headerUserName);
+
+        headerHousehold.setText(login.getHouseholdName());
+        headerUsername.setText(login.getUsername());
+
         navigationView.bringToFront(); //pri kliknuti na menu nam menu nezmizne
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
@@ -243,12 +242,6 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
 
         Intent main_intent = new Intent(Main_screen.this, Main_screen.class);
         startActivity(main_intent);
-
-//        Intent intent = new Intent(Main_screen.this, Main_screen.class);
-//        intent.putExtra("HOUSEHOLDNAME", (Parcelable) homeName);
-//        intent.putExtra("HOUSEHOLDID", householdId);
-//        intent.putExtra("USERNAME", (Parcelable) userName);
-//        startActivity(intent);
     }
 
     public void createRoomList()
@@ -433,7 +426,6 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     public void getRooms()
     {
         Call<List<Rooms>> call = api.getRooms(householdId);
-
         call.enqueue(new Callback<List<Rooms>>()
         {
             @Override
@@ -491,6 +483,22 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         return 0;
     }
 
+    //nastavi hodnoty, ktore sa menia podla prihlaseneho usera
+    public void setScreenValues(Login login)
+    {
+        //nastavenie HomeName v headeri appky
+        homeName = findViewById(R.id.mainHomeName);
+        homeName.setText(login.getHouseholdName());
+
+        //nastavenie UserName v headeri appky
+        userName = findViewById(R.id.mainUserName);
+        userName.setText(login.getUsername());
+
+        //nastavenie id_household
+        householdId = login.getHouseholdId();
+    }
+
+    //odhlasenie sa z aplikacie (zrusenie session)
     public void logout()
     {
         SessionManagement sessionManagement = new SessionManagement(Main_screen.this);
@@ -505,28 +513,4 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
-
-//    public void saveData()
-//    {
-//        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-//        SharedPreferences.Editor editor = sharedPreferences.edit();
-//
-//        editor.putString(HOUSEHOLD, homeName.getText().toString());
-//        editor.putString(USERNAME, userName.getText().toString());
-//
-//        editor.apply();
-//    }
-//
-//    public void loadData()
-//    {
-//        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-//        stringHomeName = sharedPreferences.getString("HOUSEHOLD", "");
-//        stringUserName = sharedPreferences.getString("USERNAME", "");
-//    }
-//
-//    public void updateViews()
-//    {
-//        homeName.setText(stringHomeName);
-//        userName.setText(stringUserName);
-//    }
 }

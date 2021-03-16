@@ -5,25 +5,22 @@ import com.google.gson.annotations.SerializedName;
 public class Login
 {
     @SerializedName("status")
-    private int status;
-
-    @SerializedName("info")
-    private String info;
+    private final int status;
 
     @SerializedName("role")
-    private  int role;
+    private final int role;
 
     @SerializedName("username")
-    private String username;
+    private final String username;
 
     @SerializedName("user_id")
-    private int userId;
+    private final int userId;
 
     @SerializedName("id_household")
-    private int householdId;
+    private final int householdId;
 
     @SerializedName("household_name")
-    private String householdName;
+    private final String householdName;
 
     public Login(int status, int role, String username, int userId, int householdId, String householdName)
     {
@@ -38,11 +35,6 @@ public class Login
     public int getStatus()
     {
         return status;
-    }
-
-    public String getInfo()
-    {
-        return info;
     }
 
     public int getRole()

@@ -11,7 +11,7 @@ public class Users
     private String userName;
 
     @SerializedName("email")
-    private  String userEmail;
+    private String userEmail;
 
     @SerializedName("password")
     private String userPassword;
@@ -21,6 +21,14 @@ public class Users
 
     @SerializedName("id_household")
     private int userHouseholdId;
+
+    public Users(String userName, String userEmail, String userPassword, int userRole)
+    {
+        this.userName = userName;
+        this.userEmail = userEmail;
+        this.userPassword = userPassword;
+        this.userRole = userRole;
+    }
 
     public int getUserId() {
         return userId;

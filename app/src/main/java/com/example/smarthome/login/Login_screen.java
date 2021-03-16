@@ -48,13 +48,7 @@ public class Login_screen extends AppCompatActivity
         lRegistration = findViewById(R.id.loginRegisterText);
         lConnect = findViewById(R.id.loginConnectText);
 
-        //pripojenie sa na api
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://147.175.121.237/api2/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        api = retrofit.create(Api.class);
+        apiConnection();
 
         //prihlasenie sa
         lBtn.setOnClickListener(new View.OnClickListener()
@@ -66,7 +60,7 @@ public class Login_screen extends AppCompatActivity
             }
         });
 
-//        prechod na obrazovku registracie
+//      prechod na obrazovku registracie
         lRegistration.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -75,6 +69,17 @@ public class Login_screen extends AppCompatActivity
                 startActivity(new Intent(getApplicationContext(), Registration_screen.class));
             }
         });
+    }
+
+    //pripojenie sa na api
+    public void apiConnection()
+    {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://147.175.121.237/api2/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        api = retrofit.create(Api.class);
     }
 
     //pri starte appky sa skontroluje ci so uz prihlaseny (ci mam session)
@@ -91,7 +96,6 @@ public class Login_screen extends AppCompatActivity
         SessionManagement sessionManagement = new SessionManagement(Login_screen.this);
         int userLoggedIn = sessionManagement.getSession();
 
-        System.out.println("SESIIIIIIIIIIIIIIIIIIIION " + userLoggedIn);
         if(userLoggedIn != 0)
         {
             //user id logged in and so move to mainActivity

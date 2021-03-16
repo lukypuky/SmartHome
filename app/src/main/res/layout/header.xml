@@ -14,14 +14,16 @@
         android:src="@drawable/home"/>
 
     <TextView
+        android:id="@+id/headerHousehold"
         android:layout_width="wrap_content"
         android:layout_height="28dp"
-        android:text="My Home"
+        android:text=""
         android:textSize="22sp" />
 
     <TextView
+        android:id="@+id/headerUserName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="User name"
+        android:text=""
         android:textSize="16sp" />
 </LinearLayout>

@@ -16,7 +16,6 @@ public class SessionManagement
     String SESSION_HOUSEHOLD_ID = "household_id";
     String SESSION_HOUSEHOLD_NAME = "household_name";
 
-
     public SessionManagement(Context context)
     {
         sharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME,Context.MODE_PRIVATE);

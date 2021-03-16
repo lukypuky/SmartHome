@@ -9,14 +9,15 @@ import retrofit2.http.GET;
 import retrofit2.http.HTTP;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface Api
 {
     @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
     @GET("users.php")
-    Call<Users> getUser(@Query("id") int userId,
-                        @Query("id_household") int id_household
+    Call<List<Users>> getUser(@Query("id") int userId,
+                              @Query("id_household") int id_household
     );
 
     //getne vsetky miestnosti na zaklade ID domacnosti
