@@ -10,7 +10,9 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
@@ -27,7 +30,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smarthome.R;
 import com.example.smarthome.connection.Api;
+import com.example.smarthome.connection.Login;
 import com.example.smarthome.connection.Rooms;
+import com.example.smarthome.connection.SessionManagement;
+import com.example.smarthome.connection.Users;
+import com.example.smarthome.login.Login_screen;
 import com.example.smarthome.profile.Profile_screen;
 import com.example.smarthome.scenarios.Scenario_screen;
 import com.example.smarthome.settings.Settings_screen;
@@ -47,10 +54,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class Main_screen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Room_adapter.OnRoomListener
 {
     private static final String TAG = "Main_screen";
+
     //menu
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private Toolbar toolbar;
+    private TextView headerHousehold, headerUsername;
 
     //pridanie miestnosti
     private FloatingActionButton addRoom;
@@ -65,12 +74,16 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     private RecyclerView.Adapter mAdapter; // bridge medzi datami a recycler view
     private RecyclerView.LayoutManager mLayoutManager;
 
+    //miestnosti
     private ArrayList<Room_item> roomList;
+    private List<Rooms> rooms;
 
     //api
     private Api api;
 
-    private List<Rooms> rooms;
+    //data z login screeny
+    private TextView homeName, userName;
+    private int householdId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -78,13 +91,13 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
 
-        //pripojenie sa na api
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://147.175.121.237/api2/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        apiConnection();
 
-        api = retrofit.create(Api.class);
+        //session
+        SessionManagement sessionManagement = new SessionManagement(Main_screen.this);
+        Login login =  sessionManagement.getLoginSession();
+
+        setScreenValues(login);
 
         createRoomList();
 
@@ -97,11 +110,23 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
             {
                 addRoomDialog();
             }
+
         });
 
         getRooms();
         setRecyclerView();
-        setNavigationView();
+        setNavigationView(login);
+    }
+
+    //pripojenie sa na api
+    public void apiConnection()
+    {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://147.175.121.237/api2/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        api = retrofit.create(Api.class);
     }
 
     //plocha pre miestnosti v domacnosti
@@ -118,11 +143,21 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     }
 
     //bocny navigacny panel
-    public void setNavigationView()
+    public void setNavigationView(Login login)
     {
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+        toolbar = findViewById(R.id.toolbar);
+
+        //nastavenie nazvu domacnosti a pouzivatela v headri menu
+        View headerView = navigationView.getHeaderView(0);
+
+        headerHousehold = headerView.findViewById(R.id.headerHousehold);
+        headerUsername = headerView.findViewById(R.id.headerUserName);
+
+        headerHousehold.setText(login.getHouseholdName());
+        headerUsername.setText(login.getUsername());
+
         navigationView.bringToFront(); //pri kliknuti na menu nam menu nezmizne
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
@@ -171,20 +206,21 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
                 Intent settings_intent = new Intent(Main_screen.this, Settings_screen.class);
                 startActivity(settings_intent);
                 break;
+            case R.id.logout:
+                logout();
+                break;
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    //prida miestnost na index 0 v arrayliste
+    //prida miestnost do DB
     public void insertRoom(EditText roomName, String roomType)
     {
         String name = roomName.getText().toString();
 
-        Rooms room = new Rooms(name, roomType, 1);
-
-        Call<Rooms> call = api.postRoom(name, roomType, 1);
+        Call<Rooms> call = api.postRoom(name, roomType, householdId);
 
         call.enqueue(new Callback<Rooms>()
         {
@@ -206,7 +242,6 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
 
         Intent main_intent = new Intent(Main_screen.this, Main_screen.class);
         startActivity(main_intent);
-//        mAdapter.notifyItemInserted(roomList.size());
     }
 
     public void createRoomList()
@@ -390,8 +425,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     //getne vsetky miestnosti pre danu domacnost
     public void getRooms()
     {
-        Call<List<Rooms>> call = api.getRooms(1);
-
+        Call<List<Rooms>> call = api.getRooms(householdId);
         call.enqueue(new Callback<List<Rooms>>()
         {
             @Override
@@ -409,7 +443,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
                 for (Rooms room: rooms)
                 {
                     int image = getRoomImage(room.getRoomType());
-                    roomList.add(position, new Room_item(image, room.getRoomName(), 1, room.getRoomId()));
+                    roomList.add(position, new Room_item(image, room.getRoomName(), householdId, room.getRoomId()));
                     mAdapter.notifyItemInserted(position);
                 }
             }
@@ -447,5 +481,36 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
                 return R.drawable.defaultroom;
         }
         return 0;
+    }
+
+    //nastavi hodnoty, ktore sa menia podla prihlaseneho usera
+    public void setScreenValues(Login login)
+    {
+        //nastavenie HomeName v headeri appky
+        homeName = findViewById(R.id.mainHomeName);
+        homeName.setText(login.getHouseholdName());
+
+        //nastavenie UserName v headeri appky
+        userName = findViewById(R.id.mainUserName);
+        userName.setText(login.getUsername());
+
+        //nastavenie id_household
+        householdId = login.getHouseholdId();
+    }
+
+    //odhlasenie sa z aplikacie (zrusenie session)
+    public void logout()
+    {
+        SessionManagement sessionManagement = new SessionManagement(Main_screen.this);
+        sessionManagement.removeSession();
+
+        moveToLoginScreen();
+    }
+
+    public void moveToLoginScreen()
+    {
+        Intent intent = new Intent(Main_screen.this, Login_screen.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 }
