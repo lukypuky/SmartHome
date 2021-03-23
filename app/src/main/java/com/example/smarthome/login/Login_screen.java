@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.content.Intent;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -27,14 +26,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Login_screen extends AppCompatActivity
 {
-    private Button lBtn;
-    private EditText lName, lPass;
-    private TextView lRegistration, lConnect;
+    private EditText lEmail, lPass;
 
     //api
     private Api api;
     private int status, householdId, userId, role;
-    private String householdName, userName;
+    private String householdName, userEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -42,11 +39,11 @@ public class Login_screen extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_screen);
 
-        lBtn = findViewById(R.id.loginBtn);
-        lName = findViewById(R.id.loginName);
+        Button lBtn = findViewById(R.id.loginBtn);
+        lEmail = findViewById(R.id.loginEmail);
         lPass = findViewById(R.id.loginPass);
-        lRegistration = findViewById(R.id.loginRegisterText);
-        lConnect = findViewById(R.id.loginConnectText);
+        TextView lRegistration = findViewById(R.id.loginRegisterText);
+        TextView lConnect = findViewById(R.id.loginConnectText);
 
         apiConnection();
 
@@ -56,7 +53,21 @@ public class Login_screen extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                loginToApp();
+                String loginName = lEmail.getText().toString();
+                String loginPass = lPass.getText().toString();
+                boolean success;
+
+                success = validate(loginName, loginPass);
+
+                System.out.println("NAME     " + loginName + "    PASS    " + loginPass);
+                loginToDatabase(loginName,loginPass);
+                System.out.println("STATUSS   " + status);
+
+                if (success)
+                {
+                    makeSession();
+                    moveToMainActivity();
+                }
             }
         });
 
@@ -96,11 +107,9 @@ public class Login_screen extends AppCompatActivity
         SessionManagement sessionManagement = new SessionManagement(Login_screen.this);
         int userLoggedIn = sessionManagement.getSession();
 
+        //pouzivatel je prihlaseny
         if(userLoggedIn != 0)
-        {
-            //user id logged in and so move to mainActivity
             moveToMainActivity();
-        }
     }
 
     public void moveToMainActivity()
@@ -111,17 +120,17 @@ public class Login_screen extends AppCompatActivity
     }
 
     //ulozenie session
-    public void sessionLogin()
+    public void makeSession()
     {
-        Login login = new Login(status, role, userName, userId, householdId, householdName);
+        Login login = new Login(status, role, userEmail, userId, householdId, householdName);
         SessionManagement sessionManagement = new SessionManagement(Login_screen.this);
         sessionManagement.saveSession(login);
     }
 
     //POST login , GET ids & names
-    public void loginToDatabase(String username, String password)
+    public void loginToDatabase(String useremail, String password)
     {
-        Call<Login> call = api.loginUser(username, password);
+        Call<Login> call = api.loginUser(useremail, password);
 
         call.enqueue(new Callback<Login>()
         {
@@ -137,7 +146,7 @@ public class Login_screen extends AppCompatActivity
                 status = response.body().getStatus();
                 householdId = response.body().getHouseholdId();
                 householdName = response.body().getHouseholdName();
-                userName = response.body().getUsername();
+                userEmail = response.body().getUsername();
                 userId = response.body().getUserId();
                 role = response.body().getRole();
             }
@@ -151,37 +160,29 @@ public class Login_screen extends AppCompatActivity
     }
 
     //login screen handling
-    public void loginToApp()
+    public boolean validate(String name, String pass)
     {
-        String name = lName.getText().toString().trim();
-        String pass = lPass.getText().toString().trim();
-
         if (TextUtils.isEmpty(name))
         {
-            lName.setError("Povinné pole.");
-            return;
+            lEmail.setError("Povinné pole.");
         }
 
-        else if (TextUtils.isEmpty(pass))
+        if (TextUtils.isEmpty(pass))
         {
             lPass.setError("Povinné pole.");
-            return;
+            return false;
         }
 
         else
-        {
             loginToDatabase(name, pass);
-        }
 
         if (status == 1)
-        {
-            sessionLogin();
-            moveToMainActivity();
-        }
+            return true;
 
         else
         {
-            Toast.makeText(Login_screen.this, "Nesprávne používateľské meno, alebo heslo.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(Login_screen.this, "Nesprávny email, alebo heslo.", Toast.LENGTH_SHORT).show();
+            return false;
         }
     }
 }

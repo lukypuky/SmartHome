@@ -63,16 +63,10 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
         SessionManagement sessionManagement = new SessionManagement(Profile_screen.this);
         Login login =  sessionManagement.getLoginSession();
 
-        //DOCASNE/////////////////////////////////////////////////////////////////
         householdName = findViewById(R.id.profileHome);
         householdName.setText(login.getHouseholdName());
-        //DOCASNE/////////////////////////////////////////////////////////////////
 
-        System.out.println("BEFORE API CONNECT " + stringUserName);
         getUserInfo(login);
-        System.out.println("AFTER API CONNECT " + stringUserName);
-//        setScreenValues();
-        System.out.println("AFTER SET VALUES " + stringUserName);
         setNavigationView(login);
     }
 
@@ -183,21 +177,17 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
         int tmpUserId = login.getUserId();
         int tmpHomeId = login.getHouseholdId();
 
-        System.out.println("1 " + stringUserName);
         Call<List<Users>> call = api.getUser(tmpUserId, tmpHomeId);
-        System.out.println("2 " + stringUserName);
         call.enqueue(new Callback<List<Users>>()
         {
             @Override
             public void onResponse(Call<List<Users>> call, Response<List<Users>> response)
             {
-                System.out.println("3 " + stringUserName);
                 if (!response.isSuccessful())
                 {
                     System.out.println("call = " + call + ", response = " + response);
                     return;
                 }
-                System.out.println("4 " + stringUserName);
                 users = response.body();
 
                 for (Users user: users)
@@ -207,10 +197,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
                     intRole = user.getUserRole();
 
                     setScreenValues();
-                    System.out.println("5 " + stringUserName);
                 }
-
-                System.out.println("6 " + stringUserName);
             }
 
             @Override
@@ -219,8 +206,6 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
                 System.out.println("call = " + call + ", t = " + t);
             }
         });
-
-        System.out.println("7 " + stringUserName);
     }
 
     //get role z id_role
