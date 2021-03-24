@@ -22,6 +22,9 @@ public class Users
     @SerializedName("id_household")
     private int userHouseholdId;
 
+    @SerializedName("status")
+    private Integer userStatus;
+
     public Users(String userName, String userEmail, String userPassword, int userRole)
     {
         this.userName = userName;
@@ -52,5 +55,10 @@ public class Users
 
     public String getUserPassword() {
         return userPassword;
+    }
+
+    public Integer getUserStatus()
+    {
+        return userStatus;
     }
 }

@@ -20,6 +20,19 @@ public interface Api
                               @Query("id_household") int id_household
     );
 
+    //edit profilu
+    @FormUrlEncoded
+    @HTTP(method = "PUT", path = "users.php", hasBody = true)
+    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+    Call<Users> editProfile(
+            @Field("id") int id_user,
+            @Field("username") String userName,
+            @Field("email") String email,
+            @Field("password") String password,
+            @Field("role") int role,
+            @Field("id_household") int id_household
+    );
+
     //getne vsetky miestnosti na zaklade ID domacnosti
     @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
     @GET("rooms.php")
