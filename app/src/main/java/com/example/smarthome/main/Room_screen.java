@@ -210,11 +210,11 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         addDeviceDialog = new AlertDialog.Builder(Room_screen.this);
         View contactPopupView = getLayoutInflater().inflate(R.layout.activity_add_device_popup, null);
 
-        deviceName = (EditText) contactPopupView.findViewById(R.id.deviceName);
-        saveDevice = (Button) contactPopupView.findViewById(R.id.saveDeviceButton);
-        unsaveDevice = (Button) contactPopupView.findViewById(R.id.unsaveDeviceButton);
+        deviceName = contactPopupView.findViewById(R.id.deviceName);
+        saveDevice = contactPopupView.findViewById(R.id.saveDeviceButton);
+        unsaveDevice = contactPopupView.findViewById(R.id.unsaveDeviceButton);
 
-        deviceType = (Spinner) contactPopupView.findViewById(R.id.roomType);
+        deviceType = contactPopupView.findViewById(R.id.deviceType);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(Room_screen.this,
                 android.R.layout.simple_spinner_item,
                 getResources().getStringArray(R.array.devices));

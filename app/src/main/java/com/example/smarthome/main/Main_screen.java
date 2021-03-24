@@ -10,9 +10,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,7 +31,6 @@ import com.example.smarthome.connection.Api;
 import com.example.smarthome.connection.Login;
 import com.example.smarthome.connection.Rooms;
 import com.example.smarthome.connection.SessionManagement;
-import com.example.smarthome.connection.Users;
 import com.example.smarthome.login.Login_screen;
 import com.example.smarthome.profile.Profile_screen;
 import com.example.smarthome.scenarios.Scenario_screen;
@@ -41,7 +38,6 @@ import com.example.smarthome.settings.Settings_screen;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,12 +58,15 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     private TextView headerHousehold, headerUsername;
 
     //pridanie miestnosti
-    private FloatingActionButton addRoom;
     private AlertDialog.Builder addRoomDialog;
     private AlertDialog dialog;
     private EditText roomName;
     private Spinner roomType;
     private Button saveRoom, unsaveRoom;
+
+    //edit miestnosti
+    private String editRoomName, editRoomType;
+    private int editRoomId, editHouseholdId;
 
     //zoznam miestnosti
     private RecyclerView mRecyclerView;
@@ -102,7 +101,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         createRoomList();
 
         //tlacidlo na pridanie novej miestnosti
-        addRoom = findViewById(R.id.addRoom);
+        FloatingActionButton addRoom = findViewById(R.id.addRoom);
         addRoom.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -231,6 +230,9 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
                 {
                     System.out.println("call = " + call + ", response = " + response);
                 }
+
+                if (response.body().getRoomStatus() == 1)
+                    Toast.makeText(Main_screen.this, "Miestnosť pridaná", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -242,6 +244,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
 
         Intent main_intent = new Intent(Main_screen.this, Main_screen.class);
         startActivity(main_intent);
+        Main_screen.this.finish();
     }
 
     public void createRoomList()
@@ -249,11 +252,11 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         roomList = new ArrayList<>();
     }
 
-    //metoda na pridanie novej miestnosti v domacnosti
-    public void addRoomDialog()
+    //dialog window pre add a edit roomu
+    public void initializeDialog()
     {
         addRoomDialog = new AlertDialog.Builder(Main_screen.this);
-        View contactPopupView = getLayoutInflater().inflate(R.layout.activity_add_room_popup, null);
+        View contactPopupView = getLayoutInflater().inflate(R.layout.activity_room_popup, null);
 
         roomName = contactPopupView.findViewById(R.id.roomName);
         saveRoom = contactPopupView.findViewById(R.id.saveRoomButton);
@@ -271,6 +274,12 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         addRoomDialog.setView(contactPopupView);
         dialog = addRoomDialog.create();
         dialog.show();
+    }
+
+    //metoda na pridanie novej miestnosti v domacnosti
+    public void addRoomDialog()
+    {
+        initializeDialog();
 
         //potvrdenie pridania miestnosti
         saveRoom.setOnClickListener(new View.OnClickListener()
@@ -278,8 +287,6 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
             @Override
             public void onClick(View v)
             {
-                String roomTypeString = "";
-
                 //ak sa nevyplnil nazov miestnosti -> message
                 if (roomName.getText().toString().isEmpty())
                 {
@@ -295,40 +302,86 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
                 //ak je vsetko vyplnene, pridaj miestnost do arraylistu
                 else
                 {
-                    switch (roomType.getSelectedItem().toString())
-                    {
-                        case "Garáž":
-                            roomTypeString = "garaz";
-                            break;
-                        case "Jedáleň":
-                            roomTypeString = "jedalen";
-                            break;
-                        case "Kuchyňa":
-                            roomTypeString = "kuchyna";
-                            break;
-                        case "Kúpeľňa":
-                            roomTypeString = "kupelna";
-                            break;
-                        case "Obývačka":
-                            roomTypeString = "obyvacka";
-                            break;
-                        case "Pracovňa":
-                            roomTypeString = "pracovna";
-                            break;
-                        case "Spálňa":
-                            roomTypeString = "spalna";
-                            break;
-                        case "Záhrada":
-                            roomTypeString = "zahrada";
-                            break;
-                        case "Iné":
-                            roomTypeString = "ine";
-                            break;
-                    }
-
-                    insertRoom(roomName, roomTypeString);
-                    Toast.makeText(Main_screen.this, "Miestnosť pridaná", Toast.LENGTH_SHORT).show();
+                    insertRoom(roomName, roomType.getSelectedItem().toString());
                     dialog.dismiss();
+                }
+            }
+        });
+
+        //zrusenie editovania miestnosti
+        unsaveRoom.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                dialog.dismiss();
+            }
+        });
+    }
+
+    //metoda na edit existujucej miestnosti v domacnosti
+    public void editRoomDialog(int position)
+    {
+        initializeDialog();
+
+        String type = roomList.get(position).getRoomType();
+        roomName.setText(roomList.get(position).getRoomName()); //set room name
+        roomType.setSelection(getIndexOfSpinner(roomType, type)); //set room type
+
+        //potvrdenie editu miestnosti
+        saveRoom.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                //ak sa nevyplnil nazov miestnosti -> message
+                if (roomName.getText().toString().isEmpty())
+                {
+                    Toast.makeText(Main_screen.this, "Zadajte názov pre miestnosť", Toast.LENGTH_SHORT).show();
+                }
+
+                //ak sa nezvolil typ miestnosti -> message
+                else if(roomType.getSelectedItem().toString().equals("Typ miestnosti"))
+                {
+                    Toast.makeText(Main_screen.this, "Zvoľte typ miestnosti", Toast.LENGTH_SHORT).show();
+                }
+
+                //ak je vsetko vyplnene, pridaj zedituj miestnost
+                else
+                {
+                    editRoomName = roomName.getText().toString();
+                    editRoomType = roomType.getSelectedItem().toString();
+                    editRoomId = roomList.get(position).getId_room();
+                    editHouseholdId = roomList.get(position).getId_household();
+
+                    Call<Rooms> call = api.editRoom(editRoomId, editRoomName, editRoomType, editHouseholdId);
+
+                    call.enqueue(new Callback<Rooms>()
+                    {
+                        @Override
+                        public void onResponse(Call<Rooms> call, Response<Rooms> response)
+                        {
+                            if (!response.isSuccessful())
+                            {
+                                System.out.println("call = " + call + ", response = " + response);
+                                return;
+                            }
+
+                            if (response.body().getRoomStatus() == 1)
+                                Toast.makeText(Main_screen.this, "Miestnosť zmenená", Toast.LENGTH_SHORT).show();
+
+                            dialog.dismiss();
+                            Intent main_intent = new Intent(Main_screen.this, Main_screen.class);
+                            startActivity(main_intent);
+                            Main_screen.this.finish();
+                        }
+
+                        @Override
+                        public void onFailure(Call<Rooms> call, Throwable t)
+                        {
+                            System.out.println("call = " + call + ", t = " + t);
+                        }
+                    });
                 }
             }
         });
@@ -342,6 +395,19 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
                 dialog.dismiss();
             }
         });
+    }
+
+    private int getIndexOfSpinner(Spinner spinner, String myString)
+    {
+        for (int i=0; i<spinner.getCount(); i++)
+        {
+            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString))
+            {
+                return i;
+            }
+        }
+
+        return 0;
     }
 
     //mazanie izieb (with swap right)
@@ -418,8 +484,14 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
 
         Intent intent = new Intent(this, Room_screen.class);
         intent.putExtra("roomName", String.valueOf(roomList.get(position).getRoomName()));
-        intent.putExtra("roomImg", String.valueOf(roomList.get(position).getMimageResource()));
+        intent.putExtra("roomImg", String.valueOf(roomList.get(position).getImageResource()));
         startActivity(intent);
+    }
+
+    @Override
+    public void onEditClick(int position)
+    {
+        editRoomDialog(position);
     }
 
     //getne vsetky miestnosti pre danu domacnost
@@ -443,7 +515,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
                 for (Rooms room: rooms)
                 {
                     int image = getRoomImage(room.getRoomType());
-                    roomList.add(position, new Room_item(image, room.getRoomName(), householdId, room.getRoomId()));
+                    roomList.add(position, new Room_item(image, room.getRoomName(), room.getRoomType(), householdId, room.getRoomId()));
                     mAdapter.notifyItemInserted(position);
                 }
             }
@@ -461,23 +533,23 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     {
         switch (type)
         {
-            case "garaz":
+            case "Garáž":
                 return R.drawable.garage;
-            case "jedalen":
+            case "Jedáleň":
                 return R.drawable.dinningroom;
-            case "kuchyna":
+            case "Kuchyňa":
                 return R.drawable.kitchen;
-            case "kupelna":
+            case "Kúpeľňa":
                 return R.drawable.bathroom;
-            case "obyvacka":
+            case "Obývačka":
                 return R.drawable.livingroom;
-            case "pracovna":
+            case "Pracovňa":
                 return R.drawable.office;
-            case "spalna":
+            case "Spálňa":
                 return R.drawable.bedroom;
-            case "zahrada":
+            case "Záhrada":
                 return R.drawable.garden;
-            case "ine":
+            case "Iné":
                 return R.drawable.defaultroom;
         }
         return 0;

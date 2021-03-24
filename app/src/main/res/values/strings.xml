@@ -29,7 +29,7 @@
 
     <!--Main screen-->
     <string name="main_roomname">Názov miestnosti</string>
-    <string name="main_add">Pridať</string>
+    <string name="main_add">Potvrdiť</string>
     <string name="main_back">Späť</string>
 
     <!--Profile screen-->

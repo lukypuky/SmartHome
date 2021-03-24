@@ -16,6 +16,9 @@ public class Rooms
     @SerializedName("id_household")
     private Integer idHousehold;
 
+    @SerializedName("status")
+    private Integer roomStatus;
+
     public Rooms(String roomName, String roomType, int idHousehold)
     {
         this.roomName = roomName;
@@ -43,23 +46,8 @@ public class Rooms
         return idHousehold;
     }
 
-    public void setRoomId(int roomId)
+    public Integer getRoomStatus()
     {
-        this.roomId = roomId;
-    }
-
-    public void setRoomName(String roomName)
-    {
-        this.roomName = roomName;
-    }
-
-    public void setRoomType(String roomType)
-    {
-        this.roomType = roomType;
-    }
-
-    public void setIdHousehold(int idHousehold)
-    {
-        this.idHousehold = idHousehold;
+        return roomStatus;
     }
 }

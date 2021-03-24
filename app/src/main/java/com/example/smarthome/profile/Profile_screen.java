@@ -12,10 +12,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.smarthome.connection.Api;
 import com.example.smarthome.connection.Login;
+import com.example.smarthome.connection.Rooms;
 import com.example.smarthome.connection.SessionManagement;
 import com.example.smarthome.connection.Users;
 import com.example.smarthome.login.Login_screen;
@@ -23,6 +28,7 @@ import com.example.smarthome.main.Main_screen;
 import com.example.smarthome.R;
 import com.example.smarthome.scenarios.Scenario_screen;
 import com.example.smarthome.settings.Settings_screen;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 
@@ -38,18 +44,20 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
 {
     //menu
     private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
-    private Toolbar toolbar;
-    private TextView headerHousehold, headerUsername;
 
     //udaje o userovi
-    private TextView userName, householdName, email, role;
-    private String stringUserName, stringEmail;
+    private EditText userName, householdName, email, role;
+    private String stringUserName, stringEmail, stringPassword;
     private int intRole;
     private List<Users> users;
 
     //api
     private Api api;
+
+    //edit
+    FloatingActionButton editProfile, saveProfile, cancelProfile;
+    Animation fabOpen, fabClose, fabRClockwise, fabRAnticlockwise;
+    boolean isOpen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -63,21 +71,45 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
         SessionManagement sessionManagement = new SessionManagement(Profile_screen.this);
         Login login =  sessionManagement.getLoginSession();
 
-        //DOCASNE/////////////////////////////////////////////////////////////////
         householdName = findViewById(R.id.profileHome);
         householdName.setText(login.getHouseholdName());
-        //DOCASNE/////////////////////////////////////////////////////////////////
 
-        System.out.println("BEFORE API CONNECT " + stringUserName);
         getUserInfo(login);
-        System.out.println("AFTER API CONNECT " + stringUserName);
-//        setScreenValues();
-        System.out.println("AFTER SET VALUES " + stringUserName);
+
+        setEditTexts();
+
+        editProfile.setOnClickListener(v ->
+        {
+            if (isOpen)
+            {
+                closeEditButtons();
+            }
+
+            else
+            {
+                openEditButtons();
+            }
+        });
+
+        saveProfile.setOnClickListener(v ->
+        {
+            editUserProfile(login);
+        });
+
+        cancelProfile.setOnClickListener(v ->
+        {
+            closeEditButtons();
+
+            Intent profile_intent = new Intent(Profile_screen.this, Profile_screen.class);
+            startActivity(profile_intent);
+            Profile_screen.this.finish();
+        });
+
         setNavigationView(login);
     }
 
     //pripojenie sa na api
-    public void apiConnection()
+    private void apiConnection()
     {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://147.175.121.237/api2/")
@@ -88,17 +120,17 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     }
 
     //bocny navigacny panel
-    public void setNavigationView(Login login)
+    private void setNavigationView(Login login)
     {
         drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.nav_view);
-        toolbar = findViewById(R.id.toolbar);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        Toolbar toolbar = findViewById(R.id.toolbar);
 
         //nastavenie nazvu domacnosti a pouzivatela v headri menu
         View headerView = navigationView.getHeaderView(0);
 
-        headerHousehold = headerView.findViewById(R.id.headerHousehold);
-        headerUsername = headerView.findViewById(R.id.headerUserName);
+        TextView headerHousehold = headerView.findViewById(R.id.headerHousehold);
+        TextView headerUsername = headerView.findViewById(R.id.headerUserName);
 
         headerHousehold.setText(login.getHouseholdName());
         headerUsername.setText(login.getUsername());
@@ -161,7 +193,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     }
 
     //nastavi hodnoty, ktore sa menia podla prihlaseneho usera
-    public void setScreenValues()
+    private void setScreenValues()
     {
         userName = findViewById(R.id.profileName);
         userName.setText(stringUserName);
@@ -175,29 +207,30 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
 
         role = findViewById(R.id.profileRole);
         role.setText(getRole());
+
+        userName.setEnabled(false);
+        householdName.setEnabled(false);
+        email.setEnabled(false);
+        role.setEnabled(false);
     }
 
     //getne zvysne info o pouzivatelovi, ktore sme nedostali pri logine
-    public void getUserInfo(Login login)
+    private void getUserInfo(Login login)
     {
         int tmpUserId = login.getUserId();
         int tmpHomeId = login.getHouseholdId();
 
-        System.out.println("1 " + stringUserName);
         Call<List<Users>> call = api.getUser(tmpUserId, tmpHomeId);
-        System.out.println("2 " + stringUserName);
         call.enqueue(new Callback<List<Users>>()
         {
             @Override
             public void onResponse(Call<List<Users>> call, Response<List<Users>> response)
             {
-                System.out.println("3 " + stringUserName);
                 if (!response.isSuccessful())
                 {
                     System.out.println("call = " + call + ", response = " + response);
                     return;
                 }
-                System.out.println("4 " + stringUserName);
                 users = response.body();
 
                 for (Users user: users)
@@ -207,10 +240,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
                     intRole = user.getUserRole();
 
                     setScreenValues();
-                    System.out.println("5 " + stringUserName);
                 }
-
-                System.out.println("6 " + stringUserName);
             }
 
             @Override
@@ -219,12 +249,10 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
                 System.out.println("call = " + call + ", t = " + t);
             }
         });
-
-        System.out.println("7 " + stringUserName);
     }
 
     //get role z id_role
-    public String getRole()
+    private String getRole()
     {
         if (intRole == 1)
             return "Admin";
@@ -234,7 +262,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     }
 
     //odhlasenie sa z aplikacie (zrusenie session)
-    public void logout()
+    private void logout()
     {
         SessionManagement sessionManagement = new SessionManagement(Profile_screen.this);
         sessionManagement.removeSession();
@@ -242,10 +270,100 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
         moveToLoginScreen();
     }
 
-    public void moveToLoginScreen()
+    private void moveToLoginScreen()
     {
         Intent intent = new Intent(Profile_screen.this, Login_screen.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
+    }
+
+    private void getValuesFromUser()
+    {
+        stringUserName = userName.getText().toString();
+        stringEmail = email.getText().toString();
+        stringPassword = "test";
+        intRole = 1;
+    }
+
+    private void setEditTexts()
+    {
+        editProfile = findViewById(R.id.profileEdit);
+        saveProfile = findViewById(R.id.profileOk);
+        cancelProfile = findViewById(R.id.profileCancel);
+
+        fabOpen = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
+        fabClose = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
+        fabRClockwise = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_clockwise);
+        fabRAnticlockwise = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_anticlockwise);
+    }
+
+    private void closeEditButtons()
+    {
+        userName.setEnabled(false);
+        householdName.setEnabled(false);
+        email.setEnabled(false);
+        role.setEnabled(false);
+
+        saveProfile.startAnimation(fabClose);
+        cancelProfile.startAnimation(fabClose);
+        editProfile.startAnimation(fabRClockwise);
+
+        saveProfile.setClickable(false);
+        cancelProfile.setClickable(false);
+
+        isOpen = false;
+    }
+
+    private void openEditButtons()
+    {
+        userName.setEnabled(true);
+        householdName.setEnabled(true);
+        email.setEnabled(true);
+        role.setEnabled(true);
+
+        saveProfile.startAnimation(fabOpen);
+        cancelProfile.startAnimation(fabOpen);
+        editProfile.startAnimation(fabRAnticlockwise);
+
+        saveProfile.setClickable(true);
+        cancelProfile.setClickable(true);
+
+        isOpen = true;
+    }
+
+    private void editUserProfile(Login login)
+    {
+        int tmpUserId = login.getUserId();
+        int tmpHouseholdId = login.getHouseholdId();
+
+        getValuesFromUser();
+
+        Call<Users> call = api.editProfile(tmpUserId, stringUserName, stringEmail, stringPassword, intRole, tmpHouseholdId);
+
+        call.enqueue(new Callback<Users>()
+        {
+            @Override
+            public void onResponse(Call<Users> call, Response<Users> response)
+            {
+                if (!response.isSuccessful())
+                {
+                    System.out.println("call = " + call + ", response = " + response);
+                    return;
+                }
+
+                if (response.body().getUserStatus() == 1)
+                    Toast.makeText(Profile_screen.this, "Profil bol zmenený", Toast.LENGTH_SHORT).show();
+
+                Intent profile_intent = new Intent(Profile_screen.this, Profile_screen.class);
+                startActivity(profile_intent);
+                Profile_screen.this.finish();
+            }
+
+            @Override
+            public void onFailure(Call<Users> call, Throwable t)
+            {
+                System.out.println("call = " + call + ", t = " + t);
+            }
+        });
     }
 }

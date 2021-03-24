@@ -26,6 +26,7 @@
         android:layout_marginTop="250dp"
         android:layout_marginEnd="70dp"
         android:ems="10"
+        android:maxLength="20"
         android:hint="Meno používateľa"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/registerHomeName"
@@ -41,6 +42,7 @@
         android:layout_marginTop="15dp"
         android:layout_marginEnd="70dp"
         android:ems="10"
+        android:maxLength="20"
         android:hint="Názov domácnosti"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/registerEmail"
@@ -58,9 +60,9 @@
         android:ems="10"
         android:hint="Heslo"
         android:inputType="textPassword"
+        android:maxLength="20"
         app:layout_constraintBottom_toTopOf="@+id/registerConfPass"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.416"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/registerEmail" />
 
@@ -72,6 +74,7 @@
         android:layout_marginTop="15dp"
         android:layout_marginEnd="70dp"
         android:ems="10"
+        android:maxLength="20"
         android:hint= "Potvrdenie hesla"
         android:inputType="textPassword"
         app:layout_constraintBottom_toTopOf="@+id/registerBtn"
@@ -101,7 +104,6 @@
         android:inputType="textEmailAddress"
         app:layout_constraintBottom_toTopOf="@+id/registerPass"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.416"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/registerHomeName" />
 
