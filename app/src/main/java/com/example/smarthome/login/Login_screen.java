@@ -13,10 +13,15 @@ import android.widget.Toast;
 
 import com.example.smarthome.connection.Api;
 import com.example.smarthome.connection.Login;
+import com.example.smarthome.connection.Rooms;
 import com.example.smarthome.connection.SessionManagement;
+import com.example.smarthome.connection.Users;
 import com.example.smarthome.main.Main_screen;
 import com.example.smarthome.R;
+import com.example.smarthome.profile.Profile_screen;
 import com.example.smarthome.registration.Registration_screen;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,7 +36,9 @@ public class Login_screen extends AppCompatActivity
     //api
     private Api api;
     private int status, householdId, userId, role;
-    private String householdName, userEmail;
+    private String householdName, userEmail, userName;
+
+//    private List<Users> users;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -39,47 +46,33 @@ public class Login_screen extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_screen);
 
+        apiConnection();
+
         Button lBtn = findViewById(R.id.loginBtn);
         lEmail = findViewById(R.id.loginEmail);
         lPass = findViewById(R.id.loginPass);
         TextView lRegistration = findViewById(R.id.loginRegisterText);
-        TextView lConnect = findViewById(R.id.loginConnectText);
-
-        apiConnection();
+//        TextView lConnect = findViewById(R.id.loginConnectText);
 
         //prihlasenie sa
-        lBtn.setOnClickListener(new View.OnClickListener()
+        lBtn.setOnClickListener(v ->
         {
-            @Override
-            public void onClick(View v)
+            String loginName = lEmail.getText().toString();
+            String loginPass = lPass.getText().toString();
+            boolean success;
+
+            success = validate(loginName, loginPass);
+
+            if (success)
             {
-                String loginName = lEmail.getText().toString();
-                String loginPass = lPass.getText().toString();
-                boolean success;
-
-                success = validate(loginName, loginPass);
-
-                System.out.println("NAME     " + loginName + "    PASS    " + loginPass);
-                loginToDatabase(loginName,loginPass);
-                System.out.println("STATUSS   " + status);
-
-                if (success)
-                {
-                    makeSession();
-                    moveToMainActivity();
-                }
+//                getUser();
+                makeSession();
+                moveToMainActivity();
             }
         });
 
 //      prechod na obrazovku registracie
-        lRegistration.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                startActivity(new Intent(getApplicationContext(), Registration_screen.class));
-            }
-        });
+        lRegistration.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), Registration_screen.class)));
     }
 
     //pripojenie sa na api
@@ -122,10 +115,54 @@ public class Login_screen extends AppCompatActivity
     //ulozenie session
     public void makeSession()
     {
-        Login login = new Login(status, role, userEmail, userId, householdId, householdName);
+        Login login = new Login(userId, userName, userEmail, householdId, householdName, role);
         SessionManagement sessionManagement = new SessionManagement(Login_screen.this);
-        sessionManagement.saveSession(login);
+        sessionManagement.saveLoginSession(login);
+
+//        Users user = new Users(userId, userName, userEmail, userPass, role, householdId);
+//        SessionManagement sessionManagementUsers = new SessionManagement(Login_screen.this);
+//        sessionManagementUsers.saveUsersSession(user);
+//
+        System.out.println("NAME " + userName);
+        System.out.println("EMAIL " + userEmail);
+//        System.out.println("PASS " + userPass);
+        System.out.println("ROLE" + role);
     }
+
+//    public void getUser()
+//    {
+//        Call<List<Users>> call = api.getUser(userId, householdId);
+//
+//        call.enqueue(new Callback<List<Users>>()
+//        {
+//            @Override
+//            public void onResponse(Call<List<Users>> call, Response<List<Users>> response)
+//            {
+//                if (!response.isSuccessful())
+//                {
+//                    System.out.println("call1 = " + call + ", response = " + response);
+//                    return;
+//                }
+//
+//                System.out.println("GET USER INFO CODE:" + response.code());
+//                users = response.body();
+//
+//                for (Users user : users)
+//                {
+//                    userName = user.getUserName();
+//                    userEmail = user.getUserEmail();
+//                    userPass = user.getUserPassword();
+//                    role = user.getUserRole();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<List<Users>> call, Throwable t)
+//            {
+//                System.out.println("call2 = " + call + ", t = " + t);
+//            }
+//        });
+//    }
 
     //POST login , GET ids & names
     public void loginToDatabase(String useremail, String password)
@@ -139,22 +176,23 @@ public class Login_screen extends AppCompatActivity
             {
                 if (!response.isSuccessful())
                 {
-                    System.out.println("call = " + call + ", response = " + response);
+                    System.out.println("call3 = " + call + ", response = " + response);
                     return;
                 }
 
                 status = response.body().getStatus();
                 householdId = response.body().getHouseholdId();
                 householdName = response.body().getHouseholdName();
-                userEmail = response.body().getUsername();
                 userId = response.body().getUserId();
+                userName = response.body().getUsername();
+                userEmail = response.body().getUserEmail();
                 role = response.body().getRole();
             }
 
             @Override
             public void onFailure(Call<Login> call, Throwable t)
             {
-                System.out.println("call = " + call + ", t = " + t);
+                System.out.println("call4 = " + call + ", t = " + t);
             }
         });
     }
@@ -174,10 +212,15 @@ public class Login_screen extends AppCompatActivity
         }
 
         else
+        {
             loginToDatabase(name, pass);
+            System.out.println("USER ID " + userId);
+        }
 
         if (status == 1)
+        {
             return true;
+        }
 
         else
         {

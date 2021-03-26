@@ -10,17 +10,21 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.smarthome.connection.Api;
 import com.example.smarthome.connection.Login;
-import com.example.smarthome.connection.Rooms;
 import com.example.smarthome.connection.SessionManagement;
 import com.example.smarthome.connection.Users;
 import com.example.smarthome.login.Login_screen;
@@ -46,9 +50,10 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     private DrawerLayout drawerLayout;
 
     //udaje o userovi
-    private EditText userName, householdName, email, role;
-    private String stringUserName, stringEmail, stringPassword;
-    private int intRole;
+    private EditText userName, householdName, email, password;
+    private String stringUserName, stringEmail, stringPassword, stringHouseholdName;
+    private int intRole, userId, userHouseholdId;
+    private Spinner profileRole;
     private List<Users> users;
 
     //api
@@ -71,45 +76,44 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
         SessionManagement sessionManagement = new SessionManagement(Profile_screen.this);
         Login login =  sessionManagement.getLoginSession();
 
+//        SessionManagement sessionManagementUsers = new SessionManagement(Profile_screen.this);
+//        Users users = sessionManagementUsers.getUsersSession();
+        ////////////////////////////////////////////////////////////////////////////////////////////
+
+        userId = login.getUserId();
+        userHouseholdId = login.getHouseholdId();
+
         householdName = findViewById(R.id.profileHome);
         householdName.setText(login.getHouseholdName());
+        stringHouseholdName = login.getHouseholdName();
 
         getUserInfo(login);
-
-        setEditTexts();
+        setEditButtons();
 
         editProfile.setOnClickListener(v ->
         {
             if (isOpen)
-            {
                 closeEditButtons();
-            }
 
             else
-            {
                 openEditButtons();
-            }
         });
 
         saveProfile.setOnClickListener(v ->
         {
-            editUserProfile(login);
+            editUserProfile();
         });
 
         cancelProfile.setOnClickListener(v ->
         {
             closeEditButtons();
-
-            Intent profile_intent = new Intent(Profile_screen.this, Profile_screen.class);
-            startActivity(profile_intent);
-            Profile_screen.this.finish();
         });
 
         setNavigationView(login);
     }
 
     //pripojenie sa na api
-    private void apiConnection()
+    public void apiConnection()
     {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://147.175.121.237/api2/")
@@ -120,7 +124,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     }
 
     //bocny navigacny panel
-    private void setNavigationView(Login login)
+    public void setNavigationView(Login login )
     {
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -152,14 +156,10 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     public void onBackPressed()
     {
         if (drawerLayout.isDrawerOpen(GravityCompat.START))
-        {
             drawerLayout.closeDrawer((GravityCompat.START));
-        }
 
         else
-        {
             super.onBackPressed();
-        }
     }
 
     //prepinanie medzi obrazovkami v menu
@@ -193,10 +193,13 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     }
 
     //nastavi hodnoty, ktore sa menia podla prihlaseneho usera
-    private void setScreenValues()
+    public void setScreenValues()
     {
         userName = findViewById(R.id.profileName);
         userName.setText(stringUserName);
+
+        password = findViewById(R.id.profilePassword);
+        password.setText(stringPassword);
 
         //GET HOUSEHOLD
 //        householdName = findViewById(R.id.profileHome);
@@ -205,17 +208,28 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
         email = findViewById(R.id.profileEmail);
         email.setText(stringEmail);
 
-        role = findViewById(R.id.profileRole);
-        role.setText(getRole());
+        profileRole = findViewById(R.id.profileRole);
+
+        profileRole = findViewById(R.id.profileRole);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(Profile_screen.this,
+                android.R.layout.simple_spinner_item,
+                getResources().getStringArray(R.array.roles));
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        profileRole.setAdapter(adapter);
+
+        String stringRole = getRole();
+        profileRole.setSelection(getIndexOfSpinner(profileRole, stringRole));
 
         userName.setEnabled(false);
         householdName.setEnabled(false);
         email.setEnabled(false);
-        role.setEnabled(false);
+        password.setEnabled(false);
+        profileRole.setEnabled(false);
     }
 
     //getne zvysne info o pouzivatelovi, ktore sme nedostali pri logine
-    private void getUserInfo(Login login)
+    public void getUserInfo(Login login)
     {
         int tmpUserId = login.getUserId();
         int tmpHomeId = login.getHouseholdId();
@@ -231,12 +245,14 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
                     System.out.println("call = " + call + ", response = " + response);
                     return;
                 }
+
                 users = response.body();
 
                 for (Users user: users)
                 {
                     stringUserName = user.getUserName();
                     stringEmail = user.getUserEmail();
+                    stringPassword = user.getUserPassword();
                     intRole = user.getUserRole();
 
                     setScreenValues();
@@ -252,7 +268,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     }
 
     //get role z id_role
-    private String getRole()
+    public String getRole()
     {
         if (intRole == 1)
             return "Admin";
@@ -262,7 +278,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     }
 
     //odhlasenie sa z aplikacie (zrusenie session)
-    private void logout()
+    public void logout()
     {
         SessionManagement sessionManagement = new SessionManagement(Profile_screen.this);
         sessionManagement.removeSession();
@@ -270,22 +286,27 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
         moveToLoginScreen();
     }
 
-    private void moveToLoginScreen()
+    public void moveToLoginScreen()
     {
         Intent intent = new Intent(Profile_screen.this, Login_screen.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 
-    private void getValuesFromUser()
+    public void getValuesFromUser()
     {
         stringUserName = userName.getText().toString();
         stringEmail = email.getText().toString();
-        stringPassword = "test";
-        intRole = 1;
+        stringPassword = password.getText().toString();
+
+        String tmpRoleString = profileRole.getSelectedItem().toString();
+        if (tmpRoleString.equals("Admin"))
+            intRole = 1;
+        else
+            intRole = 2;
     }
 
-    private void setEditTexts()
+    public void setEditButtons()
     {
         editProfile = findViewById(R.id.profileEdit);
         saveProfile = findViewById(R.id.profileOk);
@@ -297,12 +318,13 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
         fabRAnticlockwise = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_anticlockwise);
     }
 
-    private void closeEditButtons()
+    public void closeEditButtons()
     {
         userName.setEnabled(false);
-        householdName.setEnabled(false);
+//        householdName.setEnabled(false);
         email.setEnabled(false);
-        role.setEnabled(false);
+        password.setEnabled(false);
+        profileRole.setEnabled(false);
 
         saveProfile.startAnimation(fabClose);
         cancelProfile.startAnimation(fabClose);
@@ -312,14 +334,21 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
         cancelProfile.setClickable(false);
 
         isOpen = false;
+
+        password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+
+        Intent profile_intent = new Intent(Profile_screen.this, Profile_screen.class);
+        startActivity(profile_intent);
+        Profile_screen.this.finish();
     }
 
-    private void openEditButtons()
+    public void openEditButtons()
     {
         userName.setEnabled(true);
-        householdName.setEnabled(true);
+//        householdName.setEnabled(true);
         email.setEnabled(true);
-        role.setEnabled(true);
+        password.setEnabled(true);
+        profileRole.setEnabled(true);
 
         saveProfile.startAnimation(fabOpen);
         cancelProfile.startAnimation(fabOpen);
@@ -329,16 +358,14 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
         cancelProfile.setClickable(true);
 
         isOpen = true;
+
+        password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
     }
 
-    private void editUserProfile(Login login)
+    public void editUserProfile()
     {
-        int tmpUserId = login.getUserId();
-        int tmpHouseholdId = login.getHouseholdId();
-
         getValuesFromUser();
-
-        Call<Users> call = api.editProfile(tmpUserId, stringUserName, stringEmail, stringPassword, intRole, tmpHouseholdId);
+        Call<Users> call = api.editProfile(userId, stringUserName, stringEmail, stringPassword, intRole, userHouseholdId);
 
         call.enqueue(new Callback<Users>()
         {
@@ -354,6 +381,14 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
                 if (response.body().getUserStatus() == 1)
                     Toast.makeText(Profile_screen.this, "Profil bol zmenený", Toast.LENGTH_SHORT).show();
 
+//                Users user = new Users(userId, stringUserName, stringEmail, stringPassword, intRole, userHouseholdId);
+//                SessionManagement sessionManagementUsers = new SessionManagement(Profile_screen.this);
+//                sessionManagementUsers.saveUsersSession(user);
+
+                Login login = new Login(userId, stringUserName, stringEmail, userHouseholdId, stringHouseholdName, intRole);
+                SessionManagement sessionManagement = new SessionManagement(Profile_screen.this);
+                sessionManagement.saveLoginSession(login);
+
                 Intent profile_intent = new Intent(Profile_screen.this, Profile_screen.class);
                 startActivity(profile_intent);
                 Profile_screen.this.finish();
@@ -365,5 +400,18 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
                 System.out.println("call = " + call + ", t = " + t);
             }
         });
+    }
+
+    private int getIndexOfSpinner(Spinner spinner, String myString)
+    {
+        for (int i=0; i<spinner.getCount(); i++)
+        {
+            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString))
+            {
+                return i;
+            }
+        }
+
+        return 0;
     }
 }

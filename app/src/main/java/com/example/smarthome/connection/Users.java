@@ -25,12 +25,13 @@ public class Users
     @SerializedName("status")
     private Integer userStatus;
 
-    public Users(String userName, String userEmail, String userPassword, int userRole)
-    {
+    public Users(int userId, String userName, String userEmail, String userPassword, int userRole, int userHouseholdId) {
+        this.userId = userId;
         this.userName = userName;
         this.userEmail = userEmail;
         this.userPassword = userPassword;
         this.userRole = userRole;
+        this.userHouseholdId = userHouseholdId;
     }
 
     public int getUserId() {
