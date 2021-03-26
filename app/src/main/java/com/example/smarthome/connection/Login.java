@@ -5,16 +5,19 @@ import com.google.gson.annotations.SerializedName;
 public class Login
 {
     @SerializedName("status")
-    private final int status;
+    private  int status;
 
     @SerializedName("role")
-    private final int role;
+    private int role;
 
     @SerializedName("username")
-    private final String username;
+    private String username;
 
     @SerializedName("user_id")
     private final int userId;
+
+    @SerializedName("email")
+    private String userEmail;
 
     @SerializedName("id_household")
     private final int householdId;
@@ -22,14 +25,14 @@ public class Login
     @SerializedName("household_name")
     private final String householdName;
 
-    public Login(int status, int role, String username, int userId, int householdId, String householdName)
+    public Login(int userId, String username, String userEmail, int householdId, String householdName, int role)
     {
-        this.status = status;
-        this.role = role;
-        this.username = username;
         this.userId = userId;
+        this.username = username;
+        this.userEmail = userEmail;
         this.householdId = householdId;
         this.householdName = householdName;
+        this.role = role;
     }
 
     public int getStatus()
@@ -60,5 +63,10 @@ public class Login
     public int getUserId()
     {
         return userId;
+    }
+
+    public String getUserEmail()
+    {
+        return userEmail;
     }
 }

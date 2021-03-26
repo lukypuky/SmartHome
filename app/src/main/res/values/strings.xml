@@ -76,4 +76,9 @@
         <item>Slovenský</item>
         <item>English</item>
     </string-array>
+
+    <string-array name="roles">
+        <item>Admin</item>
+        <item>Bežný používateľ</item>
+    </string-array>
 </resources>

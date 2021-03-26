@@ -69,9 +69,17 @@ public interface Api
     );
 
     //prihlasenie
+//    @FormUrlEncoded
+//    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+//    @POST("login.php")
+//    Call<Login> loginUser(
+//            @Field("email") String userEmail,
+//            @Field("password") String password
+//    );
+
     @FormUrlEncoded
+    @HTTP(method = "POST", path = "login.php", hasBody = true)
     @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
-    @POST("login.php")
     Call<Login> loginUser(
             @Field("email") String userEmail,
             @Field("password") String password

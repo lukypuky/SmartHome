@@ -93,7 +93,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="190dp"
                 android:layout_marginTop="145dp"
-                android:text="sadasdasd"
+                android:text=""
+                android:background="@null"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -119,6 +120,7 @@
                 android:layout_marginTop="15dp"
                 android:text=""
                 android:textSize="16sp"
+                android:background="@null"
                 app:layout_constraintBottom_toTopOf="@+id/profileEmail"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/profileName" />
@@ -132,7 +134,7 @@
                 android:text="@string/profile_email"
                 android:textColor="#249FE2"
                 android:textSize="16sp"
-                app:layout_constraintBottom_toTopOf="@+id/profileRoleTag"
+                app:layout_constraintBottom_toTopOf="@+id/profilePassTag"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/profileHomeTag" />
 
@@ -142,11 +144,39 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="190dp"
                 android:layout_marginTop="15dp"
+                android:background="@null"
                 android:text=""
                 android:textSize="16sp"
-                app:layout_constraintBottom_toTopOf="@+id/profileRole"
+                app:layout_constraintBottom_toTopOf="@+id/profilePassword"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/profileHome" />
+
+            <TextView
+                android:id="@+id/profilePassTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="15dp"
+                android:text="Heslo"
+                android:textSize="16sp"
+                android:textColor="#249FE2"
+                app:layout_constraintBottom_toTopOf="@+id/profileRoleTag"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/profileEmailTag" />
+
+            <EditText
+                android:id="@+id/profilePassword"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="190dp"
+                android:layout_marginTop="15dp"
+                android:background="@null"
+                android:ems="10"
+                android:inputType="textPassword"
+                android:text="sssss"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/profileEmail" />
 
             <TextView
                 android:id="@+id/profileRoleTag"
@@ -158,18 +188,7 @@
                 android:textColor="#249FE2"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/profileEmailTag" />
-
-            <EditText
-                android:id="@+id/profileRole"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="190dp"
-                android:layout_marginTop="16dp"
-                android:text=""
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/profileEmail" />
+                app:layout_constraintTop_toBottomOf="@+id/profilePassTag" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/profileOk"
@@ -181,7 +200,8 @@
                 android:visibility="invisible"
                 app:layout_constraintBottom_toTopOf="@+id/profileCancel"
                 app:layout_constraintEnd_toEndOf="@+id/profileCancel"
-                app:srcCompat="@drawable/okay" />
+                app:srcCompat="@drawable/okay"
+                android:focusable="true" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/profileCancel"
@@ -193,7 +213,8 @@
                 android:visibility="invisible"
                 app:layout_constraintBottom_toTopOf="@+id/profileEdit"
                 app:layout_constraintEnd_toEndOf="@+id/profileEdit"
-                app:srcCompat="@drawable/cancel" />
+                app:srcCompat="@drawable/cancel"
+                android:focusable="true" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -208,24 +229,35 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
+            <Spinner
+                android:id="@+id/profileRole"
+                android:layout_width="200dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="180dp"
+                android:layout_marginTop="15dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/profilePassword" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<!--    <RelativeLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent">-->
 
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+<!--        <androidx.coordinatorlayout.widget.CoordinatorLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent">-->
 
-            <!--            <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-            <!--                android:id="@+id/editProfile"-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:layout_gravity="bottom|right"-->
-            <!--                android:layout_margin="16dp"-->
-            <!--                android:src="@drawable/edit_icon"/>-->
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
-    </RelativeLayout>
+<!--            &lt;!&ndash;            <com.google.android.material.floatingactionbutton.FloatingActionButton&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:id="@+id/editProfile"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:layout_width="wrap_content"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:layout_height="wrap_content"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:layout_gravity="bottom|right"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:layout_margin="16dp"&ndash;&gt;-->
+<!--            &lt;!&ndash;                android:src="@drawable/edit_icon"/>&ndash;&gt;-->
+<!--        </androidx.coordinatorlayout.widget.CoordinatorLayout>-->
+<!--    </RelativeLayout>-->
 </androidx.drawerlayout.widget.DrawerLayout>
