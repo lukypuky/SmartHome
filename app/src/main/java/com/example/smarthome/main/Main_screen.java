@@ -79,6 +79,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     //data z login screeny
     private TextView homeName, userName;
     private int householdId;
+    private Login login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -90,21 +91,24 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
 
         //session
         SessionManagement sessionManagement = new SessionManagement(Main_screen.this);
-        Login login =  sessionManagement.getLoginSession();
+        login =  sessionManagement.getLoginSession();
 
         ////////////////////////////////////////////////////////////////////////////////////////////
 
-        setScreenValues(login);
-
+        setScreenValues();
         createRoomList();
 
         //tlacidlo na pridanie novej miestnosti
         FloatingActionButton addRoom = findViewById(R.id.addRoom);
-        addRoom.setOnClickListener(v -> addRoomDialog());
+        if (canEdit())
+            addRoom.setOnClickListener(v -> addRoomDialog());
+
+        else
+            addRoom.setVisibility(View.INVISIBLE);
 
         getRooms();
         setRecyclerView();
-        setNavigationView(login);
+        setNavigationView();
     }
 
     //pripojenie sa na api
@@ -124,7 +128,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         mRecyclerView = findViewById(R.id.mainRecyclerView);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
-        mAdapter = new Room_adapter(roomList, this);
+        mAdapter = new Room_adapter(roomList, login, this);
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         new ItemTouchHelper(roomToRemove).attachToRecyclerView(mRecyclerView);
@@ -132,7 +136,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     }
 
     //bocny navigacny panel
-    public void setNavigationView(Login login)
+    public void setNavigationView()
     {
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
@@ -387,29 +391,39 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
         {
             //builder na potvrdenie zmazania
-            AlertDialog.Builder builder = new AlertDialog.Builder(Main_screen.this);
-            builder.setCancelable(true);
-            builder.setMessage("Naozaj chcete odstrániť túto miestnosť '" + roomList.get(viewHolder.getAdapterPosition()).getRoomName().toUpperCase() + "' ?");
-            builder.setPositiveButton("Áno", (dialog, which) ->
+            if (canEdit()) //user je admin
             {
-                int id_household = roomList.get(viewHolder.getAdapterPosition()).getId_household();
-                int id_room = roomList.get(viewHolder.getAdapterPosition()).getId_room();
+                AlertDialog.Builder builder = new AlertDialog.Builder(Main_screen.this);
+                builder.setCancelable(true);
+                builder.setMessage("Naozaj chcete odstrániť túto miestnosť '" + roomList.get(viewHolder.getAdapterPosition()).getRoomName().toUpperCase() + "' ?");
+                builder.setPositiveButton("Áno", (dialog, which) ->
+                {
+                    int id_household = roomList.get(viewHolder.getAdapterPosition()).getId_household();
+                    int id_room = roomList.get(viewHolder.getAdapterPosition()).getId_room();
 
-                deleteRoom(id_room, id_household);
+                    deleteRoom(id_room, id_household);
 
-                //refresh recycleviewra
-                roomList.remove(viewHolder.getAdapterPosition());
-                mAdapter.notifyDataSetChanged();
-            });
+                    //refresh recycleviewra
+                    roomList.remove(viewHolder.getAdapterPosition());
+                    mAdapter.notifyDataSetChanged();
+                });
 
-            builder.setNegativeButton("Nie", (dialog, which) ->
+                builder.setNegativeButton("Nie", (dialog, which) ->
+                {
+                    dialog.dismiss();
+                    mAdapter.notifyDataSetChanged();
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+
+            else // user nie je admin
             {
-                dialog.dismiss();
+                Toast.makeText(Main_screen.this, "Nemáte povolenie zmazať miestnosť.", Toast.LENGTH_SHORT).show();
                 mAdapter.notifyDataSetChanged();
-            });
+            }
 
-            AlertDialog dialog = builder.create();
-            dialog.show();
         }
     };
 
@@ -510,7 +524,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     }
 
     //nastavi hodnoty, ktore sa menia podla prihlaseneho usera
-    public void setScreenValues(Login login)
+    public void setScreenValues()
     {
         //nastavenie HomeName v headeri appky
         homeName = findViewById(R.id.mainHomeName);
@@ -522,6 +536,14 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
 
         //nastavenie id_household
         householdId = login.getHouseholdId();
+    }
+
+    public boolean canEdit()
+    {
+        if (login.getRole() == 1)
+            return true;
+        else
+            return false;
     }
 
     //odhlasenie sa z aplikacie (zrusenie session)
