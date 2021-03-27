@@ -3,6 +3,8 @@ package com.example.smarthome.connection;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.example.smarthome.main.Room_adapter;
+
 public class SessionManagement
 {
     SharedPreferences sharedPreferences;

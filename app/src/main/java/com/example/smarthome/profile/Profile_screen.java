@@ -64,6 +64,8 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     Animation fabOpen, fabClose, fabRClockwise, fabRAnticlockwise;
     boolean isOpen = false;
 
+    private Login login;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -74,7 +76,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
 
         //session
         SessionManagement sessionManagement = new SessionManagement(Profile_screen.this);
-        Login login =  sessionManagement.getLoginSession();
+        login =  sessionManagement.getLoginSession();
 
 //        SessionManagement sessionManagementUsers = new SessionManagement(Profile_screen.this);
 //        Users users = sessionManagementUsers.getUsersSession();
@@ -87,7 +89,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
         householdName.setText(login.getHouseholdName());
         stringHouseholdName = login.getHouseholdName();
 
-        getUserInfo(login);
+        getUserInfo();
         setEditButtons();
 
         editProfile.setOnClickListener(v ->
@@ -109,7 +111,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
             closeEditButtons();
         });
 
-        setNavigationView(login);
+        setNavigationView();
     }
 
     //pripojenie sa na api
@@ -124,7 +126,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     }
 
     //bocny navigacny panel
-    public void setNavigationView(Login login )
+    public void setNavigationView()
     {
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -229,7 +231,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     }
 
     //getne zvysne info o pouzivatelovi, ktore sme nedostali pri logine
-    public void getUserInfo(Login login)
+    public void getUserInfo()
     {
         int tmpUserId = login.getUserId();
         int tmpHomeId = login.getHouseholdId();
@@ -275,22 +277,6 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
 
         else
             return "Bežný používateľ";
-    }
-
-    //odhlasenie sa z aplikacie (zrusenie session)
-    public void logout()
-    {
-        SessionManagement sessionManagement = new SessionManagement(Profile_screen.this);
-        sessionManagement.removeSession();
-
-        moveToLoginScreen();
-    }
-
-    public void moveToLoginScreen()
-    {
-        Intent intent = new Intent(Profile_screen.this, Login_screen.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
     }
 
     public void getValuesFromUser()
@@ -348,7 +334,9 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
 //        householdName.setEnabled(true);
         email.setEnabled(true);
         password.setEnabled(true);
-        profileRole.setEnabled(true);
+
+        if (canEdit())
+            profileRole.setEnabled(true);
 
         saveProfile.startAnimation(fabOpen);
         cancelProfile.startAnimation(fabOpen);
@@ -414,4 +402,29 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
 
         return 0;
     }
+
+    public boolean canEdit()
+    {
+        if (login.getRole() == 1)
+            return true;
+        else
+            return false;
+    }
+
+    //odhlasenie sa z aplikacie (zrusenie session)
+    public void logout()
+    {
+        SessionManagement sessionManagement = new SessionManagement(Profile_screen.this);
+        sessionManagement.removeSession();
+
+        moveToLoginScreen();
+    }
+
+    public void moveToLoginScreen()
+    {
+        Intent intent = new Intent(Profile_screen.this, Login_screen.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
+
 }

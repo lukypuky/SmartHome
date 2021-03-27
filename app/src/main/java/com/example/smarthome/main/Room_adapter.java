@@ -5,11 +5,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smarthome.R;
+import com.example.smarthome.connection.Login;
+import com.example.smarthome.connection.SessionManagement;
 
 import java.util.ArrayList;
 
@@ -17,8 +20,9 @@ public class Room_adapter extends RecyclerView.Adapter<Room_adapter.RoomViewHold
 {
     private final ArrayList<Room_item> mRoomList;
     private final OnRoomListener mOnRoomListener;
+    private final Login login;
 
-    public static class RoomViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
+    public class RoomViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         public ImageView mImageView;
         public TextView mTextView1, mTextView2;
@@ -36,22 +40,29 @@ public class Room_adapter extends RecyclerView.Adapter<Room_adapter.RoomViewHold
 
             itemView.setOnClickListener(this);
 
-            //listener na obrazok "editu"
-            mImageEdit.setOnClickListener(new View.OnClickListener()
+            if (canEdit())
             {
-                @Override
-                public void onClick(View v)
+                //listener na obrazok "editu"
+                mImageEdit.setOnClickListener(new View.OnClickListener()
                 {
-                    if (onRoomListener != null)
+                    @Override
+                    public void onClick(View v)
                     {
-                        int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION)
+
+                        if (onRoomListener != null)
                         {
-                            onRoomListener.onEditClick(position);
+                            int position = getAdapterPosition();
+                            if (position != RecyclerView.NO_POSITION)
+                            {
+                                onRoomListener.onEditClick(position);
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
+
+            else
+                mImageEdit.setVisibility(View.INVISIBLE);
         }
 
         @Override
@@ -61,10 +72,19 @@ public class Room_adapter extends RecyclerView.Adapter<Room_adapter.RoomViewHold
         }
     }
 
+    public boolean canEdit()
+    {
+        if (login.getRole() == 1)
+            return true;
+        else
+            return false;
+    }
+
     //konstruktor
-    public Room_adapter(ArrayList<Room_item> roomList, OnRoomListener onRoomListener)
+    public Room_adapter(ArrayList<Room_item> roomList, Login login, OnRoomListener onRoomListener)
     {
         this.mRoomList = roomList;
+        this.login = login;
         this.mOnRoomListener = onRoomListener;
     }
 
