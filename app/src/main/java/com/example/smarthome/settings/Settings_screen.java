@@ -37,6 +37,7 @@ import java.util.Locale;
 
 public class Settings_screen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
 {
+    //menu
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private Toolbar toolbar;

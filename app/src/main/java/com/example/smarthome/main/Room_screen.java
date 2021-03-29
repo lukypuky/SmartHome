@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.DialogInterface;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -25,17 +25,31 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.smarthome.R;
+import com.example.smarthome.connection.Api;
+import com.example.smarthome.connection.Devices;
+import com.example.smarthome.connection.Login;
+import com.example.smarthome.connection.Rooms;
+import com.example.smarthome.connection.SessionManagement;
+import com.example.smarthome.devices.Device_adapter;
+import com.example.smarthome.devices.Device_item;
+import com.example.smarthome.devices.Device_screen;
+import com.example.smarthome.login.Login_screen;
 import com.example.smarthome.profile.Profile_screen;
-import com.example.smarthome.scenarios.Scenario_adapter;
-import com.example.smarthome.scenarios.Scenario_item;
 import com.example.smarthome.scenarios.Scenario_screen;
 import com.example.smarthome.settings.Settings_screen;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class Room_screen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+public class Room_screen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Device_adapter.OnDeviceListener
 {
     private static final String TAG = "Room_screen";
 
@@ -45,7 +59,6 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     private Toolbar toolbar;
 
     //pridanie zariadenia
-    private FloatingActionButton addDevice;
     private AlertDialog.Builder addDeviceDialog;
     private AlertDialog dialog;
     private EditText deviceName;
@@ -57,10 +70,18 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     private RecyclerView.Adapter mAdapter; // bridge medzi datami a recycler view
     private RecyclerView.LayoutManager mLayoutManager;
 
-    private ArrayList<Scenario_item> deviceList;
+    //zariadenia
+    private ArrayList<Device_item> deviceList;
+    private List<Devices> devices;
+    private ImageView active;
 
-    private TextView textView;
-    private ImageView img;
+    //api
+    private Api api;
+
+    //data z login/main screeny
+    private Login login;
+    private Room_item ri;
+    private int roomId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -68,36 +89,41 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room_screen);
 
+        apiConnection();
+
+        //session
+        SessionManagement sessionManagement = new SessionManagement(Room_screen.this);
+        login =  sessionManagement.getLoginSession();
+
+        SessionManagement roomSessionManagement = new SessionManagement(Room_screen.this);
+        ri =  roomSessionManagement.getRoomItemSession();
+        ////////////////////////////////////////////////////////////////////////////////////////////
+
+        setScreenValues();
         createDeviceList();
 
-        //tlacidlo na pridanie noveho scenara
-        addDevice= (FloatingActionButton) findViewById(R.id.addDevice);
-        addDevice.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                addDeviceDialog();
-            }
-        });
+        //tlacidlo na pridanie noveho zariadenia
+        FloatingActionButton addDevice = findViewById(R.id.addDevice);
+        if (canEdit())
+            addDevice.setOnClickListener(v -> addDeviceDialog());
 
+        else
+            addDevice.setVisibility(View.INVISIBLE);
+
+        getDevices();
         setRecyclerView();
         setNavigationView();
+    }
 
-        textView = findViewById(R.id.roomText);
-        img = findViewById(R.id.roomImage);
+    //pripojenie sa na api
+    public void apiConnection()
+    {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://147.175.121.237/api2/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
 
-        Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
-
-        if (bundle != null)
-        {
-            String string = (String) bundle.get("roomName");
-            String image = getIntent().getStringExtra("roomImg");
-
-            img.setImageResource(Integer.parseInt(image));
-            textView.setText(string);
-        }
+        api = retrofit.create(Api.class);
     }
 
     //plocha pre zariadenia v domacnosti
@@ -106,7 +132,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         mRecyclerView = findViewById(R.id.roomRecyclerView);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
-        mAdapter = new Scenario_adapter(deviceList);
+        mAdapter = new Device_adapter(deviceList, login, this);
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         new ItemTouchHelper(deviceToRemove).attachToRecyclerView(mRecyclerView);
@@ -116,9 +142,19 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     //bocny navigacny panel
     public void setNavigationView()
     {
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+        toolbar = findViewById(R.id.toolbar);
+
+        //nastavenie nazvu domacnosti a pouzivatela v headri menu
+        View headerView = navigationView.getHeaderView(0);
+
+        TextView homeName = headerView.findViewById(R.id.headerHousehold);
+        TextView userName = headerView.findViewById(R.id.headerUserName);
+
+        homeName.setText(login.getHouseholdName());
+        userName.setText(login.getUsername());
+
         navigationView.bringToFront(); //pri kliknuti na menu nam menu nezmizne
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
@@ -126,25 +162,19 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
 
         //umozni nam klikat v menu
         navigationView.setNavigationItemSelectedListener(this); //this
-
-//        //pri spusteni appky bude zakliknuta defaultne scenar screena
-//        navigationView.setCheckedItem(R.id.);
     }
 
     @Override
     public void onBackPressed()
     {
         if (drawerLayout.isDrawerOpen(GravityCompat.START))
-        {
             drawerLayout.closeDrawer((GravityCompat.START));
-        }
 
         else
-        {
             super.onBackPressed();
-        }
     }
 
+    @SuppressLint("NonConstantResourceId")
     public boolean onNavigationItemSelected(@NonNull MenuItem item)
     {
         switch (item.getItemId())
@@ -165,6 +195,9 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
                 Intent settings_intent = new Intent(Room_screen.this, Settings_screen.class);
                 startActivity(settings_intent);
                 break;
+            case R.id.logout:
+                logout();
+                break;
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -177,35 +210,140 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     }
 
     //prida zariadenie na index 0 v arrayliste
-    public void insertDevice(EditText deviceName, int deviceType)
+    public void insertDevice(EditText deviceName, String deviceType)
     {
         String name = deviceName.getText().toString();
-        int position = 0;
+        Call<Devices> call = api.postDevice(deviceType, name, roomId, 0);
 
-        switch (deviceType)
+        call.enqueue(new Callback<Devices>()
         {
-            case 1:
-                deviceList.add(position, new Scenario_item(R.drawable.alarm,name));
-                break;
-            case 2:
-                deviceList.add(position, new Scenario_item(R.drawable.heater,name));
-                break;
-            case 3:
-                deviceList.add(position, new Scenario_item(R.drawable.light,name));
-                break;
-            case 4:
-                deviceList.add(position, new Scenario_item(R.drawable.temperature,name));;
-                break;
-            case 5:
-                deviceList.add(position, new Scenario_item(R.drawable.blinds,name));
-                break;
-        }
+            @Override
+            public void onResponse(Call<Devices> call, Response<Devices> response)
+            {
+                if (!response.isSuccessful())
+                {
+                    System.out.println("call = " + call + ", response = " + response);
+                }
 
-        mAdapter.notifyItemInserted(position);
+                if (response.body().getDeviceStatus() == 1)
+                    Toast.makeText(Room_screen.this, "Zariadenie pridané", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<Devices> call, Throwable t)
+            {
+                System.out.println("call = " + call + ", t = " + t);
+            }
+        });
+
+        Intent room_intent = new Intent(Room_screen.this, Room_screen.class);
+        startActivity(room_intent);
+        Room_screen.this.finish();
     }
 
     //metoda na pridanie noveho zariadenia v domacnosti
     public void addDeviceDialog()
+    {
+        initializeDialog();
+
+        //potvrdenie pridania zariadenia
+        saveDevice.setOnClickListener(v ->
+        {
+            //ak sa nevyplnil nazov zariadanie -> message
+            if (deviceName.getText().toString().isEmpty())
+                Toast.makeText(Room_screen.this, "Zadajte názov pre zariadenie", Toast.LENGTH_SHORT).show();
+
+            //ak sa nezvolil typ zariadenia -> message
+            else if(deviceType.getSelectedItem().toString().equals("Typ zariadenia"))
+                Toast.makeText(Room_screen.this, "Zvoľte typ zariadenia", Toast.LENGTH_SHORT).show();
+
+            //ak je vsetko vyplnene, pridaj zariadenie do arraylistu
+            else
+            {
+                insertDevice(deviceName, deviceType.getSelectedItem().toString());
+                dialog.dismiss();
+            }
+        });
+
+        //zrusenie pridania zariadenia
+        unsaveDevice.setOnClickListener(v -> dialog.dismiss());
+    }
+
+    public void editDeviceDialog(int position)
+    {
+        initializeDialog();
+
+        String type = deviceList.get(position).getDeviceType();
+        deviceName.setText(deviceList.get(position).getDeviceName());
+        deviceType.setSelection(getIndexOfSpinner(deviceType, type));
+
+        //potvrdenie editu zariadenia
+        saveDevice.setOnClickListener(v ->
+        {
+            //ak sa nevyplnil nazov zariadanie -> message
+            if (deviceName.getText().toString().isEmpty())
+                Toast.makeText(Room_screen.this, "Zadajte názov pre zariadenie", Toast.LENGTH_SHORT).show();
+
+            //ak sa nezvolil typ zariadenia -> message
+            else if(deviceType.getSelectedItem().toString().equals("Typ zariadenia"))
+                Toast.makeText(Room_screen.this, "Zvoľte typ zariadenia", Toast.LENGTH_SHORT).show();
+
+            //ak je vsetko vyplnene, zedituj zariadenie
+            else
+            {
+                int deviceId = deviceList.get(position).getDeviceId();
+                int isActive = deviceList.get(position).getIsActive();
+                String stringDeviceType = deviceType.getSelectedItem().toString();
+                String stringDeviceName = deviceName.getText().toString();
+
+                Call<Devices> call = api.editDevice(deviceId, stringDeviceType, stringDeviceName, roomId, isActive);
+
+                call.enqueue(new Callback<Devices>()
+                {
+                    @Override
+                    public void onResponse(Call<Devices> call, Response<Devices> response)
+                    {
+                        if (!response.isSuccessful())
+                        {
+                            System.out.println("call = " + call + ", response = " + response);
+                            return;
+                        }
+
+                        if (response.body().getDeviceStatus() == 1)
+                            Toast.makeText(Room_screen.this, "Zariadenie zmenené", Toast.LENGTH_SHORT).show();
+
+                        dialog.dismiss();
+                        Intent room_intent = new Intent(Room_screen.this, Room_screen.class);
+                        startActivity(room_intent);
+                        Room_screen.this.finish();
+                    }
+
+                    @Override
+                    public void onFailure(Call<Devices> call, Throwable t)
+                    {
+                        System.out.println("call = " + call + ", t = " + t);
+                    }
+                });
+            }
+        });
+
+        //zrusenie edit zariadenia
+        unsaveDevice.setOnClickListener(v -> dialog.dismiss());
+    }
+
+    private int getIndexOfSpinner(Spinner spinner, String myString)
+    {
+        for (int i=0; i<spinner.getCount(); i++)
+        {
+            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString))
+                return i;
+        }
+
+        return 0;
+    }
+
+    //dialog window pre add a edit zariadenia
+    public void initializeDialog()
     {
         addDeviceDialog = new AlertDialog.Builder(Room_screen.this);
         View contactPopupView = getLayoutInflater().inflate(R.layout.activity_add_device_popup, null);
@@ -226,65 +364,18 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         addDeviceDialog.setView(contactPopupView);
         dialog = addDeviceDialog.create();
         dialog.show();
+    }
 
-        //potvrdenie pridania zariadenia
-        saveDevice.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                int deviceTypeInt = 0;
+    public void setScreenValues()
+    {
+        TextView screenHeading = findViewById(R.id.roomText);
+        ImageView screenImg = findViewById(R.id.roomImage);
 
-                //ak sa nevyplnil nazov zariadanie -> message
-                if (deviceName.getText().toString().isEmpty())
-                {
-                    Toast.makeText(Room_screen.this, "Zadajte názov pre zariadenie", Toast.LENGTH_SHORT).show();
-                }
+        screenHeading.setText(ri.getRoomName());
+        screenImg.setImageResource(ri.getIntRoomType());
+        roomId = ri.getId_room();
 
-                //ak sa nezvolil typ zariadenia -> message
-                else if(deviceType.getSelectedItem().toString().equals("Typ zariadenia"))
-                {
-                    Toast.makeText(Room_screen.this, "Zvoľte typ zariadenia", Toast.LENGTH_SHORT).show();
-                }
-
-                //ak je vsetko vyplnene, pridaj zariadenie do arraylistu
-                else
-                {
-                    switch (deviceType.getSelectedItem().toString())
-                    {
-                        case "Alarm":
-                            deviceTypeInt = 1;
-                            break;
-                        case "Kúrenie":
-                            deviceTypeInt = 2;
-                            break;
-                        case "Svetlo":
-                            deviceTypeInt = 3;
-                            break;
-                        case "Teplomer":
-                            deviceTypeInt = 4;
-                            break;
-                        case "Žalúzie":
-                            deviceTypeInt = 5;
-                            break;
-                    }
-
-                    insertDevice(deviceName, deviceTypeInt);
-                    Toast.makeText(Room_screen.this, "Zariadenie pridané", Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
-                }
-            }
-        });
-
-        //zrusenie pridania zariadenia
-        unsaveDevice.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                dialog.dismiss();
-            }
-        });
+        active =  findViewById(R.id.deviceActive);
     }
 
     //mazanie zariadenia (with swap right)
@@ -299,32 +390,169 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
         {
-            //builder na potvrdenie zmazania
-            AlertDialog.Builder builder = new AlertDialog.Builder(Room_screen.this);
-            builder.setCancelable(true);
-            builder.setMessage("Naozaj chcete odstrániť toto zariadenie '" + deviceList.get(viewHolder.getAdapterPosition()).getText().toUpperCase() + "' ?");
-            builder.setPositiveButton("Áno", new DialogInterface.OnClickListener()
+            if(canEdit())
             {
-                @Override
-                public void onClick(DialogInterface dialog, int which)
+                //builder na potvrdenie zmazania
+                AlertDialog.Builder builder = new AlertDialog.Builder(Room_screen.this);
+                builder.setCancelable(true);
+                builder.setMessage("Naozaj chcete odstrániť toto zariadenie '" + deviceList.get(viewHolder.getAdapterPosition()).getDeviceName().toUpperCase() + "' ?");
+                builder.setPositiveButton("Áno", (dialog, which) ->
                 {
+                    int id_device = deviceList.get(viewHolder.getAdapterPosition()).getDeviceId();
+
+                    deleteDevice(id_device, roomId);
+
+                    //refresh recycleviewra
                     deviceList.remove(viewHolder.getAdapterPosition());
                     mAdapter.notifyDataSetChanged();
-                }
-            });
 
-            builder.setNegativeButton("Nie", new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialog, int which)
+                    Toast.makeText(Room_screen.this, "Zariadenie bolo úspešne odstránené.", Toast.LENGTH_SHORT).show();
+                });
+
+                builder.setNegativeButton("Nie", (dialog, which) ->
                 {
                     dialog.dismiss();
                     mAdapter.notifyDataSetChanged();
-                }
-            });
+                });
 
-            AlertDialog dialog = builder.create();
-            dialog.show();
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+
+            else // user nie je admin
+            {
+                Toast.makeText(Room_screen.this, "Nemáte povolenie odstrániť zariadenie.", Toast.LENGTH_SHORT).show();
+                mAdapter.notifyDataSetChanged();
+            }
         }
     };
+
+    public void deleteDevice(int id_device, int id_room)
+    {
+        Call<Void> call = api.deleteDevice(id_device, id_room);
+
+        call.enqueue(new Callback<Void>()
+        {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response)
+            {
+                System.out.println("call = " + call + ", response = " + response);
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t)
+            {
+                System.out.println("call = " + call + ", t = " + t);
+            }
+        });
+    }
+
+    public void getDevices()
+    {
+        Call<List<Devices>> call = api.getDevices(roomId);
+
+        call.enqueue(new Callback<List<Devices>>()
+        {
+            @Override
+            public void onResponse(Call<List<Devices>> call, Response<List<Devices>> response)
+            {
+                if (!response.isSuccessful())
+                {
+                    System.out.println("call = " + call + ", response = " + response);
+                    return;
+                }
+
+                devices = response.body();
+                final int position = 0;
+
+                for (Devices device: devices)
+                {
+                    int image = getDeviceImage(device.getDeviceType());
+                    int imageActive = getActiveImage(device.getIs_active());
+
+                    deviceList.add(position, new Device_item(image, device.getDeviceName(), device.getDeviceType(), device.getDeviceId(), device.getIs_active(), imageActive));
+                    mAdapter.notifyItemInserted(position);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Devices>> call, Throwable t)
+            {
+                System.out.println("call = " + call + ", t = " + t);
+            }
+        });
+    }
+
+    //metoda ktora vrati obrazok pre zariadenie na zaklade typu zariadenia
+    public int getDeviceImage(String type)
+    {
+        switch (type)
+        {
+            case "Alarm":
+                return R.drawable.alarm;
+            case "Kúrenie":
+                return R.drawable.heater;
+            case "Svetlá":
+                return R.drawable.light;
+            case "Teplomer":
+                return R.drawable.temperature;
+            case "Zásuvka":
+                return  R.drawable.socket;
+            case "Žalúzie":
+                return R.drawable.blinds;
+        }
+
+        return 0;
+    }
+
+    public int getActiveImage(int active)
+    {
+        switch (active)
+        {
+            case 0:
+                return R.drawable.red;
+            case 1:
+                return R.drawable.green;
+        }
+
+        return 0;
+    }
+
+    //click na zariadenie
+    @Override
+    public void onDeviceClick(int position)
+    {
+        Intent intent = new Intent(this, Device_screen.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onEditClick(int position)
+    {
+        editDeviceDialog(position);
+    }
+
+    public boolean canEdit()
+    {
+        if (login.getRole() == 1)
+            return true;
+        else
+            return false;
+    }
+
+    //odhlasenie sa z aplikacie (zrusenie session)
+    public void logout()
+    {
+        SessionManagement sessionManagement = new SessionManagement(Room_screen.this);
+        sessionManagement.removeSession();
+
+        moveToLoginScreen();
+    }
+
+    public void moveToLoginScreen()
+    {
+        Intent intent = new Intent(Room_screen.this, Login_screen.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
 }

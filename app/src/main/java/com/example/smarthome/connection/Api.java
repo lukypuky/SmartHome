@@ -48,7 +48,7 @@ public interface Api
             @Field("id_household") int id_household
     );
 
-    //mazanie miestnosti
+    //delete miestnosti
     @FormUrlEncoded
     @HTTP(method = "DELETE", path = "rooms.php", hasBody = true)
     @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
@@ -96,5 +96,40 @@ public interface Api
             @Field("password") String password
     );
 
+    //getne vsetky devices pre danu miestnost
+    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+    @GET("devices.php")
+    Call<List<Devices>> getDevices(@Query("id_room") int id_room);
 
+    //insert zariadenia
+    @FormUrlEncoded
+    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+    @POST("devices.php")
+    Call<Devices> postDevice(
+            @Field("type") String deviceType,
+            @Field("name") String deviceName,
+            @Field("id_room") int id_room,
+            @Field("status_isActive") int isActive
+    );
+
+    //delete zariadenia
+    @FormUrlEncoded
+    @HTTP(method = "DELETE", path = "devices.php", hasBody = true)
+    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+    Call<Void> deleteDevice(
+            @Field("id") int id_device,
+            @Field("id_room") int id_room
+    );
+
+    //edit zariadenia
+    @FormUrlEncoded
+    @HTTP(method = "PUT", path = "devices.php", hasBody = true)
+    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+    Call<Devices> editDevice(
+            @Field("id") int id_device,
+            @Field("type") String deviceType,
+            @Field("name") String  deviceName,
+            @Field("id_room") int id_room,
+            @Field("status_isActive") int isActive
+    );
 }

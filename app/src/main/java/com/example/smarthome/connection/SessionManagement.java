@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.example.smarthome.main.Room_adapter;
+import com.example.smarthome.main.Room_item;
 
 public class SessionManagement
 {
@@ -20,12 +21,17 @@ public class SessionManagement
     String SESSION_LOGIN_ROLE = "user_role";
 
     //users
-    String SESSION_USER_ID = "user_id";
-    String SESSION_USER_NAME = "user_name";
-    String SESSION_USER_EMAIL = "user_email";
-    String SESSION_USER_PASSWORD = "user_password";
-    String SESSION_USER_ROLE = "user_role";
-    String SESSION_USER_HOUSEHOLD_ID = "user_household_id";
+//    String SESSION_USER_ID = "user_id";
+//    String SESSION_USER_NAME = "user_name";
+//    String SESSION_USER_EMAIL = "user_email";
+//    String SESSION_USER_PASSWORD = "user_password";
+//    String SESSION_USER_ROLE = "user_role";
+//    String SESSION_USER_HOUSEHOLD_ID = "user_household_id";
+
+    //room_item;
+    String SESSION_ROOM_NAME = "room_name";
+    String SESSION_ROOM_TYPE = "room_type";
+    String SESSION_ROOM_ID = "id_room";
 
     public SessionManagement(Context context)
     {
@@ -50,33 +56,53 @@ public class SessionManagement
         editor.putInt(SESSION_LOGIN_ROLE, userRole).commit();
     }
 
-    public void saveUsersSession(Users users)
+    public void saveRoomSession(Room_item ri)
     {
-        int userId = users.getUserId();
-        String userName = users.getUserName();
-        String userEmail = users.getUserEmail();
-        String userPass = users.getUserPassword();
-        int userRole = users.getUserRole();
-        int userHouseholdId = users.getUserHouseholdId();
+        String room_name = ri.getRoomName();
+        int room_type = ri.getIntRoomType();
+        int room_id = ri.getId_room();
 
-        editor.putInt(SESSION_USER_ID, userId).commit();
-        editor.putString(SESSION_USER_NAME, userName).commit();
-        editor.putString(SESSION_USER_EMAIL, userEmail).commit();
-        editor.putString(SESSION_USER_PASSWORD, userPass).commit();
-        editor.putInt(SESSION_USER_ROLE, userRole).commit();
-        editor.putInt(SESSION_USER_HOUSEHOLD_ID, userHouseholdId).commit();
+        editor.putString(SESSION_ROOM_NAME,room_name).commit();
+        editor.putInt(SESSION_ROOM_TYPE, room_type).commit();
+        editor.putInt(SESSION_ROOM_ID, room_id).commit();
     }
 
-    public Users getUsersSession()
-    {
-        int userId = sharedPreferences.getInt(SESSION_USER_ID, 0);
-        String userName = sharedPreferences.getString(SESSION_USER_NAME,"");
-        String userEmail = sharedPreferences.getString(SESSION_USER_EMAIL,"");
-        String userPass = sharedPreferences.getString(SESSION_USER_PASSWORD,"");
-        int userRole = sharedPreferences.getInt(SESSION_USER_ROLE, 0);
-        int userHouseholdId = sharedPreferences.getInt(SESSION_USER_HOUSEHOLD_ID, 0);
+//    public void saveUsersSession(Users users)
+//    {
+//        int userId = users.getUserId();
+//        String userName = users.getUserName();
+//        String userEmail = users.getUserEmail();
+//        String userPass = users.getUserPassword();
+//        int userRole = users.getUserRole();
+//        int userHouseholdId = users.getUserHouseholdId();
+//
+//        editor.putInt(SESSION_USER_ID, userId).commit();
+//        editor.putString(SESSION_USER_NAME, userName).commit();
+//        editor.putString(SESSION_USER_EMAIL, userEmail).commit();
+//        editor.putString(SESSION_USER_PASSWORD, userPass).commit();
+//        editor.putInt(SESSION_USER_ROLE, userRole).commit();
+//        editor.putInt(SESSION_USER_HOUSEHOLD_ID, userHouseholdId).commit();
+//    }
+//
+//    public Users getUsersSession()
+//    {
+//        int userId = sharedPreferences.getInt(SESSION_USER_ID, 0);
+//        String userName = sharedPreferences.getString(SESSION_USER_NAME,"");
+//        String userEmail = sharedPreferences.getString(SESSION_USER_EMAIL,"");
+//        String userPass = sharedPreferences.getString(SESSION_USER_PASSWORD,"");
+//        int userRole = sharedPreferences.getInt(SESSION_USER_ROLE, 0);
+//        int userHouseholdId = sharedPreferences.getInt(SESSION_USER_HOUSEHOLD_ID, 0);
+//
+//        return new Users(userId, userName, userEmail, userPass, userRole, userHouseholdId);
+//    }
 
-        return new Users(userId, userName, userEmail, userPass, userRole, userHouseholdId);
+    public  Room_item getRoomItemSession()
+    {
+        String roomItemName = sharedPreferences.getString(SESSION_ROOM_NAME, "");
+        int roomItemType = sharedPreferences.getInt(SESSION_ROOM_TYPE, 0);
+        int roomItemId = sharedPreferences.getInt(SESSION_ROOM_ID, 0);
+
+        return new Room_item(roomItemName, roomItemType, roomItemId);
     }
 
     public Login getLoginSession()
