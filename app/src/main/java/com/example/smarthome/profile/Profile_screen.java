@@ -166,7 +166,6 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
 
     //prepinanie medzi obrazovkami v menu
     @SuppressLint("NonConstantResourceId")
-    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item)
     {
         switch (item.getItemId())

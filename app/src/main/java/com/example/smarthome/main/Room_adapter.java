@@ -43,25 +43,18 @@ public class Room_adapter extends RecyclerView.Adapter<Room_adapter.RoomViewHold
             if (canEdit())
             {
                 //listener na obrazok "editu"
-                mImageEdit.setOnClickListener(new View.OnClickListener()
+                mImageEdit.setOnClickListener(v ->
                 {
-                    @Override
-                    public void onClick(View v)
+                    if (onRoomListener != null)
                     {
-
-                        if (onRoomListener != null)
-                        {
-                            int position = getAdapterPosition();
-                            if (position != RecyclerView.NO_POSITION)
-                            {
-                                onRoomListener.onEditClick(position);
-                            }
-                        }
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION)
+                            onRoomListener.onEditClick(position);
                     }
                 });
             }
 
-            else
+            else    // ak user nema admin rolu, ikona editu je invisible
                 mImageEdit.setVisibility(View.INVISIBLE);
         }
 

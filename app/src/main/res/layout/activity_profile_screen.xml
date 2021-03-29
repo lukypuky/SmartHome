@@ -5,17 +5,19 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
+    android:elevation="2dp"
     android:fitsSystemWindows="true"
     tools:context=".profile.Profile_screen"
     tools:openDrawer="start">
 
-        <com.google.android.material.navigation.NavigationView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/nav_view"
-            app:headerLayout="@layout/header"
-            app:menu="@menu/main_menu"
-            android:layout_gravity="start"/>
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/header"
+        app:menu="@menu/main_menu" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -93,8 +95,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="190dp"
                 android:layout_marginTop="145dp"
-                android:text=""
                 android:background="@null"
+                android:text=""
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -118,9 +120,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="190dp"
                 android:layout_marginTop="15dp"
+                android:background="@null"
                 android:text=""
                 android:textSize="16sp"
-                android:background="@null"
                 app:layout_constraintBottom_toTopOf="@+id/profileEmail"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/profileName" />
@@ -158,8 +160,8 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="15dp"
                 android:text="Heslo"
-                android:textSize="16sp"
                 android:textColor="#249FE2"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toTopOf="@+id/profileRoleTag"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/profileEmailTag" />
@@ -173,7 +175,7 @@
                 android:background="@null"
                 android:ems="10"
                 android:inputType="textPassword"
-                android:text="sssss"
+                android:text=""
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/profileEmail" />
@@ -196,12 +198,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 android:clickable="true"
-                app:fabSize="mini"
+                android:focusable="true"
                 android:visibility="invisible"
+                app:fabSize="mini"
                 app:layout_constraintBottom_toTopOf="@+id/profileCancel"
                 app:layout_constraintEnd_toEndOf="@+id/profileCancel"
-                app:srcCompat="@drawable/okay"
-                android:focusable="true" />
+                app:srcCompat="@drawable/okay" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/profileCancel"
@@ -209,12 +211,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 android:clickable="true"
-                app:fabSize="mini"
+                android:focusable="true"
                 android:visibility="invisible"
+                app:fabSize="mini"
                 app:layout_constraintBottom_toTopOf="@+id/profileEdit"
                 app:layout_constraintEnd_toEndOf="@+id/profileEdit"
-                app:srcCompat="@drawable/cancel"
-                android:focusable="true" />
+                app:srcCompat="@drawable/cancel" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -243,21 +245,21 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 
-<!--    <RelativeLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent">-->
+    <!--    <RelativeLayout-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent">-->
 
-<!--        <androidx.coordinatorlayout.widget.CoordinatorLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent">-->
+    <!--        <androidx.coordinatorlayout.widget.CoordinatorLayout-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="match_parent">-->
 
-<!--            &lt;!&ndash;            <com.google.android.material.floatingactionbutton.FloatingActionButton&ndash;&gt;-->
-<!--            &lt;!&ndash;                android:id="@+id/editProfile"&ndash;&gt;-->
-<!--            &lt;!&ndash;                android:layout_width="wrap_content"&ndash;&gt;-->
-<!--            &lt;!&ndash;                android:layout_height="wrap_content"&ndash;&gt;-->
-<!--            &lt;!&ndash;                android:layout_gravity="bottom|right"&ndash;&gt;-->
-<!--            &lt;!&ndash;                android:layout_margin="16dp"&ndash;&gt;-->
-<!--            &lt;!&ndash;                android:src="@drawable/edit_icon"/>&ndash;&gt;-->
-<!--        </androidx.coordinatorlayout.widget.CoordinatorLayout>-->
-<!--    </RelativeLayout>-->
+    <!--            &lt;!&ndash;            <com.google.android.material.floatingactionbutton.FloatingActionButton&ndash;&gt;-->
+    <!--            &lt;!&ndash;                android:id="@+id/editProfile"&ndash;&gt;-->
+    <!--            &lt;!&ndash;                android:layout_width="wrap_content"&ndash;&gt;-->
+    <!--            &lt;!&ndash;                android:layout_height="wrap_content"&ndash;&gt;-->
+    <!--            &lt;!&ndash;                android:layout_gravity="bottom|right"&ndash;&gt;-->
+    <!--            &lt;!&ndash;                android:layout_margin="16dp"&ndash;&gt;-->
+    <!--            &lt;!&ndash;                android:src="@drawable/edit_icon"/>&ndash;&gt;-->
+    <!--        </androidx.coordinatorlayout.widget.CoordinatorLayout>-->
+    <!--    </RelativeLayout>-->
 </androidx.drawerlayout.widget.DrawerLayout>

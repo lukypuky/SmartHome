@@ -61,8 +61,8 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     private Button saveRoom, unsaveRoom;
 
     //edit miestnosti
-    private String editRoomName, editRoomType;
-    private int editRoomId, editHouseholdId;
+//    private String editRoomName, editRoomType;
+//    private int editRoomId, editHouseholdId;
 
     //zoznam miestnosti
     private RecyclerView mRecyclerView;
@@ -77,7 +77,6 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     private Api api;
 
     //data z login screeny
-    private TextView homeName, userName;
     private int householdId;
     private Login login;
 
@@ -92,7 +91,6 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         //session
         SessionManagement sessionManagement = new SessionManagement(Main_screen.this);
         login =  sessionManagement.getLoginSession();
-
         ////////////////////////////////////////////////////////////////////////////////////////////
 
         setScreenValues();
@@ -208,7 +206,6 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     public void insertRoom(EditText roomName, String roomType)
     {
         String name = roomName.getText().toString();
-
         Call<Rooms> call = api.postRoom(name, roomType, householdId);
 
         call.enqueue(new Callback<Rooms>()
@@ -242,7 +239,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         roomList = new ArrayList<>();
     }
 
-    //dialog window pre add a edit roomu
+    //dialog window pre add a edit miestnosti
     public void initializeDialog()
     {
         addRoomDialog = new AlertDialog.Builder(Main_screen.this);
@@ -276,15 +273,11 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         {
             //ak sa nevyplnil nazov miestnosti -> message
             if (roomName.getText().toString().isEmpty())
-            {
                 Toast.makeText(Main_screen.this, "Zadajte názov pre miestnosť", Toast.LENGTH_SHORT).show();
-            }
 
             //ak sa nezvolil typ miestnosti -> message
             else if(roomType.getSelectedItem().toString().equals("Typ miestnosti"))
-            {
                 Toast.makeText(Main_screen.this, "Zvoľte typ miestnosti", Toast.LENGTH_SHORT).show();
-            }
 
             //ak je vsetko vyplnene, pridaj miestnost do arraylistu
             else
@@ -312,23 +305,19 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         {
             //ak sa nevyplnil nazov miestnosti -> message
             if (roomName.getText().toString().isEmpty())
-            {
                 Toast.makeText(Main_screen.this, "Zadajte názov pre miestnosť", Toast.LENGTH_SHORT).show();
-            }
 
             //ak sa nezvolil typ miestnosti -> message
             else if(roomType.getSelectedItem().toString().equals("Typ miestnosti"))
-            {
                 Toast.makeText(Main_screen.this, "Zvoľte typ miestnosti", Toast.LENGTH_SHORT).show();
-            }
 
             //ak je vsetko vyplnene, pridaj zedituj miestnost
             else
             {
-                editRoomName = roomName.getText().toString();
-                editRoomType = roomType.getSelectedItem().toString();
-                editRoomId = roomList.get(position).getId_room();
-                editHouseholdId = roomList.get(position).getId_household();
+                String editRoomName = roomName.getText().toString();
+                String editRoomType = roomType.getSelectedItem().toString();
+                int editRoomId = roomList.get(position).getId_room();
+                int editHouseholdId = roomList.get(position).getId_household();
 
                 Call<Rooms> call = api.editRoom(editRoomId, editRoomName, editRoomType, editHouseholdId);
 
@@ -361,7 +350,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
             }
         });
 
-        //zrusenie pridania miestnosti
+        //zrusenie edit miestnosti
         unsaveRoom.setOnClickListener(v -> dialog.dismiss());
     }
 
@@ -390,9 +379,10 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
         {
-            //builder na potvrdenie zmazania
+
             if (canEdit()) //user je admin
             {
+                //builder na potvrdenie zmazania
                 AlertDialog.Builder builder = new AlertDialog.Builder(Main_screen.this);
                 builder.setCancelable(true);
                 builder.setMessage("Naozaj chcete odstrániť túto miestnosť '" + roomList.get(viewHolder.getAdapterPosition()).getRoomName().toUpperCase() + "' ?");
@@ -406,6 +396,8 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
                     //refresh recycleviewra
                     roomList.remove(viewHolder.getAdapterPosition());
                     mAdapter.notifyDataSetChanged();
+
+                    Toast.makeText(Main_screen.this, "Miestnosť bola úspešne odstránená.", Toast.LENGTH_SHORT).show();
                 });
 
                 builder.setNegativeButton("Nie", (dialog, which) ->
@@ -420,7 +412,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
 
             else // user nie je admin
             {
-                Toast.makeText(Main_screen.this, "Nemáte povolenie zmazať miestnosť.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Main_screen.this, "Nemáte povolenie odstrániť miestnosť.", Toast.LENGTH_SHORT).show();
                 mAdapter.notifyDataSetChanged();
             }
 
@@ -447,15 +439,19 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         });
     }
 
+    //click na miestnost
     @Override
     public void onRoomClick(int position)
     {
+        Room_item ri = new Room_item(roomList.get(position).getRoomName(), getRoomImage(roomList.get(position).getRoomType()), roomList.get(position).getId_room());
+        SessionManagement sessionManagement = new SessionManagement(Main_screen.this);
+        sessionManagement.saveRoomSession(ri);
+
         Intent intent = new Intent(this, Room_screen.class);
-        intent.putExtra("roomName", String.valueOf(roomList.get(position).getRoomName()));
-        intent.putExtra("roomImg", String.valueOf(roomList.get(position).getImageResource()));
         startActivity(intent);
     }
 
+    //click na edit miestnosti
     @Override
     public void onEditClick(int position)
     {
@@ -527,11 +523,11 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     public void setScreenValues()
     {
         //nastavenie HomeName v headeri appky
-        homeName = findViewById(R.id.mainHomeName);
+        TextView homeName = findViewById(R.id.mainHomeName);
         homeName.setText(login.getHouseholdName());
 
         //nastavenie UserName v headeri appky
-        userName = findViewById(R.id.mainUserName);
+        TextView userName = findViewById(R.id.mainUserName);
         userName.setText(login.getUsername());
 
         //nastavenie id_household
