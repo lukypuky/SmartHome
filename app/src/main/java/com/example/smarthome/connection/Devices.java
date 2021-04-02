@@ -16,6 +16,9 @@ public class Devices
     @SerializedName("id_room")
     private Integer idRoom;
 
+    @SerializedName("isOn")
+    private Integer isOn;
+
     @SerializedName("status_isActive")
     private Integer is_active;
 
@@ -51,6 +54,11 @@ public class Devices
         return idRoom;
     }
 
+    public Integer getIsOn()
+    {
+        return isOn;
+    }
+
     public Integer getIs_active()
     {
         return is_active;
@@ -75,6 +83,8 @@ public class Devices
     {
         return deviceStatus;
     }
+
+
 }
 
 

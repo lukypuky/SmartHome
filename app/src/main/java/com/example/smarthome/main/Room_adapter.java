@@ -34,7 +34,7 @@ public class Room_adapter extends RecyclerView.Adapter<Room_adapter.RoomViewHold
             super(itemView);
             mImageView = itemView.findViewById(R.id.roomImageView);
             mTextView1 = itemView.findViewById(R.id.roomTextView);
-            mTextView2 = itemView.findViewById(R.id.roomTextView2);
+            mTextView2 = itemView.findViewById(R.id.roomCountTag);
             mImageEdit = itemView.findViewById(R.id.roomEdit);
             this.onRoomListener = onRoomListener;
 

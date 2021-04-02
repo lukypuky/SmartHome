@@ -23,7 +23,7 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
     public class DeviceViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         public ImageView mImageView;
-        public TextView mTextView;
+        public TextView mTextView, deviceValue, deviceUnit, deviceStatus;
         OnDeviceListener onDeviceListener;
         public ImageView mImageEdit;
         public ImageView mImageActive;
@@ -35,6 +35,9 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
             mTextView = itemView.findViewById(R.id.deviceTextView);
             mImageEdit = itemView.findViewById(R.id.deviceEdit);
             mImageActive = itemView.findViewById(R.id.deviceActive);
+            deviceValue = itemView.findViewById(R.id.deviceValue);
+            deviceStatus = itemView.findViewById(R.id.deviceStatusTag);
+            deviceUnit = itemView.findViewById(R.id.deviceUnitTag);
             this.onDeviceListener = onDeviceListener;
 
             itemView.setOnClickListener(this);
@@ -94,9 +97,70 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
     {
         Device_item currentItem = mDeviceList.get(position);
 
+        String unit, type;
+        boolean active;
+
+        unit = getDeviceUnit(currentItem);
+        active = isDeviceActive(currentItem);
+        type = currentItem.getDeviceType();
+
         holder.mImageView.setImageResource(currentItem.getImageResource());
         holder.mTextView.setText(currentItem.getDeviceName());
         holder.mImageActive.setImageResource(currentItem.getIsActiveImage());
+
+        if (active)
+        {
+            if (type.equals("Termostat"))
+            {
+                String stringValue= Double.toString(currentItem.getTemperature());
+                holder.deviceUnit.setText(unit);
+                holder.deviceValue.setText(stringValue);
+                holder.deviceStatus.setText("Teplota: ");
+            }
+
+            else if (type.equals("Vlhkomer"))
+            {
+                String stringValue= Double.toString(currentItem.getHumidity());
+                holder.deviceUnit.setText(unit);
+                holder.deviceValue.setText(stringValue);
+                holder.deviceStatus.setText("Vlhkosť: ");
+            }
+
+            else
+                holder.deviceStatus.setText("Zariadenie zapnuté");
+        }
+
+        else
+        {
+            holder.deviceStatus.setText("Zariadenie vypnuté");
+        }
+    }
+
+    public String getDeviceUnit(Device_item currentItem)
+    {
+        String type = currentItem.getDeviceType();
+
+        if (type.equals("Termostat"))
+            return "°C";
+
+        if (type.equals("Vlhkomer"))
+            return "%";
+
+        return "";
+    }
+
+    public boolean isDeviceActive(Device_item currentItem)
+    {
+        int isActive = currentItem.getIsActive();
+        int isOnOff = currentItem.getIsOn();
+
+        if (isActive == 1)
+        {
+            if (isOnOff == 1)
+                return true;
+        }
+
+        return false;
     }
 
     @Override
