@@ -113,7 +113,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     public void apiConnection()
     {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://147.175.121.237/api2/")
+                .baseUrl("https://bcjurajstekla.ddnsfree.com/public_api/api2/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 

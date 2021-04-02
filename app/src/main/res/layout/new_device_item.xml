@@ -18,12 +18,10 @@
             android:id="@+id/deviceTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/deviceImageView"
-            android:layout_centerHorizontal="true"
+            android:layout_marginStart="25dp"
             android:fontFamily="@font/baloo"
             android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@+id/deviceActiveTag"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/deviceUnitTag"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/deviceImageView" />
 
@@ -32,9 +30,9 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_centerHorizontal="true"
+            android:layout_marginStart="25dp"
             android:layout_marginTop="5dp"
             app:layout_constraintBottom_toTopOf="@+id/deviceTextView"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -52,22 +50,47 @@
             android:id="@+id/deviceActiveTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/deviceTextView"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="160dp"
+            android:textSize="15sp"
+            android:layout_marginTop="91dp"
+            android:layout_marginEnd="5dp"
             android:text="Pripojenie:"
             app:layout_constraintEnd_toStartOf="@+id/deviceActive"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/deviceTextView" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/deviceActive"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="145dp"
+            android:layout_marginTop="91dp"
+            android:layout_marginEnd="25dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/deviceActiveTag"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/deviceUnitTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@+id/deviceValue"
+            app:layout_constraintTop_toBottomOf="@+id/deviceTextView" />
+
+        <TextView
+            android:id="@+id/deviceValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toStartOf="@+id/deviceUnitTag"
+            app:layout_constraintStart_toEndOf="@+id/deviceStatusTag"
+            app:layout_constraintTop_toBottomOf="@+id/deviceTextView" />
+
+        <TextView
+            android:id="@+id/deviceStatusTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:layout_marginStart="25dp"
+            app:layout_constraintEnd_toStartOf="@+id/deviceValue"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/deviceTextView" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

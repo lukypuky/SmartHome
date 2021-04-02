@@ -109,7 +109,11 @@ public interface Api
             @Field("type") String deviceType,
             @Field("name") String deviceName,
             @Field("id_room") int id_room,
-            @Field("status_isActive") int isActive
+            @Field("isOn") int isOn,
+            @Field("status_isActive") int isActive,
+            @Field("status_intensity") int intensity,
+            @Field("status_humidity") int humidity,
+            @Field("status_temperature") double temperature
     );
 
     //delete zariadenia
@@ -128,8 +132,12 @@ public interface Api
     Call<Devices> editDevice(
             @Field("id") int id_device,
             @Field("type") String deviceType,
-            @Field("name") String  deviceName,
+            @Field("name") String deviceName,
             @Field("id_room") int id_room,
-            @Field("status_isActive") int isActive
+            @Field("isOn") int isOn,
+            @Field("status_isActive") int isActive,
+            @Field("status_intensity") int intensity,
+            @Field("status_humidity") int humidity,
+            @Field("status_temperature") double temperature
     );
 }

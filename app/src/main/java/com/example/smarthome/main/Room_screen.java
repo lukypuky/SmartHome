@@ -48,6 +48,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Field;
 
 public class Room_screen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Device_adapter.OnDeviceListener
 {
@@ -119,7 +120,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     public void apiConnection()
     {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://147.175.121.237/api2/")
+                .baseUrl("https://bcjurajstekla.ddnsfree.com/public_api/api2/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -213,7 +214,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     public void insertDevice(EditText deviceName, String deviceType)
     {
         String name = deviceName.getText().toString();
-        Call<Devices> call = api.postDevice(deviceType, name, roomId, 0);
+        Call<Devices> call = api.postDevice(deviceType, name, roomId, 0,0,0,0,0.0);
 
         call.enqueue(new Callback<Devices>()
         {
@@ -225,8 +226,9 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
                     System.out.println("call = " + call + ", response = " + response);
                 }
 
-                if (response.body().getDeviceStatus() == 1)
-                    Toast.makeText(Room_screen.this, "Zariadenie pridané", Toast.LENGTH_SHORT).show();
+                System.out.println("sssssssssssss " + response.code());
+//                if (response.body().getDeviceStatus() == 1)
+//                    Toast.makeText(Room_screen.this, "Zariadenie pridané", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -293,10 +295,14 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
             {
                 int deviceId = deviceList.get(position).getDeviceId();
                 int isActive = deviceList.get(position).getIsActive();
+                int isOn = deviceList.get(position).getIsOn();
+                int intensity = deviceList.get(position).getIntensity();
+                int humidity = deviceList.get(position).getHumidity();
+                double temperature = deviceList.get(position).getTemperature();
                 String stringDeviceType = deviceType.getSelectedItem().toString();
                 String stringDeviceName = deviceName.getText().toString();
 
-                Call<Devices> call = api.editDevice(deviceId, stringDeviceType, stringDeviceName, roomId, isActive);
+                Call<Devices> call = api.editDevice(deviceId, stringDeviceType, stringDeviceName, roomId, isOn, isActive, intensity, humidity, temperature);
 
                 call.enqueue(new Callback<Devices>()
                 {
@@ -470,7 +476,8 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
                     int image = getDeviceImage(device.getDeviceType());
                     int imageActive = getActiveImage(device.getIs_active());
 
-                    deviceList.add(position, new Device_item(image, device.getDeviceName(), device.getDeviceType(), device.getDeviceId(), device.getIs_active(), imageActive));
+                    deviceList.add(position, new Device_item(image, device.getDeviceName(), device.getDeviceType(), device.getDeviceId(),device.getIsOn(),
+                            device.getIs_active(), imageActive, device.getIntensity(), device.getHumidity(), device.getTemperature()));
                     mAdapter.notifyItemInserted(position);
                 }
             }
@@ -494,8 +501,10 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
                 return R.drawable.heater;
             case "Svetlá":
                 return R.drawable.light;
-            case "Teplomer":
+            case "Termostat":
                 return R.drawable.temperature;
+            case "Vlhkomer":
+                return R.drawable.humidity;
             case "Zásuvka":
                 return  R.drawable.socket;
             case "Žalúzie":
