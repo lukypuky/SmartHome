@@ -15,7 +15,6 @@
         android:theme="@style/Theme.SmartHome"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
-        <activity android:name=".devices.Device_screen"></activity>
         <activity android:name=".devices.Device_item" />
         <activity android:name=".main.Room_screen" />
         <activity android:name=".scenarios.Scenario_screen" />

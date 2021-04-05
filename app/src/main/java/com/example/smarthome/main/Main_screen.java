@@ -243,7 +243,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     public void initializeDialog()
     {
         addRoomDialog = new AlertDialog.Builder(Main_screen.this);
-        View contactPopupView = getLayoutInflater().inflate(R.layout.activity_room_popup, null);
+        View contactPopupView = getLayoutInflater().inflate(R.layout.add_room_popup, null);
 
         roomName = contactPopupView.findViewById(R.id.roomName);
         saveRoom = contactPopupView.findViewById(R.id.saveRoomButton);

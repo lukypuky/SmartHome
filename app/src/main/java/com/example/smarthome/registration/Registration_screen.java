@@ -87,7 +87,7 @@ public class Registration_screen extends AppCompatActivity
     public void apiConnection()
     {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://bcjurajstekla.ddnsfree.com/public_api/api2/")
+                .baseUrl("https://bcjurajstekla.ddnsfree.com/public_api/api2/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 

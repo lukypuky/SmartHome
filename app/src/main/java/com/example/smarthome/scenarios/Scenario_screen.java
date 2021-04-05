@@ -161,7 +161,7 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
     public void addScenarioDialog()
     {
         addScenarioDialog = new AlertDialog.Builder(Scenario_screen.this);
-        View contactPopupView = getLayoutInflater().inflate(R.layout.activity_add_scenario_popup, null);
+        View contactPopupView = getLayoutInflater().inflate(R.layout.add_scenario_popup, null);
 
         scenarioName = (EditText) contactPopupView.findViewById(R.id.scenarioName);
         saveScenario = (Button) contactPopupView.findViewById(R.id.saveScenarioButton);

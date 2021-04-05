@@ -110,7 +110,7 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
 
         if (active)
         {
-            if (type.equals("Termostat"))
+            if (type.equals("Kúrenie"))
             {
                 String stringValue= Double.toString(currentItem.getTemperature());
                 holder.deviceUnit.setText(unit);
@@ -131,16 +131,14 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
         }
 
         else
-        {
             holder.deviceStatus.setText("Zariadenie vypnuté");
-        }
     }
 
     public String getDeviceUnit(Device_item currentItem)
     {
         String type = currentItem.getDeviceType();
 
-        if (type.equals("Termostat"))
+        if (type.equals("Kúrenie"))
             return "°C";
 
         if (type.equals("Vlhkomer"))
