@@ -1,6 +1,7 @@
 package com.example.smarthome.main;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,7 +22,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,11 +32,9 @@ import com.example.smarthome.R;
 import com.example.smarthome.connection.Api;
 import com.example.smarthome.connection.Devices;
 import com.example.smarthome.connection.Login;
-import com.example.smarthome.connection.Rooms;
 import com.example.smarthome.connection.SessionManagement;
 import com.example.smarthome.devices.Device_adapter;
 import com.example.smarthome.devices.Device_item;
-import com.example.smarthome.devices.Device_screen;
 import com.example.smarthome.login.Login_screen;
 import com.example.smarthome.profile.Profile_screen;
 import com.example.smarthome.scenarios.Scenario_screen;
@@ -42,29 +44,34 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.Field;
 
 public class Room_screen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Device_adapter.OnDeviceListener
 {
-    private static final String TAG = "Room_screen";
-
     //menu
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private Toolbar toolbar;
 
     //pridanie zariadenia
-    private AlertDialog.Builder addDeviceDialog;
     private AlertDialog dialog;
     private EditText deviceName;
     private Spinner deviceType;
     private Button saveDevice, unsaveDevice;
+
+    //ovladanie zariadenia
+    private AlertDialog controlDialog;
+    private TextView controlDeviceName, controlDeviceIntensityTag, controlDeviceValue;
+    private Switch controlDeviceSwitch;
+    private SeekBar controlDeviceSeekBar;
+    private Button saveControlDevice, unsaveControlDevice;
+    private int seekBarValue;
 
     //zoznam zariadeni
     private RecyclerView mRecyclerView;
@@ -74,7 +81,6 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     //zariadenia
     private ArrayList<Device_item> deviceList;
     private List<Devices> devices;
-    private ImageView active;
 
     //api
     private Api api;
@@ -83,6 +89,9 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     private Login login;
     private Room_item ri;
     private int roomId;
+
+    public Room_screen() {
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -226,9 +235,8 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
                     System.out.println("call = " + call + ", response = " + response);
                 }
 
-                System.out.println("sssssssssssss " + response.code());
-//                if (response.body().getDeviceStatus() == 1)
-//                    Toast.makeText(Room_screen.this, "Zariadenie pridané", Toast.LENGTH_SHORT).show();
+                if (response.body().getDeviceStatus() == 1)
+                    Toast.makeText(Room_screen.this, "Zariadenie pridané", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -337,6 +345,68 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         unsaveDevice.setOnClickListener(v -> dialog.dismiss());
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void controlDevice(int position)
+    {
+        String stringDeviceType = deviceList.get(position).getDeviceType();
+        initializeDeviceControlDialog(stringDeviceType, position);
+
+        saveControlDevice.setOnClickListener(v ->
+        {
+            int isOn;
+            int intensity = deviceList.get(position).getIntensity();
+            double temperature = deviceList.get(position).getTemperature();
+
+            boolean switchState = controlDeviceSwitch.isChecked();
+            if (switchState)
+                isOn = 1;
+            else
+                isOn = 0;
+
+            if (stringDeviceType.equals("Kúrenie"))
+                temperature = seekBarValue;
+
+            else if (stringDeviceType.equals("Svetlá") || stringDeviceType.equals("Žalúzie"))
+                intensity = seekBarValue;
+
+            int deviceId = deviceList.get(position).getDeviceId();
+            int isActive = deviceList.get(position).getIsActive();
+            int humidity = deviceList.get(position).getHumidity();
+            String stringDeviceName = deviceList.get(position).getDeviceName();
+
+            Call<Devices> call = api.editDevice(deviceId, stringDeviceType, stringDeviceName, roomId, isOn, isActive, intensity, humidity, temperature);
+
+            call.enqueue(new Callback<Devices>()
+            {
+                @Override
+                public void onResponse(Call<Devices> call, Response<Devices> response)
+                {
+                    if (!response.isSuccessful())
+                    {
+                        System.out.println("call = " + call + ", response = " + response);
+                        return;
+                    }
+
+                    if (response.body().getDeviceStatus() == 1)
+                        Toast.makeText(Room_screen.this, "Zariadenie nastavené", Toast.LENGTH_SHORT).show();
+
+                    controlDialog.dismiss();
+                    Intent room_intent = new Intent(Room_screen.this, Room_screen.class);
+                    startActivity(room_intent);
+                    Room_screen.this.finish();
+                }
+
+                @Override
+                public void onFailure(Call<Devices> call, Throwable t)
+                {
+                    System.out.println("call = " + call + ", t = " + t);
+                }
+            });
+        });
+
+        unsaveControlDevice.setOnClickListener(v -> controlDialog.dismiss());
+    }
+
     private int getIndexOfSpinner(Spinner spinner, String myString)
     {
         for (int i=0; i<spinner.getCount(); i++)
@@ -351,8 +421,8 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     //dialog window pre add a edit zariadenia
     public void initializeDialog()
     {
-        addDeviceDialog = new AlertDialog.Builder(Room_screen.this);
-        View contactPopupView = getLayoutInflater().inflate(R.layout.activity_add_device_popup, null);
+        AlertDialog.Builder addDeviceDialog = new AlertDialog.Builder(Room_screen.this);
+        View contactPopupView = getLayoutInflater().inflate(R.layout.add_device_popup, null);
 
         deviceName = contactPopupView.findViewById(R.id.deviceName);
         saveDevice = contactPopupView.findViewById(R.id.saveDeviceButton);
@@ -372,6 +442,92 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         dialog.show();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void initializeDeviceControlDialog(String type, int position)
+    {
+        AlertDialog.Builder controlDeviceDialog = new AlertDialog.Builder(Room_screen.this);
+        View contactPopupView;
+
+        if (type.equals("Alarm") || type.equals("Zásuvka") || type.equals("Vlhkomer"))
+            contactPopupView = getLayoutInflater().inflate(R.layout.device_basic_popup, null);
+
+        else
+            contactPopupView = getLayoutInflater().inflate(R.layout.device_range_popup, null);
+
+        saveControlDevice = contactPopupView.findViewById(R.id.saveControlDeviceButton);
+        unsaveControlDevice = contactPopupView.findViewById(R.id.unsaveControlDeviceButton);
+        controlDeviceName = contactPopupView.findViewById(R.id.devicePopUpName);
+        controlDeviceSwitch = contactPopupView.findViewById(R.id.devicePopUpSwitch);
+        controlDeviceIntensityTag = contactPopupView.findViewById(R.id.devicePopUpIntenssityTag);
+        controlDeviceValue = contactPopupView.findViewById(R.id.devicePopUpIntensity);
+        controlDeviceSeekBar = contactPopupView.findViewById(R.id.devicePopUpSeekBar);
+
+        if (!type.equals("Alarm") && !type.equals("Zásuvka") && !type.equals("Vlhkomer"))
+            controlSeekBar(type);
+
+        //nastavenie hodnot z DB
+        controlDeviceName.setText(deviceList.get(position).getDeviceName());
+
+        if (deviceList.get(position).getIsOn() == 1)
+            controlDeviceSwitch.setChecked(true);
+
+        else
+            controlDeviceSwitch.setChecked(false);
+
+        if (type.equals("Kúrenie"))
+        {
+            controlDeviceSeekBar.setMax(30);
+            controlDeviceSeekBar.setMin(19);
+            controlDeviceSeekBar.setProgress((int) deviceList.get(position).getTemperature());
+        }
+
+        else if (type.equals("Svetlá") || type.equals("Žalúzie"))
+            controlDeviceSeekBar.setProgress(deviceList.get(position).getIntensity());
+
+        controlDeviceDialog.setView(contactPopupView);
+        controlDialog = controlDeviceDialog.create();
+        controlDialog.show();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void controlSeekBar(String type)
+    {
+        String unit;
+        seekBarValue = 0;
+
+        if (type.equals("Kúrenie") || type.equals("Svetlá") || type.equals("Žalúzie"))
+        {
+            if (type.equals("Kúrenie"))
+                unit = "°C";
+
+            else
+                unit = "%";
+
+            controlDeviceSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+            {
+                @SuppressLint("SetTextI18n")
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
+                {
+                    controlDeviceValue.setText(progress + unit);
+                    seekBarValue = progress;
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar)
+                {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar)
+                {
+
+                }
+            });
+        }
+    }
+
     public void setScreenValues()
     {
         TextView screenHeading = findViewById(R.id.roomText);
@@ -380,8 +536,6 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         screenHeading.setText(ri.getRoomName());
         screenImg.setImageResource(ri.getIntRoomType());
         roomId = ri.getId_room();
-
-        active =  findViewById(R.id.deviceActive);
     }
 
     //mazanie zariadenia (with swap right)
@@ -528,11 +682,15 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     }
 
     //click na zariadenie
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onDeviceClick(int position)
     {
-        Intent intent = new Intent(this, Device_screen.class);
-        startActivity(intent);
+        int isActive = deviceList.get(position).getIsActive();
+        if (isActive == 1)
+            controlDevice(position);
+        else
+            Toast.makeText(Room_screen.this, "Zariadenie nie je pripojené", Toast.LENGTH_SHORT).show();
     }
 
     @Override
