@@ -38,8 +38,6 @@ public class Login_screen extends AppCompatActivity
     private int status, householdId, userId, role;
     private String householdName, userEmail, userName;
 
-//    private List<Users> users;
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -52,7 +50,6 @@ public class Login_screen extends AppCompatActivity
         lEmail = findViewById(R.id.loginEmail);
         lPass = findViewById(R.id.loginPass);
         TextView lRegistration = findViewById(R.id.loginRegisterText);
-//        TextView lConnect = findViewById(R.id.loginConnectText);
 
         //prihlasenie sa
         lBtn.setOnClickListener(v ->
@@ -64,11 +61,7 @@ public class Login_screen extends AppCompatActivity
             success = validate(loginName, loginPass);
 
             if (success)
-            {
-//                getUser();
-                makeSession();
-                moveToMainActivity();
-            }
+                loginToDatabase(loginName, loginPass);
         });
 
 //      prechod na obrazovku registracie
@@ -118,51 +111,7 @@ public class Login_screen extends AppCompatActivity
         Login login = new Login(userId, userName, userEmail, householdId, householdName, role);
         SessionManagement sessionManagement = new SessionManagement(Login_screen.this);
         sessionManagement.saveLoginSession(login);
-
-//        Users user = new Users(userId, userName, userEmail, userPass, role, householdId);
-//        SessionManagement sessionManagementUsers = new SessionManagement(Login_screen.this);
-//        sessionManagementUsers.saveUsersSession(user);
-//
-        System.out.println("NAME " + userName);
-        System.out.println("EMAIL " + userEmail);
-//        System.out.println("PASS " + userPass);
-        System.out.println("ROLE" + role);
     }
-
-//    public void getUser()
-//    {
-//        Call<List<Users>> call = api.getUser(userId, householdId);
-//
-//        call.enqueue(new Callback<List<Users>>()
-//        {
-//            @Override
-//            public void onResponse(Call<List<Users>> call, Response<List<Users>> response)
-//            {
-//                if (!response.isSuccessful())
-//                {
-//                    System.out.println("call1 = " + call + ", response = " + response);
-//                    return;
-//                }
-//
-//                System.out.println("GET USER INFO CODE:" + response.code());
-//                users = response.body();
-//
-//                for (Users user : users)
-//                {
-//                    userName = user.getUserName();
-//                    userEmail = user.getUserEmail();
-//                    userPass = user.getUserPassword();
-//                    role = user.getUserRole();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<List<Users>> call, Throwable t)
-//            {
-//                System.out.println("call2 = " + call + ", t = " + t);
-//            }
-//        });
-//    }
 
     //POST login , GET ids & names
     public void loginToDatabase(String useremail, String password)
@@ -187,6 +136,16 @@ public class Login_screen extends AppCompatActivity
                 userName = response.body().getUsername();
                 userEmail = response.body().getUserEmail();
                 role = response.body().getRole();
+
+                if (status == 1)
+                {
+                    makeSession();
+                    Toast.makeText(Login_screen.this, "Prihlásenie bolo úspešné", Toast.LENGTH_SHORT).show();
+                    moveToMainActivity();
+                }
+
+                else
+                    Toast.makeText(Login_screen.this, "Nesprávny email, alebo heslo", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -202,30 +161,15 @@ public class Login_screen extends AppCompatActivity
     {
         if (TextUtils.isEmpty(name))
         {
-            lEmail.setError("Povinné pole.");
+            lEmail.setError("Povinné pole");
         }
 
         if (TextUtils.isEmpty(pass))
         {
-            lPass.setError("Povinné pole.");
+            lPass.setError("Povinné pole");
             return false;
         }
 
-        else
-        {
-            loginToDatabase(name, pass);
-            System.out.println("USER ID " + userId);
-        }
-
-        if (status == 1)
-        {
-            return true;
-        }
-
-        else
-        {
-            Toast.makeText(Login_screen.this, "Nesprávny email, alebo heslo.", Toast.LENGTH_SHORT).show();
-            return false;
-        }
+        return true;
     }
 }

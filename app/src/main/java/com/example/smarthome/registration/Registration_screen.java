@@ -51,36 +51,22 @@ public class Registration_screen extends AppCompatActivity
         //pripojenie sa na api
         apiConnection();
 
-        rBtn.setOnClickListener(new View.OnClickListener()
+        rBtn.setOnClickListener(v ->
         {
-            @Override
-            public void onClick(View v)
-            {
-                String username = rName.getText().toString();
-                String email = rEmail.getText().toString();
-                String householdname = rHomeName.getText().toString();
-                String password = rPass.getText().toString();
-                String confPassword = rConfPass.getText().toString();
-                boolean success;
+            String username = rName.getText().toString();
+            String email = rEmail.getText().toString();
+            String householdname = rHomeName.getText().toString();
+            String password = rPass.getText().toString();
+            String confPassword = rConfPass.getText().toString();
+            boolean success;
 
-                success = validate(username, email, householdname, password, confPassword);
+            success = validate(username, email, householdname, password, confPassword);
 
-                if (success)
-                {
-                    Toast.makeText(Registration_screen.this, "Registrácia úspešná.", Toast.LENGTH_SHORT).show();
-                    moveToLoginScreen();
-                }
-            }
+            if (success)
+                registrateToDatabase(username, email, householdname, password);
         });
 
-        rLogin.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                moveToLoginScreen();
-            }
-        });
+        rLogin.setOnClickListener(v -> moveToLoginScreen());
     }
 
     //pripojenie sa na api
@@ -117,6 +103,15 @@ public class Registration_screen extends AppCompatActivity
                 }
 
                 status = response.body().getStatus();
+
+                if (status == 1)
+                {
+                    Toast.makeText(Registration_screen.this, "Registrácia úspešná", Toast.LENGTH_SHORT).show();
+                    moveToLoginScreen();
+                }
+
+                else
+                    Toast.makeText(Registration_screen.this, "Domácnosť s rovnakým menom už existuje", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -132,50 +127,52 @@ public class Registration_screen extends AppCompatActivity
     {
         if (TextUtils.isEmpty(username))
         {
-            rName.setError("Povinné pole.");
+            rName.setError("Povinné pole");
             return false;
         }
 
         if (TextUtils.isEmpty(email))
         {
-            rEmail.setError("Povinné pole.");
+            rEmail.setError("Povinné pole");
             return false;
         }
 
         if (TextUtils.isEmpty(householdname))
         {
-            rHomeName.setError("Povinné pole.");
+            rHomeName.setError("Povinné pole");
             return false;
         }
 
         if (TextUtils.isEmpty(password))
         {
-            rPass.setError("Povinné pole.");
+            rPass.setError("Povinné pole");
             return false;
         }
 
         if (TextUtils.isEmpty(confPass))
         {
-            rConfPass.setError("Povinné pole.");
+            rConfPass.setError("Povinné pole");
             return false;
         }
 
         else if (!password.equals(confPass))
         {
-            rConfPass.setError("Heslá sa nezhodujú.");
+            rConfPass.setError("Heslá sa nezhodujú");
             return false;
         }
 
-        else
-            registrateToDatabase(username, email, householdname, password);
+        return true;
 
-        if (status == 1)
-            return true;
-
-        else
-        {
-            Toast.makeText(Registration_screen.this, "Domácnosť s rovnakým menom už existuje.", Toast.LENGTH_SHORT).show();
-            return false;
-        }
+//        else
+//            registrateToDatabase(username, email, householdname, password);
+//
+//        if (status == 1)
+//            return true;
+//
+//        else
+//        {
+//            Toast.makeText(Registration_screen.this, "Domácnosť s rovnakým menom už existuje.", Toast.LENGTH_SHORT).show();
+//            return false;
+//        }
     }
 }

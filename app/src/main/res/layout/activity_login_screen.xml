@@ -39,21 +39,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="Vytvoriť novú domácnosť"
-        app:layout_constraintBottom_toTopOf="@+id/loginConnectText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/loginBtn" />
-
-    <TextView
-        android:id="@+id/loginConnectText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="Pripojiť sa už k existujúcej domácnosti"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginRegisterText" />
 
     <EditText
         android:id="@+id/loginEmail"

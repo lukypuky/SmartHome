@@ -67,11 +67,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal">
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -225,8 +220,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|right"
                 android:layout_margin="16dp"
-                android:layout_marginEnd="84dp"
-                android:layout_marginBottom="164dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
                 android:src="@drawable/edit_icon"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
@@ -241,25 +236,5 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/profilePassword" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
-
-    <!--    <RelativeLayout-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent">-->
-
-    <!--        <androidx.coordinatorlayout.widget.CoordinatorLayout-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="match_parent">-->
-
-    <!--            &lt;!&ndash;            <com.google.android.material.floatingactionbutton.FloatingActionButton&ndash;&gt;-->
-    <!--            &lt;!&ndash;                android:id="@+id/editProfile"&ndash;&gt;-->
-    <!--            &lt;!&ndash;                android:layout_width="wrap_content"&ndash;&gt;-->
-    <!--            &lt;!&ndash;                android:layout_height="wrap_content"&ndash;&gt;-->
-    <!--            &lt;!&ndash;                android:layout_gravity="bottom|right"&ndash;&gt;-->
-    <!--            &lt;!&ndash;                android:layout_margin="16dp"&ndash;&gt;-->
-    <!--            &lt;!&ndash;                android:src="@drawable/edit_icon"/>&ndash;&gt;-->
-    <!--        </androidx.coordinatorlayout.widget.CoordinatorLayout>-->
-    <!--    </RelativeLayout>-->
 </androidx.drawerlayout.widget.DrawerLayout>
