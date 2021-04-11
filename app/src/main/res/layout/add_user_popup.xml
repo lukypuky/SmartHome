@@ -4,97 +4,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".registration.Registration_screen">
-
-    <Button
-        android:id="@+id/registerBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Registrovať sa"
-        app:layout_constraintBottom_toTopOf="@+id/registerLoginText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registerConfPass" />
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <EditText
-        android:id="@+id/registerName"
+        android:id="@+id/settingsUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="70dp"
-        android:layout_marginTop="250dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="70dp"
         android:ems="10"
         android:hint="Meno používateľa"
         android:inputType="textPersonName"
-        android:maxLength="20"
-        app:layout_constraintBottom_toTopOf="@+id/registerHomeName"
+        app:layout_constraintBottom_toTopOf="@+id/settingsEmail"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.489"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/settingAddUserHeading" />
 
     <EditText
-        android:id="@+id/registerHomeName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="70dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="70dp"
-        android:ems="10"
-        android:maxLength="20"
-        android:hint="Názov domácnosti"
-        android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/registerEmail"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registerName" />
-
-    <EditText
-        android:id="@+id/registerPass"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="70dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="70dp"
-        android:ems="10"
-        android:hint="Heslo"
-        android:inputType="textPassword"
-        android:maxLength="20"
-        app:layout_constraintBottom_toTopOf="@+id/registerConfPass"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registerEmail" />
-
-    <EditText
-        android:id="@+id/registerConfPass"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="70dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="70dp"
-        android:ems="10"
-        android:maxLength="20"
-        android:hint= "Potvrdenie hesla"
-        android:inputType="textPassword"
-        app:layout_constraintBottom_toTopOf="@+id/registerBtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registerPass" />
-
-    <TextView
-        android:id="@+id/registerLoginText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Už máš účet? Prihlás sa."
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registerBtn" />
-
-    <EditText
-        android:id="@+id/registerEmail"
+        android:id="@+id/settingsEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="70dp"
@@ -103,9 +32,84 @@
         android:ems="10"
         android:hint="Email"
         android:inputType="textEmailAddress"
-        app:layout_constraintBottom_toTopOf="@+id/registerPass"
+        app:layout_constraintBottom_toTopOf="@+id/settingsPass"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registerHomeName" />
+        app:layout_constraintTop_toBottomOf="@+id/settingsUsername" />
+
+    <EditText
+        android:id="@+id/settingsPass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="70dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="70dp"
+        android:ems="10"
+        android:hint="Heslo"
+        android:inputType="textPassword"
+        app:layout_constraintBottom_toTopOf="@+id/settingsConfPass"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settingsEmail" />
+
+    <EditText
+        android:id="@+id/settingsConfPass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="70dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="70dp"
+        android:ems="10"
+        android:hint="Potvrdenie hesla"
+        android:inputType="textPassword"
+        app:layout_constraintBottom_toTopOf="@+id/saveUserButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settingsPass" />
+
+    <Button
+        android:id="@+id/saveUserButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="25dp"
+        android:text="@string/main_add"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/unsaveUserButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settingsConfPass" />
+
+    <Button
+        android:id="@+id/unsaveUserButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginBottom="25dp"
+        android:text="@string/main_back"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/saveUserButton"
+        app:layout_constraintTop_toBottomOf="@+id/settingsConfPass" />
+
+    <TextView
+        android:id="@+id/settingAddUserHeading"
+        android:layout_width="319dp"
+        android:layout_height="85dp"
+        android:layout_marginStart="70dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="70dp"
+
+        android:gravity="center"
+        android:text="Pridanie nového používateľa do domácnosti "
+        android:textColor="#249FE2"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/settingsUsername"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

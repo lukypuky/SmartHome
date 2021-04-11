@@ -96,6 +96,18 @@ public interface Api
             @Field("password") String password
     );
 
+    //pridanie pouzivatela Adminom
+    @FormUrlEncoded
+    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+    @POST("users.php")
+    Call<Users> postUserByAdmin(
+            @Field("username") String userName,
+            @Field("email") String email,
+            @Field("password") String password,
+            @Field("role") int role,
+            @Field("id_household") int householdId
+    );
+
     //getne vsetky devices pre danu miestnost
     @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
     @GET("devices.php")

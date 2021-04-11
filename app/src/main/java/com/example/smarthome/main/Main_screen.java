@@ -60,10 +60,6 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     private Spinner roomType;
     private Button saveRoom, unsaveRoom;
 
-    //edit miestnosti
-//    private String editRoomName, editRoomType;
-//    private int editRoomId, editHouseholdId;
-
     //zoznam miestnosti
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter; // bridge medzi datami a recycler view
