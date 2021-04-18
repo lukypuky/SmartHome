@@ -5,10 +5,10 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
     android:elevation="2dp"
     android:fitsSystemWindows="true"
     tools:context=".profile.Profile_screen"
+    android:background="@color/bg"
     tools:openDrawer="start">
 
     <com.google.android.material.navigation.NavigationView
@@ -17,7 +17,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:headerLayout="@layout/header"
-        app:menu="@menu/main_menu" />
+        app:menu="@menu/main_menu"
+        android:background="@color/navigation"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -26,7 +27,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/blue_bg">
+            android:background="@color/colorPrimary">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -44,7 +45,7 @@
                 android:id="@+id/imageView7"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
-                android:layout_marginStart="24dp"
+                android:layout_marginStart="15dp"
                 android:layout_marginTop="20dp"
                 android:padding="5dp"
                 app:layout_constraintEnd_toStartOf="@+id/textView3"
@@ -76,9 +77,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="145dp"
+                android:layout_marginTop="150dp"
                 android:text="@string/profile_username"
-                android:textColor="#249FE2"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toTopOf="@+id/profileHomeTag"
                 app:layout_constraintStart_toStartOf="parent"
@@ -89,7 +89,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="190dp"
-                android:layout_marginTop="145dp"
+                android:layout_marginTop="150dp"
                 android:background="@null"
                 android:text=""
                 android:textSize="16sp"
@@ -103,7 +103,6 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="15dp"
                 android:text="@string/profile_household"
-                android:textColor="#249FE2"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toTopOf="@+id/profileEmailTag"
                 app:layout_constraintStart_toStartOf="parent"
@@ -129,7 +128,6 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="15dp"
                 android:text="@string/profile_email"
-                android:textColor="#249FE2"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toTopOf="@+id/profilePassTag"
                 app:layout_constraintStart_toStartOf="parent"
@@ -155,7 +153,6 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="15dp"
                 android:text="Heslo"
-                android:textColor="#249FE2"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toTopOf="@+id/profileRoleTag"
                 app:layout_constraintStart_toStartOf="parent"
@@ -182,7 +179,6 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="15dp"
                 android:text="@string/profile_role"
-                android:textColor="#249FE2"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/profilePassTag" />
@@ -198,7 +194,9 @@
                 app:fabSize="mini"
                 app:layout_constraintBottom_toTopOf="@+id/profileCancel"
                 app:layout_constraintEnd_toEndOf="@+id/profileCancel"
-                app:srcCompat="@drawable/okay" />
+                app:srcCompat="@drawable/okay"
+                android:backgroundTint="@color/btns"
+                app:tint="@color/textColor"/>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/profileCancel"
@@ -211,7 +209,9 @@
                 app:fabSize="mini"
                 app:layout_constraintBottom_toTopOf="@+id/profileEdit"
                 app:layout_constraintEnd_toEndOf="@+id/profileEdit"
-                app:srcCompat="@drawable/cancel" />
+                app:srcCompat="@drawable/cancel"
+                android:backgroundTint="@color/btns"
+                app:tint="@color/textColor"/>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -224,7 +224,9 @@
                 android:layout_marginBottom="16dp"
                 android:src="@drawable/edit_icon"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                android:backgroundTint="@color/btns"
+                app:tint="@color/textColor"/>
 
             <Spinner
                 android:id="@+id/profileRole"

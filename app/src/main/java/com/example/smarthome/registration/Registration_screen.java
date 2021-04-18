@@ -1,6 +1,7 @@
 package com.example.smarthome.registration;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,9 +16,11 @@ import com.example.smarthome.R;
 import com.example.smarthome.connection.Api;
 import com.example.smarthome.connection.Login;
 import com.example.smarthome.connection.Registration;
+import com.example.smarthome.connection.SessionManagement;
 import com.example.smarthome.login.Login_screen;
 import com.example.smarthome.main.Main_screen;
 import com.example.smarthome.profile.Profile_screen;
+import com.example.smarthome.settings.Dark_mode;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,16 +43,21 @@ public class Registration_screen extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration_screen);
 
-        Button rBtn = findViewById(R.id.registerBtn);
-        rName = findViewById(R.id.registerName);
-        rHomeName = findViewById(R.id.registerHomeName);
-        rEmail = findViewById(R.id.registerEmail);
-        rPass = findViewById(R.id.registerPass);
-        rConfPass = findViewById(R.id.registerConfPass);
-        TextView rLogin = findViewById(R.id.registerLoginText);
-
         //pripojenie sa na api
         apiConnection();
+
+        //session
+        SessionManagement darkModeSessionManagement = new SessionManagement(Registration_screen.this);
+        Dark_mode darkMode = darkModeSessionManagement.getDarkModeSession();
+        ////////////////////////////////////////////////////////////////////////////////////////////
+
+        initializatizeVariables();
+
+        Button rBtn = findViewById(R.id.registerBtn);
+        TextView rLogin = findViewById(R.id.registerLoginText);
+
+        if (darkMode.isDark_mode())
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
         rBtn.setOnClickListener(v ->
         {
@@ -122,6 +130,15 @@ public class Registration_screen extends AppCompatActivity
         });
     }
 
+    public void initializatizeVariables()
+    {
+        rName = findViewById(R.id.registerName);
+        rHomeName = findViewById(R.id.registerHomeName);
+        rEmail = findViewById(R.id.registerEmail);
+        rPass = findViewById(R.id.registerPass);
+        rConfPass = findViewById(R.id.registerConfPass);
+    }
+
     //registration screen handling
     public boolean validate(String username, String email, String householdname, String password, String confPass)
     {
@@ -162,17 +179,5 @@ public class Registration_screen extends AppCompatActivity
         }
 
         return true;
-
-//        else
-//            registrateToDatabase(username, email, householdname, password);
-//
-//        if (status == 1)
-//            return true;
-//
-//        else
-//        {
-//            Toast.makeText(Registration_screen.this, "Domácnosť s rovnakým menom už existuje.", Toast.LENGTH_SHORT).show();
-//            return false;
-//        }
     }
 }

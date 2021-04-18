@@ -1,6 +1,7 @@
 package com.example.smarthome.login;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import com.example.smarthome.main.Main_screen;
 import com.example.smarthome.R;
 import com.example.smarthome.profile.Profile_screen;
 import com.example.smarthome.registration.Registration_screen;
+import com.example.smarthome.settings.Dark_mode;
 
 import java.util.List;
 
@@ -45,6 +47,14 @@ public class Login_screen extends AppCompatActivity
         setContentView(R.layout.activity_login_screen);
 
         apiConnection();
+
+        //session
+        SessionManagement darkModeSessionManagement = new SessionManagement(Login_screen.this);
+        Dark_mode darkMode = darkModeSessionManagement.getDarkModeSession();
+        ////////////////////////////////////////////////////////////////////////////////////////////
+
+        if (darkMode.isDark_mode())
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
         Button lBtn = findViewById(R.id.loginBtn);
         lEmail = findViewById(R.id.loginEmail);
@@ -160,9 +170,7 @@ public class Login_screen extends AppCompatActivity
     public boolean validate(String name, String pass)
     {
         if (TextUtils.isEmpty(name))
-        {
             lEmail.setError("Povinné pole");
-        }
 
         if (TextUtils.isEmpty(pass))
         {

@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -38,11 +39,13 @@ import com.example.smarthome.devices.Device_item;
 import com.example.smarthome.login.Login_screen;
 import com.example.smarthome.profile.Profile_screen;
 import com.example.smarthome.scenarios.Scenario_screen;
+import com.example.smarthome.settings.Dark_mode;
 import com.example.smarthome.settings.Settings_screen;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -62,7 +65,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     //pridanie zariadenia
     private AlertDialog dialog;
     private EditText deviceName;
-    private Spinner deviceType;
+    private Spinner spinnerDeviceType;
     private Button saveDevice, unsaveDevice;
 
     //ovladanie zariadenia
@@ -106,8 +109,14 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         login =  sessionManagement.getLoginSession();
 
         SessionManagement roomSessionManagement = new SessionManagement(Room_screen.this);
-        ri =  roomSessionManagement.getRoomItemSession();
+        ri =  roomSessionManagement.getRoomSession();
+
+        SessionManagement darkModeSessionManagement = new SessionManagement(Room_screen.this);
+        Dark_mode darkMode = darkModeSessionManagement.getDarkModeSession();
         ////////////////////////////////////////////////////////////////////////////////////////////
+
+        if (darkMode.isDark_mode())
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
         setScreenValues();
         createDeviceList();
@@ -220,10 +229,12 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     }
 
     //prida zariadenie na index 0 v arrayliste
-    public void insertDevice(EditText deviceName, String deviceType)
+    public void insertDevice(EditText deviceName, String spinDeviceType)
     {
         String name = deviceName.getText().toString();
-        Call<Devices> call = api.postDevice(deviceType, name, roomId, 0,0,0,0,0.0);
+        String deviceType = setDeviceType(spinDeviceType);
+
+        Call<Devices> call = api.postDevice(deviceType, name, roomId, 0,0,0,0,0.0, 0);
 
         call.enqueue(new Callback<Devices>()
         {
@@ -251,6 +262,56 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         Room_screen.this.finish();
     }
 
+    public String setDeviceType(String spinDeviceType)
+    {
+        if(spinDeviceType.equals("Alarm"))
+            return "2/alarm";
+        else if(spinDeviceType.equals("Dymový senzor"))
+            return "1/smoke_sensor";
+        else if(spinDeviceType.equals("Kúrenie"))
+            return "0/heating";
+        else if(spinDeviceType.equals("Svetelný senzor"))
+            return "1/light_sensor";
+        else if(spinDeviceType.equals("Svetlo"))
+            return "0/light";
+        else if(spinDeviceType.equals("Teplomer"))
+            return "1/thermometer";
+        else if(spinDeviceType.equals("Vlhkomer"))
+            return "1/hygrometer";
+        else if(spinDeviceType.equals("Záplavový senzor"))
+            return "1/flood_sensor";
+        else if(spinDeviceType.equals("Zásuvka"))
+            return "0/socket";
+        else if(spinDeviceType.equals("Žalúzie"))
+            return "0/blinds";
+        return "";
+    }
+
+    public String setSpinnerDeviceType(String type)
+    {
+        if(type.equals("alarm"))
+            return "Alarm";
+        else if(type.equals("smoke_sensor"))
+            return "Dymový senzor";
+        else if(type.equals("heating"))
+            return "Kúrenie";
+        else if(type.equals("light_sensor"))
+            return "Svetelný senzor";
+        else if(type.equals("light"))
+            return "Svetlo";
+        else if(type.equals("thermometer"))
+            return "Teplomer";
+        else if(type.equals("hygrometer"))
+            return "Vlhkomer";
+        else if(type.equals("flood_sensor"))
+            return "Záplavový senzor";
+        else if(type.equals("socket"))
+            return "Zásuvka";
+        else if(type.equals("blinds"))
+            return "Žalúzie";
+        return "";
+    }
+
     //metoda na pridanie noveho zariadenia v domacnosti
     public void addDeviceDialog()
     {
@@ -264,13 +325,13 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
                 Toast.makeText(Room_screen.this, "Zadajte názov pre zariadenie", Toast.LENGTH_SHORT).show();
 
             //ak sa nezvolil typ zariadenia -> message
-            else if(deviceType.getSelectedItem().toString().equals("Typ zariadenia"))
+            else if(spinnerDeviceType.getSelectedItem().toString().equals("Typ zariadenia"))
                 Toast.makeText(Room_screen.this, "Zvoľte typ zariadenia", Toast.LENGTH_SHORT).show();
 
             //ak je vsetko vyplnene, pridaj zariadenie do arraylistu
             else
             {
-                insertDevice(deviceName, deviceType.getSelectedItem().toString());
+                insertDevice(deviceName, spinnerDeviceType.getSelectedItem().toString());
                 dialog.dismiss();
             }
         });
@@ -283,9 +344,9 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     {
         initializeDialog();
 
-        String type = deviceList.get(position).getDeviceType();
+        String type = setSpinnerDeviceType(deviceList.get(position).getDeviceType());
         deviceName.setText(deviceList.get(position).getDeviceName());
-        deviceType.setSelection(getIndexOfSpinner(deviceType, type));
+        spinnerDeviceType.setSelection(getIndexOfSpinner(spinnerDeviceType, type));
 
         //potvrdenie editu zariadenia
         saveDevice.setOnClickListener(v ->
@@ -295,7 +356,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
                 Toast.makeText(Room_screen.this, "Zadajte názov pre zariadenie", Toast.LENGTH_SHORT).show();
 
             //ak sa nezvolil typ zariadenia -> message
-            else if(deviceType.getSelectedItem().toString().equals("Typ zariadenia"))
+            else if(spinnerDeviceType.getSelectedItem().toString().equals("Typ zariadenia"))
                 Toast.makeText(Room_screen.this, "Zvoľte typ zariadenia", Toast.LENGTH_SHORT).show();
 
             //ak je vsetko vyplnene, zedituj zariadenie
@@ -307,10 +368,11 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
                 int intensity = deviceList.get(position).getIntensity();
                 int humidity = deviceList.get(position).getHumidity();
                 double temperature = deviceList.get(position).getTemperature();
-                String stringDeviceType = deviceType.getSelectedItem().toString();
+                int connectivity = deviceList.get(position).getConnectivity();
+                String stringDeviceType = setDeviceType(spinnerDeviceType.getSelectedItem().toString());
                 String stringDeviceName = deviceName.getText().toString();
 
-                Call<Devices> call = api.editDevice(deviceId, stringDeviceType, stringDeviceName, roomId, isOn, isActive, intensity, humidity, temperature);
+                Call<Devices> call = api.editDevice(deviceId, stringDeviceType, stringDeviceName, roomId, isOn, isActive, intensity, humidity, temperature, connectivity);
 
                 call.enqueue(new Callback<Devices>()
                 {
@@ -363,18 +425,22 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
             else
                 isOn = 0;
 
-            if (stringDeviceType.equals("Kúrenie"))
+            if (stringDeviceType.equals("heating"))
                 temperature = seekBarValue;
 
-            else if (stringDeviceType.equals("Svetlá") || stringDeviceType.equals("Žalúzie"))
+            else if (stringDeviceType.equals("light") || stringDeviceType.equals("blinds"))
                 intensity = seekBarValue;
 
             int deviceId = deviceList.get(position).getDeviceId();
             int isActive = deviceList.get(position).getIsActive();
             int humidity = deviceList.get(position).getHumidity();
+            int connectivity = deviceList.get(position).getConnectivity();
             String stringDeviceName = deviceList.get(position).getDeviceName();
 
-            Call<Devices> call = api.editDevice(deviceId, stringDeviceType, stringDeviceName, roomId, isOn, isActive, intensity, humidity, temperature);
+            String deviceType1 = setSpinnerDeviceType(stringDeviceType);
+            String deviceType2 = setDeviceType(deviceType1);
+
+            Call<Devices> call = api.editDevice(deviceId, deviceType2, stringDeviceName, roomId, isOn, isActive, intensity, humidity, temperature, connectivity);
 
             call.enqueue(new Callback<Devices>()
             {
@@ -428,14 +494,14 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         saveDevice = contactPopupView.findViewById(R.id.saveDeviceButton);
         unsaveDevice = contactPopupView.findViewById(R.id.unsaveDeviceButton);
 
-        deviceType = contactPopupView.findViewById(R.id.deviceType);
+        spinnerDeviceType = contactPopupView.findViewById(R.id.deviceType);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(Room_screen.this,
                 android.R.layout.simple_spinner_item,
                 getResources().getStringArray(R.array.devices));
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        deviceType.setAdapter(adapter);
+        spinnerDeviceType.setAdapter(adapter);
 
         addDeviceDialog.setView(contactPopupView);
         dialog = addDeviceDialog.create();
@@ -448,11 +514,10 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         AlertDialog.Builder controlDeviceDialog = new AlertDialog.Builder(Room_screen.this);
         View contactPopupView;
 
-        if (type.equals("Alarm") || type.equals("Zásuvka") || type.equals("Vlhkomer"))
-            contactPopupView = getLayoutInflater().inflate(R.layout.device_basic_popup, null);
-
-        else
+        if (type.equals("heating") || type.equals("light") || type.equals("blinds"))
             contactPopupView = getLayoutInflater().inflate(R.layout.device_range_popup, null);
+        else
+            contactPopupView = getLayoutInflater().inflate(R.layout.device_basic_popup, null);
 
         saveControlDevice = contactPopupView.findViewById(R.id.saveControlDeviceButton);
         unsaveControlDevice = contactPopupView.findViewById(R.id.unsaveControlDeviceButton);
@@ -462,7 +527,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         controlDeviceValue = contactPopupView.findViewById(R.id.devicePopUpIntensity);
         controlDeviceSeekBar = contactPopupView.findViewById(R.id.devicePopUpSeekBar);
 
-        if (!type.equals("Alarm") && !type.equals("Zásuvka") && !type.equals("Vlhkomer"))
+        if (type.equals("heating") || type.equals("light") || type.equals("blinds"))
             controlSeekBar(type);
 
         //nastavenie hodnot z DB
@@ -474,14 +539,14 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         else
             controlDeviceSwitch.setChecked(false);
 
-        if (type.equals("Kúrenie"))
+        if (type.equals("heating"))
         {
             controlDeviceSeekBar.setMax(30);
             controlDeviceSeekBar.setMin(19);
             controlDeviceSeekBar.setProgress((int) deviceList.get(position).getTemperature());
         }
 
-        else if (type.equals("Svetlá") || type.equals("Žalúzie"))
+        else if (type.equals("light") || type.equals("blinds"))
             controlDeviceSeekBar.setProgress(deviceList.get(position).getIntensity());
 
         controlDeviceDialog.setView(contactPopupView);
@@ -495,37 +560,28 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         String unit;
         seekBarValue = 0;
 
-        if (type.equals("Kúrenie") || type.equals("Svetlá") || type.equals("Žalúzie"))
+        if (type.equals("heating"))
+            unit = "°C";
+
+        else
+            unit = "%";
+
+        controlDeviceSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
         {
-            if (type.equals("Kúrenie"))
-                unit = "°C";
-
-            else
-                unit = "%";
-
-            controlDeviceSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
             {
-                @SuppressLint("SetTextI18n")
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
-                {
-                    controlDeviceValue.setText(progress + unit);
-                    seekBarValue = progress;
-                }
+                controlDeviceValue.setText(progress + unit);
+                seekBarValue = progress;
+            }
 
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar)
-                {
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) { }
 
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar)
-                {
-
-                }
-            });
-        }
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) { }
+        });
     }
 
     public void setScreenValues()
@@ -627,11 +683,13 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
 
                 for (Devices device: devices)
                 {
-                    int image = getDeviceImage(device.getDeviceType());
-                    int imageActive = getActiveImage(device.getIs_active());
+                    String[] parserArray = device.getDeviceType().split("/", 2);
+                    int image = getDeviceImage(parserArray[1]);
+                    int imageConnected = getConnectedImage(device.getConnectivity());
+                    String parseType = parserArray[1];
 
-                    deviceList.add(position, new Device_item(image, device.getDeviceName(), device.getDeviceType(), device.getDeviceId(),device.getIsOn(),
-                            device.getIs_active(), imageActive, device.getIntensity(), device.getHumidity(), device.getTemperature()));
+                    deviceList.add(position, new Device_item(image, device.getDeviceName(), parseType, device.getDeviceId(), device.getIsOn(),
+                            device.getConnectivity(), device.getIs_active(), imageConnected, device.getIntensity(), device.getHumidity(), device.getTemperature()));
                     mAdapter.notifyItemInserted(position);
                 }
             }
@@ -649,26 +707,32 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     {
         switch (type)
         {
-            case "Alarm":
+            case "alarm":
                 return R.drawable.alarm;
-            case "Kúrenie":
+            case "smoke_sensor":
+                return R.drawable.fire_sensor;
+            case "heating":
                 return R.drawable.heater;
-            case "Svetlá":
+            case "light_sensor":
+                return R.drawable.light_sensor;
+            case "light":
                 return R.drawable.light;
-            case "Termostat":
+            case "thermometer":
                 return R.drawable.temperature;
-            case "Vlhkomer":
+            case "hygrometer":
                 return R.drawable.humidity;
-            case "Zásuvka":
+            case "flood_sensor":
+                return R.drawable.water_sensor;
+            case "socket":
                 return  R.drawable.socket;
-            case "Žalúzie":
+            case "blinds":
                 return R.drawable.blinds;
         }
 
         return 0;
     }
 
-    public int getActiveImage(int active)
+    public int getConnectedImage(int active)
     {
         switch (active)
         {
@@ -686,9 +750,10 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     @Override
     public void onDeviceClick(int position)
     {
-        int isActive = deviceList.get(position).getIsActive();
-        if (isActive == 1)
+        int isConnected = deviceList.get(position).getConnectivity();
+        if (isConnected== 1)
             controlDevice(position);
+
         else
             Toast.makeText(Room_screen.this, "Zariadenie nie je pripojené", Toast.LENGTH_SHORT).show();
     }

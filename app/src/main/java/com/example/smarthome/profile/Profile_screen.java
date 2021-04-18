@@ -3,6 +3,7 @@ package com.example.smarthome.profile;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -31,6 +32,7 @@ import com.example.smarthome.login.Login_screen;
 import com.example.smarthome.main.Main_screen;
 import com.example.smarthome.R;
 import com.example.smarthome.scenarios.Scenario_screen;
+import com.example.smarthome.settings.Dark_mode;
 import com.example.smarthome.settings.Settings_screen;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -78,9 +80,12 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
         SessionManagement sessionManagement = new SessionManagement(Profile_screen.this);
         login =  sessionManagement.getLoginSession();
 
-//        SessionManagement sessionManagementUsers = new SessionManagement(Profile_screen.this);
-//        Users users = sessionManagementUsers.getUsersSession();
+        SessionManagement darkModeSessionManagement = new SessionManagement(Profile_screen.this);
+        Dark_mode darkMode = darkModeSessionManagement.getDarkModeSession();
         ////////////////////////////////////////////////////////////////////////////////////////////
+
+        if (darkMode.isDark_mode())
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
         userId = login.getUserId();
         userHouseholdId = login.getHouseholdId();
@@ -149,8 +154,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
         //umozni nam klikat v menu
         navigationView.setNavigationItemSelectedListener(this);
 
-        //pri spusteni appky bude zakliknuta defaultne main screena
-        navigationView.setCheckedItem(R.id.profile);
+        navigationView.setCheckedItem(0);
     }
 
     //pri pouziti tlacidla "Back" alebo po pouziti gesta na vratenie spat, sa zasunie menu, miesto toho aby sa vratilo a obrazovku spat
@@ -201,10 +205,6 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
 
         password = findViewById(R.id.profilePassword);
         password.setText(stringPassword);
-
-        //GET HOUSEHOLD
-//        householdName = findViewById(R.id.profileHome);
-//        householdName.setText();
 
         email = findViewById(R.id.profileEmail);
         email.setText(stringEmail);
@@ -306,7 +306,6 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     public void closeEditButtons()
     {
         userName.setEnabled(false);
-//        householdName.setEnabled(false);
         email.setEnabled(false);
         password.setEnabled(false);
         profileRole.setEnabled(false);
@@ -330,7 +329,6 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     public void openEditButtons()
     {
         userName.setEnabled(true);
-//        householdName.setEnabled(true);
         email.setEnabled(true);
         password.setEnabled(true);
 
@@ -368,10 +366,6 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
                 if (response.body().getUserStatus() == 1)
                     Toast.makeText(Profile_screen.this, "Profil bol zmenený", Toast.LENGTH_SHORT).show();
 
-//                Users user = new Users(userId, stringUserName, stringEmail, stringPassword, intRole, userHouseholdId);
-//                SessionManagement sessionManagementUsers = new SessionManagement(Profile_screen.this);
-//                sessionManagementUsers.saveUsersSession(user);
-
                 Login login = new Login(userId, stringUserName, stringEmail, userHouseholdId, stringHouseholdName, intRole);
                 SessionManagement sessionManagement = new SessionManagement(Profile_screen.this);
                 sessionManagement.saveLoginSession(login);
@@ -394,9 +388,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
         for (int i=0; i<spinner.getCount(); i++)
         {
             if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString))
-            {
                 return i;
-            }
         }
 
         return 0;

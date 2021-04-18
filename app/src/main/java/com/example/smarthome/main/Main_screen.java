@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -32,6 +33,7 @@ import com.example.smarthome.connection.SessionManagement;
 import com.example.smarthome.login.Login_screen;
 import com.example.smarthome.profile.Profile_screen;
 import com.example.smarthome.scenarios.Scenario_screen;
+import com.example.smarthome.settings.Dark_mode;
 import com.example.smarthome.settings.Settings_screen;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -87,7 +89,13 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         //session
         SessionManagement sessionManagement = new SessionManagement(Main_screen.this);
         login =  sessionManagement.getLoginSession();
+
+        SessionManagement darkModeSessionManagement = new SessionManagement(Main_screen.this);
+        Dark_mode darkMode = darkModeSessionManagement.getDarkModeSession();
         ////////////////////////////////////////////////////////////////////////////////////////////
+
+        if (darkMode.isDark_mode())
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
         setScreenValues();
         createRoomList();
@@ -153,8 +161,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         //umozni nam klikat v menu
         navigationView.setNavigationItemSelectedListener(this);
 
-        //pri spusteni appky bude zakliknuta defaultne main screena
-        navigationView.setCheckedItem(R.id.mainScreen);
+        navigationView.setCheckedItem(0);
     }
 
     //pri pouziti tlacidla "Back" alebo po pouziti gesta na vratenie spat, sa zasunie menu, miesto toho aby sa vratilo a obrazovku spat
@@ -355,9 +362,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         for (int i=0; i<spinner.getCount(); i++)
         {
             if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString))
-            {
                 return i;
-            }
         }
 
         return 0;

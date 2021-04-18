@@ -1,10 +1,12 @@
 package com.example.smarthome.connection;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.example.smarthome.main.Room_adapter;
 import com.example.smarthome.main.Room_item;
+import com.example.smarthome.settings.Dark_mode;
 
 public class SessionManagement
 {
@@ -20,19 +22,15 @@ public class SessionManagement
     String SESSION_LOGIN_HOUSEHOLD_NAME = "household_name";
     String SESSION_LOGIN_ROLE = "user_role";
 
-    //users
-//    String SESSION_USER_ID = "user_id";
-//    String SESSION_USER_NAME = "user_name";
-//    String SESSION_USER_EMAIL = "user_email";
-//    String SESSION_USER_PASSWORD = "user_password";
-//    String SESSION_USER_ROLE = "user_role";
-//    String SESSION_USER_HOUSEHOLD_ID = "user_household_id";
+    //dark mode
+    String SESSION_DARK_MODE = "dark_mode";
 
     //room_item;
     String SESSION_ROOM_NAME = "room_name";
     String SESSION_ROOM_TYPE = "room_type";
     String SESSION_ROOM_ID = "id_room";
 
+    @SuppressLint("CommitPrefEdits")
     public SessionManagement(Context context)
     {
         sharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME,Context.MODE_PRIVATE);
@@ -67,42 +65,11 @@ public class SessionManagement
         editor.putInt(SESSION_ROOM_ID, room_id).commit();
     }
 
-//    public void saveUsersSession(Users users)
-//    {
-//        int userId = users.getUserId();
-//        String userName = users.getUserName();
-//        String userEmail = users.getUserEmail();
-//        String userPass = users.getUserPassword();
-//        int userRole = users.getUserRole();
-//        int userHouseholdId = users.getUserHouseholdId();
-//
-//        editor.putInt(SESSION_USER_ID, userId).commit();
-//        editor.putString(SESSION_USER_NAME, userName).commit();
-//        editor.putString(SESSION_USER_EMAIL, userEmail).commit();
-//        editor.putString(SESSION_USER_PASSWORD, userPass).commit();
-//        editor.putInt(SESSION_USER_ROLE, userRole).commit();
-//        editor.putInt(SESSION_USER_HOUSEHOLD_ID, userHouseholdId).commit();
-//    }
-//
-//    public Users getUsersSession()
-//    {
-//        int userId = sharedPreferences.getInt(SESSION_USER_ID, 0);
-//        String userName = sharedPreferences.getString(SESSION_USER_NAME,"");
-//        String userEmail = sharedPreferences.getString(SESSION_USER_EMAIL,"");
-//        String userPass = sharedPreferences.getString(SESSION_USER_PASSWORD,"");
-//        int userRole = sharedPreferences.getInt(SESSION_USER_ROLE, 0);
-//        int userHouseholdId = sharedPreferences.getInt(SESSION_USER_HOUSEHOLD_ID, 0);
-//
-//        return new Users(userId, userName, userEmail, userPass, userRole, userHouseholdId);
-//    }
-
-    public  Room_item getRoomItemSession()
+    public void saveDarkModeSession(Dark_mode dark_mode)
     {
-        String roomItemName = sharedPreferences.getString(SESSION_ROOM_NAME, "");
-        int roomItemType = sharedPreferences.getInt(SESSION_ROOM_TYPE, 0);
-        int roomItemId = sharedPreferences.getInt(SESSION_ROOM_ID, 0);
+        boolean darkMode = dark_mode.isDark_mode();
 
-        return new Room_item(roomItemName, roomItemType, roomItemId);
+        editor.putBoolean(SESSION_DARK_MODE, darkMode).commit();
     }
 
     public Login getLoginSession()
@@ -115,6 +82,21 @@ public class SessionManagement
         int loginRole = sharedPreferences.getInt(SESSION_LOGIN_ROLE,0);
 
         return new Login(loginUserId, loginUserName, loginEmail, loginHouseholdId, loginHouseholdName, loginRole );
+    }
+
+    public Room_item getRoomSession()
+    {
+        String roomItemName = sharedPreferences.getString(SESSION_ROOM_NAME, "");
+        int roomItemType = sharedPreferences.getInt(SESSION_ROOM_TYPE, 0);
+        int roomItemId = sharedPreferences.getInt(SESSION_ROOM_ID, 0);
+
+        return new Room_item(roomItemName, roomItemType, roomItemId);
+    }
+
+    public Dark_mode getDarkModeSession()
+    {
+        boolean dark_mode = sharedPreferences.getBoolean(SESSION_DARK_MODE, false);
+        return new Dark_mode(dark_mode);
     }
 
     public int getSession()

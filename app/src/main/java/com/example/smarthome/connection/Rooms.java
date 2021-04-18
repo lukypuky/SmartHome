@@ -5,19 +5,19 @@ import com.google.gson.annotations.SerializedName;
 public class Rooms
 {
     @SerializedName("id")
-    private Integer roomId;
+    private int roomId;
 
     @SerializedName("name")
-    private String roomName;
+    private final String roomName;
 
     @SerializedName("type")
-    private String roomType;
+    private final String roomType;
 
     @SerializedName("id_household")
-    private Integer idHousehold;
+    private final int idHousehold;
 
     @SerializedName("status")
-    private Integer roomStatus;
+    private int roomStatus;
 
     public Rooms(String roomName, String roomType, int idHousehold)
     {
@@ -46,7 +46,7 @@ public class Rooms
         return idHousehold;
     }
 
-    public Integer getRoomStatus()
+    public int getRoomStatus()
     {
         return roomStatus;
     }

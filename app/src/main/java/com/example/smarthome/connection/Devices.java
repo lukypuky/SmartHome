@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 public class Devices
 {
     @SerializedName("id")
-    private Integer deviceId;
+    private int deviceId;
 
     @SerializedName("type")
     private String deviceType;
@@ -14,25 +14,28 @@ public class Devices
     private String deviceName;
 
     @SerializedName("id_room")
-    private Integer idRoom;
+    private int idRoom;
 
-    @SerializedName("isOn")
-    private Integer isOn;
+    @SerializedName("connectivity")
+    private int connectivity;
+
+    @SerializedName("status_isOn")
+    private int isOn;
 
     @SerializedName("status_isActive")
-    private Integer is_active;
+    private int is_active;
 
     @SerializedName("status_intensity")
-    private Integer intensity;
+    private int intensity;
 
     @SerializedName("status_humidity")
-    private Integer humidity;
+    private int humidity;
 
     @SerializedName("status_temperature")
     private double temperature;
 
     @SerializedName("status")
-    private Integer deviceStatus;
+    private int deviceStatus;
 
     public Integer getDeviceId()
     {
@@ -49,27 +52,32 @@ public class Devices
         return deviceName;
     }
 
-    public Integer getIdRoom()
+    public int getIdRoom()
     {
         return idRoom;
     }
 
-    public Integer getIsOn()
+    public int getConnectivity()
+    {
+        return connectivity;
+    }
+
+    public int getIsOn()
     {
         return isOn;
     }
 
-    public Integer getIs_active()
+    public int getIs_active()
     {
         return is_active;
     }
 
-    public Integer getIntensity()
+    public int getIntensity()
     {
         return intensity;
     }
 
-    public Integer getHumidity()
+    public int getHumidity()
     {
         return humidity;
     }
@@ -79,7 +87,7 @@ public class Devices
         return temperature;
     }
 
-    public Integer getDeviceStatus()
+    public int getDeviceStatus()
     {
         return deviceStatus;
     }
