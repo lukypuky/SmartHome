@@ -5,10 +5,10 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
     android:elevation="2dp"
     android:fitsSystemWindows="true"
     tools:context=".main.Main_screen"
+    android:background="@color/bg"
     tools:openDrawer="start">
 
     <com.google.android.material.navigation.NavigationView
@@ -17,7 +17,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:headerLayout="@layout/header"
-        app:menu="@menu/main_menu" />
+        app:menu="@menu/main_menu"
+        android:background="@color/navigation"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -26,7 +27,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/blue_bg">
+            android:background="@color/colorPrimary">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -101,7 +102,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|right"
                 android:layout_margin="16dp"
-                android:src="@drawable/add_icon" />
+                android:src="@drawable/add_icon"
+                android:backgroundTint="@color/btns"
+                app:tint="@color/textColor"/>
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
     </RelativeLayout>
 </androidx.drawerlayout.widget.DrawerLayout>

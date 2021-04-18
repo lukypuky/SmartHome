@@ -69,14 +69,6 @@ public interface Api
     );
 
     //prihlasenie
-//    @FormUrlEncoded
-//    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
-//    @POST("login.php")
-//    Call<Login> loginUser(
-//            @Field("email") String userEmail,
-//            @Field("password") String password
-//    );
-
     @FormUrlEncoded
     @HTTP(method = "POST", path = "login.php", hasBody = true)
     @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
@@ -121,11 +113,12 @@ public interface Api
             @Field("type") String deviceType,
             @Field("name") String deviceName,
             @Field("id_room") int id_room,
-            @Field("isOn") int isOn,
-            @Field("status_isActive") int isActive,
+            @Field("status_isOn") int isOn,
             @Field("status_intensity") int intensity,
+            @Field("status_isActive") int isActive,
             @Field("status_humidity") int humidity,
-            @Field("status_temperature") double temperature
+            @Field("status_temperature") double temperature,
+            @Field("connectivity") int connectivity
     );
 
     //delete zariadenia
@@ -146,10 +139,11 @@ public interface Api
             @Field("type") String deviceType,
             @Field("name") String deviceName,
             @Field("id_room") int id_room,
-            @Field("isOn") int isOn,
+            @Field("status_isOn") int isOn,
             @Field("status_isActive") int isActive,
             @Field("status_intensity") int intensity,
             @Field("status_humidity") int humidity,
-            @Field("status_temperature") double temperature
+            @Field("status_temperature") double temperature,
+            @Field("connectivity") int connectivity
     );
 }

@@ -100,22 +100,17 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
         //umozni nam klikat v menu
         navigationView.setNavigationItemSelectedListener(this);
 
-        //pri spusteni appky bude zakliknuta defaultne scenar screena
-        navigationView.setCheckedItem(R.id.scenario);
+        navigationView.setCheckedItem(0);
     }
 
     @Override
     public void onBackPressed()
     {
         if (drawerLayout.isDrawerOpen(GravityCompat.START))
-        {
             drawerLayout.closeDrawer((GravityCompat.START));
-        }
 
         else
-        {
             super.onBackPressed();
-        }
     }
 
     public boolean onNavigationItemSelected(@NonNull MenuItem item)

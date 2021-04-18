@@ -12,7 +12,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/navigation">
 
         <TextView
             android:id="@+id/deviceTextView"
@@ -20,7 +21,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="25dp"
             android:fontFamily="@font/baloo"
-            android:textColor="#249FE2"
             android:textSize="20sp"
             app:layout_constraintBottom_toTopOf="@+id/deviceUnitTag"
             app:layout_constraintStart_toStartOf="parent"
@@ -35,7 +35,8 @@
             android:layout_marginTop="5dp"
             app:layout_constraintBottom_toTopOf="@+id/deviceTextView"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/textColor"/>
 
         <ImageView
             android:id="@+id/deviceEdit"
@@ -45,7 +46,8 @@
             android:layout_alignParentEnd="true"
             android:src="@drawable/edit_icon"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/textColor"/>
 
         <TextView
             android:id="@+id/deviceActiveTag"
@@ -55,11 +57,11 @@
             android:layout_marginTop="91dp"
             android:layout_marginEnd="5dp"
             android:text="Pripojenie:"
-            app:layout_constraintEnd_toStartOf="@+id/deviceActive"
+            app:layout_constraintEnd_toStartOf="@+id/deviceConnected"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/deviceActive"
+            android:id="@+id/deviceConnected"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginTop="95dp"

@@ -5,6 +5,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -25,8 +27,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +42,7 @@ import com.example.smarthome.connection.Users;
 import com.example.smarthome.login.Login_screen;
 import com.example.smarthome.main.Main_screen;
 import com.example.smarthome.R;
+import com.example.smarthome.main.Room_screen;
 import com.example.smarthome.profile.Profile_screen;
 import com.example.smarthome.registration.Registration_screen;
 import com.example.smarthome.scenarios.Scenario_screen;
@@ -59,13 +64,13 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
     private Toolbar toolbar;
 
     //pridanie usera
-    private Button addUserBtn;
-    private EditText userName, email, password, confPassword;
     private Button saveUser, unsaveUser;
+    private EditText userName, email, password, confPassword;
     private AlertDialog dialog;
+    private TextView addUser;
 
-//    private TextView title, languageText, languageDialog;
-//    private Spinner language;
+    //dark mode
+    private SwitchCompat switchCompat;
 
     //api
     private Api api;
@@ -84,27 +89,41 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
         //session
         SessionManagement sessionManagement = new SessionManagement(Settings_screen.this);
         login =  sessionManagement.getLoginSession();
+
+        SessionManagement darkModeSessionManagement = new SessionManagement(Settings_screen.this);
+        Dark_mode darkMode = darkModeSessionManagement.getDarkModeSession();
         ////////////////////////////////////////////////////////////////////////////////////////////
 
         if (canEdit())
         {
-            addUserBtn = findViewById(R.id.settings_add_user_btn);
-            addUserBtn.setVisibility(View.VISIBLE);
-            addUserBtn.setOnClickListener(v -> addUser());
+            addUser = findViewById(R.id.settings_add_user);
+            addUser.setVisibility(View.VISIBLE);
+            addUser.setOnClickListener(v -> addUser());
         }
 
-//        title = findViewById(R.id.options_title);
-//        languageText = findViewById(R.id.options_language_text);
-//        languageDialog = findViewById(R.id.options_language_type);
-//
-//        languageDialog.setOnClickListener(new View.OnClickListener()
-//        {
-//            @Override
-//            public void onClick(View v)
-//            {
-//                changeLanguage();
-//            }
-//        });
+        switchCompat = findViewById(R.id.settings_dark_mode_swtich);
+        if (darkMode.isDark_mode())
+        {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            switchCompat.setChecked(true);
+        }
+
+        switchCompat.setOnCheckedChangeListener((buttonView, isChecked) ->
+        {
+            if (isChecked)
+            {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                switchCompat.setChecked(true);
+                setDarkMode(true);
+            }
+
+            else
+            {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                switchCompat.setChecked(false);
+                setDarkMode(false);
+            }
+        });
 
         setNavigationView();
     }
@@ -119,57 +138,6 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
 
         api = retrofit.create(Api.class);
     }
-
-//    public void changeLanguage()
-//    {
-//        //pole jazykov
-//        final String[] languageItems = {"Slovenský", "English"};
-//        AlertDialog.Builder mBuilder = new AlertDialog.Builder(Settings_screen.this);
-//
-//        mBuilder.setSingleChoiceItems(languageItems, -1, new DialogInterface.OnClickListener()
-//        {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which)
-//            {
-//                if (which == 0)
-//                {
-//                    setAppLocale("sk");
-//                    recreate();
-//                }
-//
-//                if (which == 1)
-//                {
-//                    setAppLocale("en");
-//                    recreate();
-//                }
-//
-//                //zrusi dialogove okno ak sa vybral jazyk
-//                dialog.dismiss();
-//            }
-//        });
-//
-//        AlertDialog mDialog = mBuilder.create();
-//        //show alert dialog
-//        mDialog.show();
-//    }
-
-//    private void setAppLocale(String localeCode)
-//    {
-//        Resources res = getResources();
-//        DisplayMetrics dm = res.getDisplayMetrics();
-//        Configuration conf = res.getConfiguration();
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-//        {
-//            conf.setLocale(new Locale(localeCode.toLowerCase()));
-//        }
-//
-//        else
-//        {
-//            conf.locale = new Locale(localeCode.toLowerCase());
-//        }
-//
-//        res.updateConfiguration(conf,dm);
-//    }
 
     //bocny navigacny panel
     public void setNavigationView()
@@ -194,7 +162,7 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        navigationView.setCheckedItem(R.id.settings);
+        navigationView.setCheckedItem(0);
     }
 
     @Override
@@ -205,23 +173,6 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
 
         else
             super.onBackPressed();
-    }
-
-    public void initializeDialog()
-    {
-        AlertDialog.Builder addUserDialog = new AlertDialog.Builder(Settings_screen.this);
-        View contactPopupView = getLayoutInflater().inflate(R.layout.add_user_popup, null);
-
-        userName = contactPopupView.findViewById(R.id.settingsUsername);
-        email = contactPopupView.findViewById(R.id.settingsEmail);
-        password = contactPopupView.findViewById(R.id.settingsPass);
-        confPassword = contactPopupView.findViewById(R.id.settingsConfPass);
-        saveUser = contactPopupView.findViewById(R.id.saveUserButton);
-        unsaveUser = contactPopupView.findViewById(R.id.unsaveUserButton);
-
-        addUserDialog.setView(contactPopupView);
-        dialog = addUserDialog.create();
-        dialog.show();
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -250,6 +201,23 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void initializeDialog()
+    {
+        AlertDialog.Builder addUserDialog = new AlertDialog.Builder(Settings_screen.this);
+        View contactPopupView = getLayoutInflater().inflate(R.layout.add_user_popup, null);
+
+        userName = contactPopupView.findViewById(R.id.settingsUsername);
+        email = contactPopupView.findViewById(R.id.settingsEmail);
+        password = contactPopupView.findViewById(R.id.settingsPass);
+        confPassword = contactPopupView.findViewById(R.id.settingsConfPass);
+        saveUser = contactPopupView.findViewById(R.id.saveUserButton);
+        unsaveUser = contactPopupView.findViewById(R.id.unsaveUserButton);
+
+        addUserDialog.setView(contactPopupView);
+        dialog = addUserDialog.create();
+        dialog.show();
     }
 
     public boolean canEdit()
@@ -344,6 +312,13 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
                 System.out.println("call = " + call + ", t = " + t);
             }
         });
+    }
+
+    public void setDarkMode(boolean option)
+    {
+        Dark_mode dark_mode = new Dark_mode(option);
+        SessionManagement sessionManagement = new SessionManagement(Settings_screen.this);
+        sessionManagement.saveDarkModeSession(dark_mode);
     }
 
     //odhlasenie sa z aplikacie (zrusenie session)

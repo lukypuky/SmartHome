@@ -6,10 +6,9 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
     android:elevation="2dp"
     tools:context=".main.Room_screen"
-    android:fitsSystemWindows="true"
+    android:background="@color/bg"
     tools:openDrawer="start">
 
     <com.google.android.material.navigation.NavigationView
@@ -18,7 +17,8 @@
         android:id="@+id/nav_view"
         app:headerLayout="@layout/header"
         app:menu="@menu/main_menu"
-        android:layout_gravity="start">
+        android:layout_gravity="start"
+        android:background="@color/navigation">
     </com.google.android.material.navigation.NavigationView>
 
     <ScrollView
@@ -28,7 +28,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/blue_bg">
+            android:background="@color/colorPrimary">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -46,13 +46,14 @@
                 android:id="@+id/roomImage"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginStart="24dp"
+                android:layout_marginStart="15dp"
                 android:layout_marginTop="15dp"
                 android:padding="5dp"
                 android:src="@mipmap/ic_launcher"
                 app:layout_constraintEnd_toStartOf="@+id/textView"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+                app:layout_constraintTop_toBottomOf="@+id/toolbar"
+                app:tint="@color/textColor" />
 
             <TextView
                 android:id="@+id/roomText"
@@ -95,7 +96,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|right"
                 android:layout_margin="16dp"
-                android:src="@drawable/add_icon" />
+                android:src="@drawable/add_icon"
+                android:backgroundTint="@color/btns"
+                app:tint="@color/textColor"/>
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
     </RelativeLayout>
 </androidx.drawerlayout.widget.DrawerLayout>

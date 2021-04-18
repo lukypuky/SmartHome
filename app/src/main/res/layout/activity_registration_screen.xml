@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".registration.Registration_screen">
+    tools:context=".registration.Registration_screen"
+    android:background="@color/bg">
 
     <Button
         android:id="@+id/registerBtn"
@@ -13,6 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="Registrovať sa"
+        android:textColor="@color/textColor"
         app:layout_constraintBottom_toTopOf="@+id/registerLoginText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

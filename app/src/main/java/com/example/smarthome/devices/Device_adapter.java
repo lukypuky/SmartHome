@@ -26,7 +26,7 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
         public TextView mTextView, deviceValue, deviceUnit, deviceStatus;
         OnDeviceListener onDeviceListener;
         public ImageView mImageEdit;
-        public ImageView mImageActive;
+        public ImageView mImageConnected;
 
         public DeviceViewHolder(@NonNull View itemView, OnDeviceListener onDeviceListener)
         {
@@ -34,7 +34,7 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
             mImageView = itemView.findViewById(R.id.deviceImageView);
             mTextView = itemView.findViewById(R.id.deviceTextView);
             mImageEdit = itemView.findViewById(R.id.deviceEdit);
-            mImageActive = itemView.findViewById(R.id.deviceActive);
+            mImageConnected = itemView.findViewById(R.id.deviceConnected);
             deviceValue = itemView.findViewById(R.id.deviceValue);
             deviceStatus = itemView.findViewById(R.id.deviceStatusTag);
             deviceUnit = itemView.findViewById(R.id.deviceUnitTag);
@@ -98,19 +98,19 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
         Device_item currentItem = mDeviceList.get(position);
 
         String unit, type;
-        boolean active;
+        boolean connected;
 
         unit = getDeviceUnit(currentItem);
-        active = isDeviceActive(currentItem);
+        connected = isDeviceConnected(currentItem);
         type = currentItem.getDeviceType();
 
         holder.mImageView.setImageResource(currentItem.getImageResource());
         holder.mTextView.setText(currentItem.getDeviceName());
-        holder.mImageActive.setImageResource(currentItem.getIsActiveImage());
+        holder.mImageConnected.setImageResource(currentItem.getIsConnectedImage());
 
-        if (active)
+        if (connected)
         {
-            if (type.equals("Kúrenie"))
+            if (type.equals("heating") || type.equals("thermometer"))
             {
                 String stringValue= Double.toString(currentItem.getTemperature());
                 holder.deviceUnit.setText(unit);
@@ -118,12 +118,20 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
                 holder.deviceStatus.setText("Teplota: ");
             }
 
-            else if (type.equals("Vlhkomer"))
+            else if (type.equals("hygrometer"))
             {
                 String stringValue= Double.toString(currentItem.getHumidity());
                 holder.deviceUnit.setText(unit);
                 holder.deviceValue.setText(stringValue);
                 holder.deviceStatus.setText("Vlhkosť: ");
+            }
+
+            else if (type.equals("blinds"))
+            {
+                String stringValue= Double.toString(currentItem.getIntensity());
+                holder.deviceUnit.setText(unit);
+                holder.deviceValue.setText(stringValue);
+                holder.deviceStatus.setText("Zatiahnuté: ");
             }
 
             else
@@ -138,21 +146,21 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
     {
         String type = currentItem.getDeviceType();
 
-        if (type.equals("Kúrenie"))
+        if (type.equals("heating") || type.equals("thermometer"))
             return "°C";
 
-        if (type.equals("Vlhkomer"))
+        if (type.equals("hygrometer") || type.equals("blinds"))
             return "%";
 
         return "";
     }
 
-    public boolean isDeviceActive(Device_item currentItem)
+    public boolean isDeviceConnected(Device_item currentItem)
     {
-        int isActive = currentItem.getIsActive();
+        int isConnected = currentItem.getConnectivity();
         int isOnOff = currentItem.getIsOn();
 
-        if (isActive == 1)
+        if (isConnected == 1)
         {
             if (isOnOff == 1)
                 return true;
