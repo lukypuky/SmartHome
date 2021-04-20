@@ -25,7 +25,7 @@ public class Room_adapter extends RecyclerView.Adapter<Room_adapter.RoomViewHold
     public class RoomViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         public ImageView mImageView;
-        public TextView mTextView1, mTextView2;
+        public TextView mTextView1, mTextView2, mTextView3;
         OnRoomListener onRoomListener;
         public ImageView mImageEdit;
 
@@ -35,6 +35,7 @@ public class Room_adapter extends RecyclerView.Adapter<Room_adapter.RoomViewHold
             mImageView = itemView.findViewById(R.id.roomImageView);
             mTextView1 = itemView.findViewById(R.id.roomTextView);
             mTextView2 = itemView.findViewById(R.id.roomCountTag);
+            mTextView3 = itemView.findViewById(R.id.roomCountNumber);
             mImageEdit = itemView.findViewById(R.id.roomEdit);
             this.onRoomListener = onRoomListener;
 
@@ -97,6 +98,7 @@ public class Room_adapter extends RecyclerView.Adapter<Room_adapter.RoomViewHold
 
         holder.mImageView.setImageResource(currentItem.getImageResource());
         holder.mTextView1.setText(currentItem.getRoomName());
+        holder.mTextView3.setText(String.valueOf(currentItem.getDevicesCount()));
     }
 
     @Override

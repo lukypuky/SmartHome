@@ -45,9 +45,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -70,7 +68,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
 
     //ovladanie zariadenia
     private AlertDialog controlDialog;
-    private TextView controlDeviceName, controlDeviceIntensityTag, controlDeviceValue;
+    private TextView controlDeviceName, controlDeviceStatusTag, controlDeviceValue, controlDeviceUnit;
     private Switch controlDeviceSwitch;
     private SeekBar controlDeviceSeekBar;
     private Button saveControlDevice, unsaveControlDevice;
@@ -411,7 +409,12 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     public void controlDevice(int position)
     {
         String stringDeviceType = deviceList.get(position).getDeviceType();
-        initializeDeviceControlDialog(stringDeviceType, position);
+
+        if (stringDeviceType.equals("socket"))
+            initializeBasicDialog(position);
+
+        else
+            initializeDeviceRangeDialog(stringDeviceType, position);
 
         saveControlDevice.setOnClickListener(v ->
         {
@@ -427,8 +430,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
 
             if (stringDeviceType.equals("heating"))
                 temperature = seekBarValue;
-
-            else if (stringDeviceType.equals("light") || stringDeviceType.equals("blinds"))
+            else if(stringDeviceType.equals("light") || (stringDeviceType.equals("blinds")))
                 intensity = seekBarValue;
 
             int deviceId = deviceList.get(position).getDeviceId();
@@ -508,50 +510,81 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         dialog.show();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void initializeDeviceControlDialog(String type, int position)
+    public void initializeBasicDialog(int position)
     {
         AlertDialog.Builder controlDeviceDialog = new AlertDialog.Builder(Room_screen.this);
         View contactPopupView;
 
-        if (type.equals("heating") || type.equals("light") || type.equals("blinds"))
-            contactPopupView = getLayoutInflater().inflate(R.layout.device_range_popup, null);
-        else
-            contactPopupView = getLayoutInflater().inflate(R.layout.device_basic_popup, null);
+        contactPopupView = getLayoutInflater().inflate(R.layout.device_basic_popup, null);
+
+        controlDeviceName = contactPopupView.findViewById(R.id.devicePopUpName);
+        saveControlDevice = contactPopupView.findViewById(R.id.saveControlDeviceButton);
+        unsaveControlDevice = contactPopupView.findViewById(R.id.unsaveControlDeviceButton);
+        controlDeviceSwitch = contactPopupView.findViewById(R.id.devicePopUpSwitch);
+
+        setSwitch(position);
+
+        //nastavenie hodnot z DB
+        controlDeviceName.setText(deviceList.get(position).getDeviceName());
+
+        controlDeviceDialog.setView(contactPopupView);
+        controlDialog = controlDeviceDialog.create();
+        controlDialog.show();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void initializeDeviceRangeDialog(String type, int position)
+    {
+        AlertDialog.Builder controlDeviceDialog = new AlertDialog.Builder(Room_screen.this);
+        View contactPopupView;
+
+        contactPopupView = getLayoutInflater().inflate(R.layout.device_range_popup, null);
 
         saveControlDevice = contactPopupView.findViewById(R.id.saveControlDeviceButton);
         unsaveControlDevice = contactPopupView.findViewById(R.id.unsaveControlDeviceButton);
         controlDeviceName = contactPopupView.findViewById(R.id.devicePopUpName);
         controlDeviceSwitch = contactPopupView.findViewById(R.id.devicePopUpSwitch);
-        controlDeviceIntensityTag = contactPopupView.findViewById(R.id.devicePopUpIntenssityTag);
+        controlDeviceStatusTag = contactPopupView.findViewById(R.id.deviceDisplayTag);
         controlDeviceValue = contactPopupView.findViewById(R.id.devicePopUpIntensity);
         controlDeviceSeekBar = contactPopupView.findViewById(R.id.devicePopUpSeekBar);
 
-        if (type.equals("heating") || type.equals("light") || type.equals("blinds"))
-            controlSeekBar(type);
+        controlSeekBar(type);
+
+        switch (type)
+        {
+            case "heating":
+                controlDeviceSeekBar.setMax(30);
+                controlDeviceSeekBar.setMin(19);
+                controlDeviceSeekBar.setProgress((int) deviceList.get(position).getTemperature());
+                controlDeviceStatusTag.setText("Teplota: ");
+                break;
+            case "light":
+                controlDeviceSeekBar.setProgress(deviceList.get(position).getIntensity());
+                controlDeviceStatusTag.setText("Intenzita: ");
+                break;
+            case "blinds":
+                controlDeviceSeekBar.setProgress(deviceList.get(position).getIntensity());
+                controlDeviceStatusTag.setText("Zatiahnuté: ");
+                break;
+        }
+
+        setSwitch(position);
 
         //nastavenie hodnot z DB
         controlDeviceName.setText(deviceList.get(position).getDeviceName());
 
+        controlDeviceDialog.setView(contactPopupView);
+        controlDialog = controlDeviceDialog.create();
+        controlDialog.show();
+    }
+
+    public void setSwitch(int position)
+    {
         if (deviceList.get(position).getIsOn() == 1)
             controlDeviceSwitch.setChecked(true);
 
         else
             controlDeviceSwitch.setChecked(false);
-
-        if (type.equals("heating"))
-        {
-            controlDeviceSeekBar.setMax(30);
-            controlDeviceSeekBar.setMin(19);
-            controlDeviceSeekBar.setProgress((int) deviceList.get(position).getTemperature());
-        }
-
-        else if (type.equals("light") || type.equals("blinds"))
-            controlDeviceSeekBar.setProgress(deviceList.get(position).getIntensity());
-
-        controlDeviceDialog.setView(contactPopupView);
-        controlDialog = controlDeviceDialog.create();
-        controlDialog.show();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -751,8 +784,13 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     public void onDeviceClick(int position)
     {
         int isConnected = deviceList.get(position).getConnectivity();
+        String type = deviceList.get(position).getDeviceType();
+
         if (isConnected== 1)
-            controlDevice(position);
+        {
+            if (type.equals("heating") || type.equals("light") || type.equals("blinds") || type.equals("socket"))
+                controlDevice(position);
+        }
 
         else
             Toast.makeText(Room_screen.this, "Zariadenie nie je pripojené", Toast.LENGTH_SHORT).show();

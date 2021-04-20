@@ -60,4 +60,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/saveControlDeviceButton"
         app:layout_constraintTop_toBottomOf="@+id/devicePopUpSwitch" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

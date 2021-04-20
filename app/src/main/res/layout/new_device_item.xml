@@ -22,7 +22,7 @@
             android:layout_marginStart="25dp"
             android:fontFamily="@font/baloo"
             android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@+id/deviceUnitTag"
+            app:layout_constraintBottom_toTopOf="@+id/deviceUnit"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/deviceImageView" />
 
@@ -70,7 +70,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/deviceUnitTag"
+            android:id="@+id/deviceUnit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"
@@ -81,8 +81,9 @@
             android:id="@+id/deviceValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
             android:textSize="15sp"
-            app:layout_constraintEnd_toStartOf="@+id/deviceUnitTag"
+            app:layout_constraintEnd_toStartOf="@+id/deviceUnit"
             app:layout_constraintStart_toEndOf="@+id/deviceStatusTag"
             app:layout_constraintTop_toBottomOf="@+id/deviceTextView" />
 
@@ -90,10 +91,20 @@
             android:id="@+id/deviceStatusTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
             android:layout_marginStart="25dp"
+            android:textSize="15sp"
             app:layout_constraintEnd_toStartOf="@+id/deviceValue"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/deviceTextView" />
+
+        <ImageView
+            android:id="@+id/deviceStatusWarning"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginStart="5dp"
+            android:visibility="invisible"
+            app:layout_constraintStart_toEndOf="@+id/deviceStatusTag"
+            app:layout_constraintTop_toBottomOf="@+id/deviceTextView"
+            app:srcCompat="@drawable/warning" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
