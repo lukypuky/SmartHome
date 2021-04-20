@@ -1,8 +1,11 @@
 package com.example.smarthome.devices;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,14 +22,13 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
     private ArrayList<Device_item> mDeviceList;
     private final OnDeviceListener mOnDeviceListener;
     private final Login login;
+    private Context context;
 
     public class DeviceViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
-        public ImageView mImageView;
+        public ImageView mImageView, mImageEdit, mImageConnected, mImageWarning;
         public TextView mTextView, deviceValue, deviceUnit, deviceStatus;
         OnDeviceListener onDeviceListener;
-        public ImageView mImageEdit;
-        public ImageView mImageConnected;
 
         public DeviceViewHolder(@NonNull View itemView, OnDeviceListener onDeviceListener)
         {
@@ -34,10 +36,11 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
             mImageView = itemView.findViewById(R.id.deviceImageView);
             mTextView = itemView.findViewById(R.id.deviceTextView);
             mImageEdit = itemView.findViewById(R.id.deviceEdit);
+            mImageWarning = itemView.findViewById(R.id.deviceStatusWarning);
             mImageConnected = itemView.findViewById(R.id.deviceConnected);
             deviceValue = itemView.findViewById(R.id.deviceValue);
             deviceStatus = itemView.findViewById(R.id.deviceStatusTag);
-            deviceUnit = itemView.findViewById(R.id.deviceUnitTag);
+            deviceUnit = itemView.findViewById(R.id.deviceUnit);
             this.onDeviceListener = onDeviceListener;
 
             itemView.setOnClickListener(this);
@@ -89,6 +92,7 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
     {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.new_device_item, parent, false);
         DeviceViewHolder rvh = new DeviceViewHolder(view, mOnDeviceListener);
+        context = parent.getContext();
         return rvh;
     }
 
@@ -100,7 +104,6 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
         String unit, type;
         boolean connected;
 
-        unit = getDeviceUnit(currentItem);
         connected = isDeviceConnected(currentItem);
         type = currentItem.getDeviceType();
 
@@ -113,6 +116,7 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
             if (type.equals("heating") || type.equals("thermometer"))
             {
                 String stringValue= Double.toString(currentItem.getTemperature());
+                unit = getDeviceUnit(currentItem);
                 holder.deviceUnit.setText(unit);
                 holder.deviceValue.setText(stringValue);
                 holder.deviceStatus.setText("Teplota: ");
@@ -121,6 +125,7 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
             else if (type.equals("hygrometer"))
             {
                 String stringValue= Double.toString(currentItem.getHumidity());
+                unit = getDeviceUnit(currentItem);
                 holder.deviceUnit.setText(unit);
                 holder.deviceValue.setText(stringValue);
                 holder.deviceStatus.setText("Vlhkosť: ");
@@ -129,17 +134,43 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
             else if (type.equals("blinds"))
             {
                 String stringValue= Double.toString(currentItem.getIntensity());
+                unit = getDeviceUnit(currentItem);
                 holder.deviceUnit.setText(unit);
                 holder.deviceValue.setText(stringValue);
                 holder.deviceStatus.setText("Zatiahnuté: ");
             }
 
+            else if (type.equals("light") || type.equals("light_sensor"))
+            {
+                String stringValue= Double.toString(currentItem.getIntensity());
+                unit = getDeviceUnit(currentItem);
+                holder.deviceUnit.setText(unit);
+                holder.deviceValue.setText(stringValue);
+                holder.deviceStatus.setText("Intenzita: ");
+            }
+
             else
-                holder.deviceStatus.setText("Zariadenie zapnuté");
+            {
+                if (currentItem.getIsActive() == 1)
+                {
+                    holder.deviceStatus.setText("Spustil sa senzor! ");
+                    holder.mImageWarning.setVisibility(View.VISIBLE);
+                    Animation animation = AnimationUtils.loadAnimation(context,R.anim.warning_blink);
+                    holder.mImageWarning.startAnimation(animation);
+                }
+
+                else
+                    holder.deviceStatus.setText("Zariadenie zapnuté");
+            }
         }
 
         else
+        {
+            holder.deviceUnit.setText("");
+            holder.deviceValue.setText("");
             holder.deviceStatus.setText("Zariadenie vypnuté");
+        }
+
     }
 
     public String getDeviceUnit(Device_item currentItem)
@@ -149,10 +180,8 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
         if (type.equals("heating") || type.equals("thermometer"))
             return "°C";
 
-        if (type.equals("hygrometer") || type.equals("blinds"))
+        else
             return "%";
-
-        return "";
     }
 
     public boolean isDeviceConnected(Device_item currentItem)

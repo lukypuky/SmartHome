@@ -480,7 +480,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
                 for (Rooms room: rooms)
                 {
                     int image = getRoomImage(room.getRoomType());
-                    roomList.add(position, new Room_item(image, room.getRoomName(), room.getRoomType(), householdId, room.getRoomId()));
+                    roomList.add(position, new Room_item(image, room.getRoomName(), room.getRoomType(), householdId, room.getRoomId(), room.getDevicesCount()));
                     mAdapter.notifyItemInserted(position);
                 }
             }

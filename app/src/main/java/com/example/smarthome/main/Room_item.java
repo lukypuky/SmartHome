@@ -4,7 +4,7 @@ public class Room_item extends android.app.Activity
 {
     private int imageResource;
     private String roomName, roomType;
-    private int  id_household, id_room, intRoomType;
+    private int  id_household, id_room, intRoomType, devicesCount;
 
     public Room_item()
     {
@@ -18,13 +18,14 @@ public class Room_item extends android.app.Activity
         this.id_room = id_room;
     }
 
-    public Room_item(int imageResource, String roomName, String roomType, int id_household, int id_room)
+    public Room_item(int imageResource, String roomName, String roomType, int id_household, int id_room, int devicesCount)
     {
         this.imageResource = imageResource;
         this.roomName = roomName;
         this.roomType = roomType;
         this.id_household = id_household;
         this.id_room = id_room;
+        this.devicesCount = devicesCount;
     }
 
     public int getImageResource()
@@ -55,5 +56,10 @@ public class Room_item extends android.app.Activity
     public int getIntRoomType()
     {
         return intRoomType;
+    }
+
+    public int getDevicesCount()
+    {
+        return devicesCount;
     }
 }
