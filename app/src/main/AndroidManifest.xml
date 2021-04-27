@@ -15,6 +15,9 @@
         android:theme="@style/Theme.SmartHome"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
+        <activity android:name=".scenarios.Scenario_add_screen_three"></activity>
+        <activity android:name=".scenarios.Scenario_add_screen_two" />
+        <activity android:name=".scenarios.Scenario_add_screen_one" />
         <activity android:name=".devices.Device_item" />
         <activity android:name=".main.Room_screen" />
         <activity android:name=".scenarios.Scenario_screen" />

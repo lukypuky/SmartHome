@@ -22,7 +22,7 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
     private ArrayList<Device_item> mDeviceList;
     private final OnDeviceListener mOnDeviceListener;
     private final Login login;
-    private Context context;
+//    private Context context;
 
     public class DeviceViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
@@ -92,7 +92,7 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
     {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.new_device_item, parent, false);
         DeviceViewHolder rvh = new DeviceViewHolder(view, mOnDeviceListener);
-        context = parent.getContext();
+//        context = parent.getContext();
         return rvh;
     }
 
@@ -155,8 +155,8 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
                 {
                     holder.deviceStatus.setText("Spustil sa senzor! ");
                     holder.mImageWarning.setVisibility(View.VISIBLE);
-                    Animation animation = AnimationUtils.loadAnimation(context,R.anim.warning_blink);
-                    holder.mImageWarning.startAnimation(animation);
+//                    Animation animation = AnimationUtils.loadAnimation(context,R.anim.warning_blink);
+//                    holder.mImageWarning.startAnimation(animation);
                 }
 
                 else
