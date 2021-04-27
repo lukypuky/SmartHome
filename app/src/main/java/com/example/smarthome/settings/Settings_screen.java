@@ -29,6 +29,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -97,6 +98,8 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
         if (canEdit())
         {
             addUser = findViewById(R.id.settings_add_user);
+            ImageView addUserImage = findViewById(R.id.settings_add_user_image);
+            addUserImage.setVisibility(View.VISIBLE);
             addUser.setVisibility(View.VISIBLE);
             addUser.setOnClickListener(v -> addUser());
         }
