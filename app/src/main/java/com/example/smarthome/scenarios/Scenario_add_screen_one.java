@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.example.smarthome.R;
+import com.example.smarthome.connection.Api;
 import com.example.smarthome.connection.Login;
 import com.example.smarthome.connection.SessionManagement;
 import com.example.smarthome.login.Login_screen;
@@ -29,6 +30,9 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.Calendar;
 
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class Scenario_add_screen_one extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, TimePickerDialog.OnTimeSetListener
 {
     //menu
@@ -36,8 +40,12 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
     private NavigationView navigationView;
     private Toolbar toolbar;
 
+    //time picker
     private TextView hourValue, hourTag, minuteValue, minuteTag, pickedTime;
     private Button nextBtn, timeBtn;
+
+    //api
+    private Api api;
 
     //data z login/main screeny
     private Login login;
@@ -48,6 +56,8 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scenario_add_screen_one);
+
+        apiConnection();
 
         //session
         SessionManagement sessionManagement = new SessionManagement(Scenario_add_screen_one.this);
@@ -79,6 +89,16 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
         setNavigationView();
     }
 
+    //pripojenie sa na api
+    public void apiConnection()
+    {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://bcjurajstekla.ddnsfree.com/public_api/api2/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        api = retrofit.create(Api.class);
+    }
 
     //bocny navigacny panel
     public void setNavigationView()
@@ -145,6 +165,11 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void initializeScreen()
+    {
+
     }
 
     @Override

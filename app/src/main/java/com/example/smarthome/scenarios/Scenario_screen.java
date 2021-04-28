@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -21,17 +22,25 @@ import android.widget.TextView;
 
 import com.example.smarthome.connection.Api;
 import com.example.smarthome.connection.Login;
+import com.example.smarthome.connection.Rooms;
+import com.example.smarthome.connection.Scenarios;
 import com.example.smarthome.connection.SessionManagement;
 import com.example.smarthome.login.Login_screen;
 import com.example.smarthome.main.Main_screen;
 import com.example.smarthome.R;
+import com.example.smarthome.main.Room_item;
 import com.example.smarthome.profile.Profile_screen;
+import com.example.smarthome.settings.Dark_mode;
 import com.example.smarthome.settings.Settings_screen;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -42,17 +51,14 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
     private NavigationView navigationView;
     private Toolbar toolbar;
 
-    //pridanie scenara
-//    private AlertDialog dialog;
-//    private EditText scenarioName;
-//    private Button nextScenario, backScenario;
-
     //zoznam scenarov
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter; // bridge medzi datami a recycler view
     private RecyclerView.LayoutManager mLayoutManager;
 
+    //scenare
     private ArrayList<Scenario_item> scenarioList;
+    private List<Scenarios> scenarios;
 
     //api
     private Api api;
@@ -71,22 +77,31 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
         //session
         SessionManagement sessionManagement = new SessionManagement(Scenario_screen.this);
         login =  sessionManagement.getLoginSession();
+
+        SessionManagement darkModeSessionManagement = new SessionManagement(Scenario_screen.this);
+        Dark_mode darkMode = darkModeSessionManagement.getDarkModeSession();
         ////////////////////////////////////////////////////////////////////////////////////////////
+
+        if (darkMode.isDark_mode())
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
         createScenarioList();
 
         //tlacidlo na pridanie noveho scenara
-        FloatingActionButton addScenario = (FloatingActionButton) findViewById(R.id.addScenario);
-        addScenario.setOnClickListener(new View.OnClickListener()
+        FloatingActionButton addScenario = findViewById(R.id.addScenario);
+        if (canEdit())
         {
-            @Override
-            public void onClick(View v)
+            addScenario.setOnClickListener(v ->
             {
                 Intent intent = new Intent(Scenario_screen.this, Scenario_add_screen_one.class);
                 startActivity(intent);
-            }
-        });
+            });
+        }
 
+        else
+            addScenario.setVisibility(View.INVISIBLE);
+
+        getScenarios();
         setRecyclerView();
         setNavigationView();
     }
@@ -183,6 +198,38 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
     public void createScenarioList()
     {
         scenarioList = new ArrayList<>();
+    }
+
+    public void getScenarios()
+    {
+        Call<List<Scenarios>> call = api.getScenarios(login.getHouseholdId());
+        call.enqueue(new Callback<List<Scenarios>>()
+        {
+            @Override
+            public void onResponse(Call<List<Scenarios>> call, Response<List<Scenarios>> response)
+            {
+                if (!response.isSuccessful())
+                {
+                    System.out.println("call = " + call + ", response = " + response);
+                    return;
+                }
+
+                scenarios = response.body();
+                final int position = 0;
+
+                for (Scenarios scenario: scenarios)
+                {
+                    scenarioList.add(position, new Scenario_item(R.drawable.scenario_icon, scenario.getScenarioName()));
+                    mAdapter.notifyItemInserted(position);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Scenarios>> call, Throwable t)
+            {
+                System.out.println("call = " + call + ", t = " + t);
+            }
+        });
     }
 
 //    //prida scenar na index 0 v arrayliste
@@ -286,6 +333,14 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
 //            dialog.show();
 //        }
 //    };
+
+    public boolean canEdit()
+    {
+        if (login.getRole() == 1)
+            return true;
+        else
+            return false;
+    }
 
     //odhlasenie sa z aplikacie (zrusenie session)
     public void logout()

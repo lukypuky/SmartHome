@@ -2,7 +2,7 @@ package com.example.smarthome.scenarios;
 
 public class Scenario_item extends android.app.Activity
 {
-    private int mimageResource;
+    private int mImageResource;
     private String mtext;
 
     public Scenario_item()
@@ -12,13 +12,13 @@ public class Scenario_item extends android.app.Activity
 
     public Scenario_item(int imageResource, String text)
     {
-        mimageResource = imageResource;
+        mImageResource = imageResource;
         mtext = text;
     }
 
     public int getImageResource()
     {
-        return mimageResource;
+        return mImageResource;
     }
 
     public String getText()

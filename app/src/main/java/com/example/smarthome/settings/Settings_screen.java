@@ -10,6 +10,9 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -38,17 +41,23 @@ import android.widget.Toast;
 import com.example.smarthome.connection.Api;
 import com.example.smarthome.connection.Login;
 import com.example.smarthome.connection.Registration;
+import com.example.smarthome.connection.Rooms;
 import com.example.smarthome.connection.SessionManagement;
 import com.example.smarthome.connection.Users;
 import com.example.smarthome.login.Login_screen;
 import com.example.smarthome.main.Main_screen;
 import com.example.smarthome.R;
+import com.example.smarthome.main.Room_adapter;
+import com.example.smarthome.main.Room_item;
 import com.example.smarthome.main.Room_screen;
 import com.example.smarthome.profile.Profile_screen;
 import com.example.smarthome.registration.Registration_screen;
 import com.example.smarthome.scenarios.Scenario_screen;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import retrofit2.Call;
@@ -57,21 +66,37 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class Settings_screen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
+public class Settings_screen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, User_adapter.OnUserListener
 {
     //menu
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private Toolbar toolbar;
 
+    //zoznam userov
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter; // bridge medzi datami a recycler view
+    private RecyclerView.LayoutManager mLayoutManager;
+
     //pridanie usera
     private Button saveUser, unsaveUser;
     private EditText userName, email, password, confPassword;
     private AlertDialog dialog;
-    private TextView addUser;
+
+    //edit usera
+    private AlertDialog.Builder editUserDialog;
+    private EditText editUserName, editEmail, editPassword;
+    private Spinner editRole;
+    private String stringUserName, stringEmail, stringPassword;
+    private int intRole, userId;
+    private AlertDialog editDialog;
 
     //dark mode
     private SwitchCompat switchCompat;
+
+    //users
+    private ArrayList<User_item> userList;
+    private List<Users> users;
 
     //api
     private Api api;
@@ -95,14 +120,8 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
         Dark_mode darkMode = darkModeSessionManagement.getDarkModeSession();
         ////////////////////////////////////////////////////////////////////////////////////////////
 
-        if (canEdit())
-        {
-            addUser = findViewById(R.id.settings_add_user);
-            ImageView addUserImage = findViewById(R.id.settings_add_user_image);
-            addUserImage.setVisibility(View.VISIBLE);
-            addUser.setVisibility(View.VISIBLE);
-            addUser.setOnClickListener(v -> addUser());
-        }
+        //initialize recyclee view
+        mRecyclerView = findViewById(R.id.settingsRecyclerView);
 
         switchCompat = findViewById(R.id.settings_dark_mode_swtich);
         if (darkMode.isDark_mode())
@@ -128,9 +147,20 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
             }
         });
 
+        createUserList();
+
+        if (canEdit())
+        {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            FloatingActionButton addUser = findViewById(R.id.settings_add_user);
+            addUser.setVisibility(View.VISIBLE);
+            addUser.setOnClickListener(v -> addUser());
+        }
+
+        getUsers();
+        setRecyclerView();
         setNavigationView();
     }
-
 
     public void apiConnection()
     {
@@ -140,6 +170,18 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
                 .build();
 
         api = retrofit.create(Api.class);
+    }
+
+    //plocha pre userov v domacnosti
+    public void setRecyclerView()
+    {
+        mRecyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(this);
+        mAdapter = new User_adapter(userList, login, this);
+
+        mRecyclerView.setLayoutManager(mLayoutManager);
+//        new ItemTouchHelper(roomToRemove).attachToRecyclerView(mRecyclerView);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     //bocny navigacny panel
@@ -204,6 +246,11 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void createUserList()
+    {
+        userList = new ArrayList<>();
     }
 
     public void initializeDialog()
@@ -303,6 +350,9 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
                 {
                     Toast.makeText(Settings_screen.this, "Používateľ bol vytvorený", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
+                    Intent profile_intent = new Intent(Settings_screen.this, Settings_screen.class);
+                    startActivity(profile_intent);
+                    Settings_screen.this.finish();
                 }
 
                 else
@@ -315,6 +365,186 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
                 System.out.println("call = " + call + ", t = " + t);
             }
         });
+    }
+
+    @Override
+    public void onUserClick(int position)
+    {
+        userDisplayMode(position);
+    }
+
+    @Override
+    public void onEditClick(int position)
+    {
+        editUserDialog(position);
+    }
+
+    public void editUserDialog(int position)
+    {
+        initializeEditDialog();
+        setEditDialogValues(position);
+
+        saveUser.setOnClickListener(v ->
+        {
+            getValuesFromUser(position);
+
+            Call<Users> call = api.editProfile(userId, stringUserName, stringEmail, stringPassword, intRole, login.getHouseholdId());
+
+            call.enqueue(new Callback<Users>()
+            {
+                @Override
+                public void onResponse(Call<Users> call, Response<Users> response)
+                {
+                    if (!response.isSuccessful())
+                    {
+                        System.out.println("call = " + call + ", response = " + response);
+                        return;
+                    }
+
+                    if (response.body().getUserStatus() == 1)
+                        Toast.makeText(Settings_screen.this, "Profil bol zmenený", Toast.LENGTH_SHORT).show();
+
+                    if (userId == login.getUserId()) // len ked menim aktualne prihlaseneho usera
+                    {
+                        Login newLogin = new Login(userId, stringUserName, stringEmail, login.getHouseholdId(), login.getHouseholdName(), intRole);
+                        SessionManagement sessionManagement = new SessionManagement(Settings_screen.this);
+                        sessionManagement.saveLoginSession(newLogin);
+                    }
+
+                    editDialog.dismiss();
+                    Intent profile_intent = new Intent(Settings_screen.this, Settings_screen.class);
+                    startActivity(profile_intent);
+                    Settings_screen.this.finish();
+                }
+
+                @Override
+                public void onFailure(Call<Users> call, Throwable t)
+                {
+                    System.out.println("call = " + call + ", t = " + t);
+                }
+            });
+        });
+
+        unsaveUser.setOnClickListener(v -> editDialog.dismiss());
+    }
+
+    public void setEditDialogValues(int position)
+    {
+        editUserName.setText(userList.get(position).getSettingsUserName());
+        editEmail.setText(userList.get(position).getSettingsUserEmail());
+        editPassword.setText(userList.get(position).getSettingsUserPassword());
+
+        String stringRole = getRole(userList.get(position).getSettingsUserRole());
+        editRole.setSelection(getIndexOfSpinner(editRole, stringRole));
+    }
+
+    public void userDisplayMode(int position)
+    {
+        initializeEditDialog();
+        setEditDialogValues(position);
+
+        saveUser.setVisibility(View.INVISIBLE);
+        editUserName.setEnabled(false);
+        editEmail.setEnabled(false);
+        editPassword.setEnabled(false);
+        editRole.setEnabled(false);
+
+        unsaveUser.setOnClickListener(v -> editDialog.dismiss());
+    }
+
+    public void initializeEditDialog()
+    {
+        editUserDialog = new AlertDialog.Builder(Settings_screen.this);
+        View contactPopupView = getLayoutInflater().inflate(R.layout.edit_user_popup,null);
+
+        editUserName = contactPopupView.findViewById(R.id.profileName);
+        editEmail = contactPopupView.findViewById(R.id.profileEmail);;
+        editPassword = contactPopupView.findViewById(R.id.profilePassword);;
+        editRole = contactPopupView.findViewById(R.id.profileRole);
+
+        saveUser = contactPopupView.findViewById(R.id.saveUserButton);
+        unsaveUser = contactPopupView.findViewById(R.id.unsaveUserButton);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(Settings_screen.this,
+                android.R.layout.simple_spinner_item,
+                getResources().getStringArray(R.array.roles));
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        editRole.setAdapter(adapter);
+        editUserDialog.setView(contactPopupView);
+        editDialog = editUserDialog.create();
+        editDialog.show();
+    }
+
+    public void getUsers()
+    {
+        Call<List<Users>> call = api.getUsers(login.getHouseholdId());
+        call.enqueue(new Callback<List<Users>>()
+        {
+            @Override
+            public void onResponse(Call<List<Users>> call, Response<List<Users>> response)
+            {
+                if (!response.isSuccessful())
+                {
+                    System.out.println("call = " + call + ", response = " + response);
+                    return;
+                }
+
+                users = response.body();
+                final int position = 0;
+
+                for (Users user: users)
+                {
+                    if (!user.getUserEmail().equals(login.getUserEmail()))
+                    {
+                        userList.add(position, new User_item(user.getUserId(), user.getUserName(), user.getUserEmail(), user.getUserPassword(), user.getUserRole()));
+                        mAdapter.notifyItemInserted(position);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Users>> call, Throwable t)
+            {
+                System.out.println("call = " + call + ", t = " + t);
+            }
+        });
+    }
+
+    //get role z id_role
+    public String getRole(int role)
+    {
+        if (role == 1)
+            return "Admin";
+
+        else
+            return "Bežný používateľ";
+    }
+
+    private int getIndexOfSpinner(Spinner spinner, String myString)
+    {
+        for (int i=0; i<spinner.getCount(); i++)
+        {
+            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString))
+                return i;
+        }
+
+        return 0;
+    }
+
+    public void getValuesFromUser(int position)
+    {
+        userId = userList.get(position).getSettingUserId();
+        stringUserName = editUserName.getText().toString();
+        stringEmail = editEmail.getText().toString();
+        stringPassword = editPassword.getText().toString();
+
+        String tmpRoleString = editRole.getSelectedItem().toString();
+        if (tmpRoleString.equals("Admin"))
+            intRole = 1;
+        else
+            intRole = 2;
     }
 
     public void setDarkMode(boolean option)
