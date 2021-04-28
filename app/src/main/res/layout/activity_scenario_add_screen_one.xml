@@ -62,7 +62,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/imageView7"
                 app:layout_constraintTop_toBottomOf="@+id/toolbar" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
@@ -95,27 +94,36 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <RadioButton
-            android:id="@+id/scenarioOneManualBtn"
+        <RadioGroup
+            android:id="@+id/radioGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="45dp"
+            android:layout_marginStart="15dp"
             android:layout_marginTop="5dp"
-            android:text="Manuálny"
-            android:textSize="16sp"
+            android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/scenarioOneControlTag" />
+            app:layout_constraintTop_toBottomOf="@+id/scenarioOneControlTag">
 
-        <RadioButton
-            android:id="@+id/scenarioOneAutoBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="50dp"
-            android:layout_marginTop="5dp"
-            android:text="Automatický"
-            android:textSize="16sp"
-            app:layout_constraintStart_toEndOf="@+id/scenarioOneManualBtn"
-            app:layout_constraintTop_toBottomOf="@+id/scenarioOneControlTag" />
+            <RadioButton
+                android:id="@+id/scenarioOneManualBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="45dp"
+                android:text="Manuálny"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:layout_editor_absoluteY="290dp" />
+
+            <RadioButton
+                android:id="@+id/scenarioOneAutoBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="50dp"
+                android:text="Automatický"
+                android:textSize="16sp"
+                app:layout_constraintStart_toEndOf="@+id/scenarioOneManualBtn"
+                tools:layout_editor_absoluteY="293dp" />
+        </RadioGroup>
 
         <Spinner
             android:id="@+id/scenarioOneRoomSpinner"
@@ -145,10 +153,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="45dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:text="Typ ovládania scenára"
             android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/scenarioOneManualBtn"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/scenarioOneName" />
 
@@ -157,12 +164,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="45dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:text="Výber senzora pre súšťanie scenára"
             android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@+id/scenarioOneRoomSpinner"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/scenarioOneManualBtn" />
+            app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
 
         <Button
             android:id="@+id/scenarioOneTimeBtn"
@@ -231,5 +238,102 @@
             android:visibility="invisible"
             app:layout_constraintEnd_toStartOf="@+id/scenarioOneHour"
             app:layout_constraintTop_toBottomOf="@+id/scenarioOneDeviceSpinner" />
+
+        <SeekBar
+            android:id="@+id/scenarioOneBarFrom"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="17dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintEnd_toStartOf="@+id/scenarioOneValueFrom"
+            app:layout_constraintStart_toEndOf="@+id/scenarioOneValueFromTag"
+            app:layout_constraintTop_toBottomOf="@+id/scenarioOneSeekBarTag" />
+
+        <SeekBar
+            android:id="@+id/scenarioOneBarTo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintEnd_toStartOf="@+id/scenarioOneValueTo"
+            app:layout_constraintStart_toEndOf="@+id/scenarioOneValueToTag"
+            app:layout_constraintTop_toBottomOf="@+id/scenarioOneBarFrom" />
+
+        <TextView
+            android:id="@+id/scenarioOneSeekBarTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="45dp"
+            android:layout_marginTop="20dp"
+            android:text="Zvoľte interval, kedy bude scenár zapnutý"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/scenarioOneTimeBtn" />
+
+        <TextView
+            android:id="@+id/scenarioOneValueFromTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="45dp"
+            android:layout_marginTop="10dp"
+            android:text="Od:"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/scenarioOneSeekBarTag" />
+
+        <TextView
+            android:id="@+id/scenarioOneValueToTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="45dp"
+            android:layout_marginTop="10dp"
+            android:text="Do:"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/scenarioOneValueFromTag" />
+
+        <TextView
+            android:id="@+id/scenarioOneValueFrom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="30"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toStartOf="@+id/scenarioOneUnitFrom"
+            app:layout_constraintTop_toBottomOf="@+id/scenarioOneSeekBarTag" />
+
+        <TextView
+            android:id="@+id/scenarioOneUnitFrom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="45dp"
+            android:text="%"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/scenarioOneSeekBarTag" />
+
+        <TextView
+            android:id="@+id/scenarioOneValueTo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="50"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toStartOf="@+id/scenarioOneUnitTo"
+            app:layout_constraintTop_toBottomOf="@+id/scenarioOneValueFromTag" />
+
+        <TextView
+            android:id="@+id/scenarioOneUnitTo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="45dp"
+            android:text="%"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/scenarioOneValueFromTag" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.drawerlayout.widget.DrawerLayout>

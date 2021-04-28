@@ -75,7 +75,6 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     private Api api;
 
     //data z login screeny
-    private int householdId;
     private Login login;
 
     @Override
@@ -209,7 +208,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     public void insertRoom(EditText roomName, String roomType)
     {
         String name = roomName.getText().toString();
-        Call<Rooms> call = api.postRoom(name, roomType, householdId);
+        Call<Rooms> call = api.postRoom(name, roomType, login.getHouseholdId());
 
         call.enqueue(new Callback<Rooms>()
         {
@@ -462,7 +461,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     //getne vsetky miestnosti pre danu domacnost
     public void getRooms()
     {
-        Call<List<Rooms>> call = api.getRooms(householdId);
+        Call<List<Rooms>> call = api.getRooms(login.getHouseholdId());
         call.enqueue(new Callback<List<Rooms>>()
         {
             @Override
@@ -480,7 +479,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
                 for (Rooms room: rooms)
                 {
                     int image = getRoomImage(room.getRoomType());
-                    roomList.add(position, new Room_item(image, room.getRoomName(), room.getRoomType(), householdId, room.getRoomId(), room.getDevicesCount()));
+                    roomList.add(position, new Room_item(image, room.getRoomName(), room.getRoomType(), login.getHouseholdId(), room.getRoomId(), room.getDevicesCount()));
                     mAdapter.notifyItemInserted(position);
                 }
             }
@@ -530,9 +529,6 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         //nastavenie UserName v headeri appky
         TextView userName = findViewById(R.id.mainUserName);
         userName.setText(login.getUsername());
-
-        //nastavenie id_household
-        householdId = login.getHouseholdId();
     }
 
     public boolean canEdit()

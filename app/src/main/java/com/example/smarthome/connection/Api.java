@@ -20,6 +20,11 @@ public interface Api
                               @Query("id_household") int id_household
     );
 
+    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+    @GET("users.php")
+    Call<List<Users>> getUsers(@Query("id_household") int id_household
+    );
+
     //edit profilu
     @FormUrlEncoded
     @HTTP(method = "PUT", path = "users.php", hasBody = true)
@@ -145,5 +150,24 @@ public interface Api
             @Field("status_humidity") int humidity,
             @Field("status_temperature") double temperature,
             @Field("connectivity") int connectivity
+    );
+
+    //getne vsetky scenare pre danu domacnost
+    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+    @GET("scenario.php")
+    Call<List<Scenarios>> getScenarios(@Query("id_household") int householdId);
+
+    //insert scenartio
+    @FormUrlEncoded
+    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+    @POST("scenario.php")
+    Call<Rooms> postScenario(
+            @Field("name") String scenarioName,
+            @Field("executingType") String roomTyp,
+            @Field("sensorId") String sensorId,
+            @Field("isRunning") int isRunning,
+            @Field("status") String status,
+            @Field("time") String time,
+            @Field("id_household") int householdId
     );
 }

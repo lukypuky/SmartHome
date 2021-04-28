@@ -25,7 +25,8 @@ public class Users
     @SerializedName("status")
     private int userStatus;
 
-    public Users(int userId, String userName, String userEmail, String userPassword, int userRole, int userHouseholdId) {
+    public Users(int userId, String userName, String userEmail, String userPassword, int userRole, int userHouseholdId)
+    {
         this.userId = userId;
         this.userName = userName;
         this.userEmail = userEmail;

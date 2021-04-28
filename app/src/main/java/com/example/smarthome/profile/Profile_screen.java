@@ -62,8 +62,8 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     private Api api;
 
     //edit
-    FloatingActionButton editProfile, saveProfile, cancelProfile;
-    Animation fabOpen, fabClose, fabRClockwise, fabRAnticlockwise;
+    private FloatingActionButton editProfile, saveProfile, cancelProfile;
+    private Animation fabOpen, fabClose, fabRClockwise, fabRAnticlockwise;
     boolean isOpen = false;
 
     private Login login;
@@ -232,10 +232,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     //getne zvysne info o pouzivatelovi, ktore sme nedostali pri logine
     public void getUserInfo()
     {
-        int tmpUserId = login.getUserId();
-        int tmpHomeId = login.getHouseholdId();
-
-        Call<List<Users>> call = api.getUser(tmpUserId, tmpHomeId);
+        Call<List<Users>> call = api.getUser(login.getUserId(), login.getHouseholdId());
         call.enqueue(new Callback<List<Users>>()
         {
             @Override
@@ -331,9 +328,6 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
         userName.setEnabled(true);
         email.setEnabled(true);
         password.setEnabled(true);
-
-        if (canEdit())
-            profileRole.setEnabled(true);
 
         saveProfile.startAnimation(fabOpen);
         cancelProfile.startAnimation(fabOpen);
