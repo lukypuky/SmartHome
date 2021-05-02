@@ -8,13 +8,13 @@ public class Rooms
     private int roomId;
 
     @SerializedName("name")
-    private final String roomName;
+    private String roomName;
 
     @SerializedName("type")
-    private final String roomType;
+    private String roomType;
 
     @SerializedName("id_household")
-    private final int idHousehold;
+    private int idHousehold;
 
     @SerializedName("status")
     private int roomStatus;
@@ -22,12 +22,12 @@ public class Rooms
     @SerializedName("devicesCount")
     private int devicesCount;
 
-    public Rooms(String roomName, String roomType, int idHousehold)
-    {
-        this.roomName = roomName;
-        this.roomType = roomType;
-        this. idHousehold = idHousehold;
-    }
+//    public Rooms(String roomName, String roomType, int idHousehold)
+//    {
+//        this.roomName = roomName;
+//        this.roomType = roomType;
+//        this. idHousehold = idHousehold;
+//    }
 
     public int getRoomId()
     {

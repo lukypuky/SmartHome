@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smarthome.R;
 import com.example.smarthome.connection.Api;
+import com.example.smarthome.connection.Devices;
 import com.example.smarthome.connection.Login;
 import com.example.smarthome.connection.Rooms;
 import com.example.smarthome.connection.SessionManagement;
@@ -69,7 +70,6 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
 
     //miestnosti
     private ArrayList<Room_item> roomList;
-    private List<Rooms> rooms;
 
     //api
     private Api api;
@@ -447,6 +447,8 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         SessionManagement sessionManagement = new SessionManagement(Main_screen.this);
         sessionManagement.saveRoomSession(ri);
 
+        System.out.println("ROOM CLICKED " + roomList.get(position).getId_room());
+
         Intent intent = new Intent(this, Room_screen.class);
         startActivity(intent);
     }
@@ -473,7 +475,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
                     return;
                 }
 
-                rooms = response.body();
+                List<Rooms> rooms = response.body();
                 final int position = 0;
 
                 for (Rooms room: rooms)

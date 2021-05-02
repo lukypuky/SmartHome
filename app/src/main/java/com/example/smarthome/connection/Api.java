@@ -102,7 +102,7 @@ public interface Api
             @Field("email") String email,
             @Field("password") String password,
             @Field("role") int role,
-            @Field("id_household") int householdId
+            @Field("id_household") int id_household
     );
 
     //getne vsetky devices pre danu miestnost
@@ -155,19 +155,45 @@ public interface Api
     //getne vsetky scenare pre danu domacnost
     @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
     @GET("scenario.php")
-    Call<List<Scenarios>> getScenarios(@Query("id_household") int householdId);
+    Call<List<Scenarios>> getScenarios(
+            @Query("id_household") int id_household);
 
-    //insert scenartio
+    //getne vsetky miestnosti s connected sensors
+    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+    @GET("scenario.php")
+    Call<List<Rooms>> getRoomsWithSensors(
+            @Query("id_household") int id_household,
+            @Query("sensors") int sensors
+    );
+
+    //getne vsetky connected senzory z danej roomky
+    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+    @GET("scenario.php")
+    Call<List<Devices>> getSensors(
+            @Query("id_household") int id_household,
+            @Query("id_room") int id_room,
+            @Query("sensors") int sensors
+    );
+
+    //insert scenario
     @FormUrlEncoded
     @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
     @POST("scenario.php")
-    Call<Rooms> postScenario(
+    Call<Scenarios> postScenario(
             @Field("name") String scenarioName,
-            @Field("executingType") String roomTyp,
-            @Field("sensorId") String sensorId,
+            @Field("executingType") String executingType,
+            @Field("sensorId") String id_sensor,
             @Field("isRunning") int isRunning,
             @Field("status") String status,
             @Field("time") String time,
-            @Field("id_household") int householdId
+            @Field("id_household") int id_household
+    );
+
+    //get steps na zakalde scenara
+    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+    @GET("steps.php")
+    Call<List<Steps>> getSteps(
+            @Query("id_scenar") int id_scenario,
+            @Query("id_household") int id_household
     );
 }

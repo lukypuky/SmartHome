@@ -3,6 +3,7 @@ package com.example.smarthome.scenarios;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -18,18 +19,28 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.smarthome.R;
+import com.example.smarthome.connection.Api;
+import com.example.smarthome.connection.Devices;
 import com.example.smarthome.connection.Login;
 import com.example.smarthome.connection.SessionManagement;
+import com.example.smarthome.connection.Steps;
+import com.example.smarthome.devices.Device_item;
 import com.example.smarthome.login.Login_screen;
 import com.example.smarthome.main.Main_screen;
-import com.example.smarthome.main.Room_adapter;
-import com.example.smarthome.main.Room_item;
 import com.example.smarthome.profile.Profile_screen;
+import com.example.smarthome.settings.Dark_mode;
 import com.example.smarthome.settings.Settings_screen;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Scenario_add_screen_two extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Step_adapter.OnStepListener
 {
@@ -46,8 +57,14 @@ public class Scenario_add_screen_two extends AppCompatActivity implements Naviga
     //miestnosti
     private ArrayList<Step_item> stepList;
 
+    //api
+    private Api api;
+
     //data z login/main screeny
     private Login login;
+
+    //data zo scenario screeny
+    private Scenario_item si;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -55,10 +72,21 @@ public class Scenario_add_screen_two extends AppCompatActivity implements Naviga
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scenario_add_screen_two);
 
+        apiConnection();
+
         //session
         SessionManagement sessionManagement = new SessionManagement(Scenario_add_screen_two.this);
         login =  sessionManagement.getLoginSession();
+
+        SessionManagement scenarioSessionManagement = new SessionManagement(Scenario_add_screen_two.this);
+        si =  scenarioSessionManagement.getScenarioSession();
+
+        SessionManagement darkModeSessionManagement = new SessionManagement(Scenario_add_screen_two.this);
+        Dark_mode darkMode = darkModeSessionManagement.getDarkModeSession();
         ////////////////////////////////////////////////////////////////////////////////////////////
+
+        if (darkMode.isDark_mode())
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
         createStepList();
 
@@ -73,8 +101,20 @@ public class Scenario_add_screen_two extends AppCompatActivity implements Naviga
             }
         });
 
+        getSteps();
         setRecyclerView();
         setNavigationView();
+    }
+
+    //pripojenie sa na api
+    public void apiConnection()
+    {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://bcjurajstekla.ddnsfree.com/public_api/api2/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        api = retrofit.create(Api.class);
     }
 
     //plocha pre stepy
@@ -93,15 +133,6 @@ public class Scenario_add_screen_two extends AppCompatActivity implements Naviga
     public void createStepList()
     {
         stepList = new ArrayList<>();
-        stepList.add(0, new Step_item("test"));
-        stepList.add(1, new Step_item("test2"));
-        stepList.add(2, new Step_item("test3"));
-        stepList.add(0, new Step_item("test"));
-        stepList.add(1, new Step_item("test2"));
-        stepList.add(2, new Step_item("test3"));
-        stepList.add(0, new Step_item("test"));
-        stepList.add(1, new Step_item("test2"));
-        stepList.add(2, new Step_item("test3"));
     }
 
     //bocny navigacny panel
@@ -170,6 +201,40 @@ public class Scenario_add_screen_two extends AppCompatActivity implements Naviga
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void getSteps()
+    {
+        System.out.println("SCENAR ID " + si.getScenarioId());
+        Call<List<Steps>> call = api.getSteps(si.getScenarioId(), login.getHouseholdId());
+
+        call.enqueue(new Callback<List<Steps>>()
+        {
+            @Override
+            public void onResponse(Call<List<Steps>> call, Response<List<Steps>> response)
+            {
+                if (!response.isSuccessful())
+                {
+                    System.out.println("call = " + call + ", response = " + response);
+                    return;
+                }
+
+                List<Steps> steps = response.body();
+                final int position = 0;
+
+                for (Steps step: steps)
+                {
+                    stepList.add(position, new Step_item(step.getStepName()));
+                    mAdapter.notifyItemInserted(position);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Steps>> call, Throwable t)
+            {
+                System.out.println("call = " + call + ", t = " + t);
+            }
+        });
     }
 
     //odhlasenie sa z aplikacie (zrusenie session)

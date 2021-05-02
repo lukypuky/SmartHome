@@ -81,7 +81,6 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
 
     //zariadenia
     private ArrayList<Device_item> deviceList;
-    private List<Devices> devices;
 
     //api
     private Api api;
@@ -265,7 +264,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         if(spinDeviceType.equals("Alarm"))
             return "2/alarm";
         else if(spinDeviceType.equals("Dymový senzor"))
-            return "1/smoke_sensor";
+            return "2/smoke_sensor";
         else if(spinDeviceType.equals("Kúrenie"))
             return "0/heating";
         else if(spinDeviceType.equals("Svetelný senzor"))
@@ -277,7 +276,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         else if(spinDeviceType.equals("Vlhkomer"))
             return "1/hygrometer";
         else if(spinDeviceType.equals("Záplavový senzor"))
-            return "1/flood_sensor";
+            return "2/flood_sensor";
         else if(spinDeviceType.equals("Zásuvka"))
             return "0/socket";
         else if(spinDeviceType.equals("Žalúzie"))
@@ -711,7 +710,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
                     return;
                 }
 
-                devices = response.body();
+                List<Devices> devices = response.body();
                 final int position = 0;
 
                 for (Devices device: devices)
