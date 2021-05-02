@@ -16,11 +16,14 @@ public class Scenarios
     @SerializedName("sensorId")
     private String sensorId;
 
+    @SerializedName("isExecutable")
+    private int isExecutable;
+
     @SerializedName("isRunning")
     private int isRunning;
 
     @SerializedName("status")
-    private String status;
+    private String scenarioStatus;
 
     @SerializedName("time")
     private String time;
@@ -48,14 +51,19 @@ public class Scenarios
         return sensorId;
     }
 
+    public int getIsExecutable()
+    {
+        return isExecutable;
+    }
+
     public int getIsRunning()
     {
         return isRunning;
     }
 
-    public String getStatus()
+    public String getScenarioStatus()
     {
-        return status;
+        return scenarioStatus;
     }
 
     public String getTime()

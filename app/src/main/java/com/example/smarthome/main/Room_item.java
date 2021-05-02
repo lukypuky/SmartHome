@@ -11,6 +11,12 @@ public class Room_item extends android.app.Activity
 
     }
 
+    public Room_item(String roomName, int id_room)
+    {
+        this.roomName = roomName;
+        this.id_room = id_room;
+    }
+
     public Room_item(String roomName, int intRoomType, int id_room)
     {
         this.roomName = roomName;
@@ -26,6 +32,12 @@ public class Room_item extends android.app.Activity
         this.id_household = id_household;
         this.id_room = id_room;
         this.devicesCount = devicesCount;
+    }
+
+    @Override
+    public String toString()
+    {
+        return roomName;
     }
 
     public int getImageResource()

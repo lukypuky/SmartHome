@@ -12,6 +12,13 @@ public class Device_item extends android.app.Activity
 
     }
 
+    public Device_item(String deviceName, int deviceId, String deviceType)
+    {
+        this.deviceName = deviceName;
+        this.deviceId = deviceId;
+        this.deviceType = deviceType;
+    }
+
     public Device_item(int imageResource, String deviceName, String deviceType, int deviceId, int isOn, int connectivity, int isActive, int isConnectedImage, int intensity, int humidity, double temperature)
     {
         this.imageResource = imageResource;
@@ -25,6 +32,12 @@ public class Device_item extends android.app.Activity
         this.intensity = intensity;
         this.humidity = humidity;
         this.temperature = temperature;
+    }
+
+    @Override
+    public String toString()
+    {
+        return deviceName;
     }
 
     public int getImageResource()

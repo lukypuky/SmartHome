@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 
 import com.example.smarthome.main.Room_adapter;
 import com.example.smarthome.main.Room_item;
+import com.example.smarthome.scenarios.Scenario_item;
 import com.example.smarthome.settings.Dark_mode;
 
 public class SessionManagement
@@ -29,6 +30,9 @@ public class SessionManagement
     String SESSION_ROOM_NAME = "room_name";
     String SESSION_ROOM_TYPE = "room_type";
     String SESSION_ROOM_ID = "id_room";
+
+    //scenario_item
+    String SESSION_SCENARIO_ID = "id_scenario";
 
     @SuppressLint("CommitPrefEdits")
     public SessionManagement(Context context)
@@ -72,6 +76,13 @@ public class SessionManagement
         editor.putBoolean(SESSION_DARK_MODE, darkMode).commit();
     }
 
+    public void saveScenarioSession(Scenario_item si)
+    {
+        int scenarioId = si.getScenarioId();
+
+        editor.putInt(SESSION_SCENARIO_ID, scenarioId).commit();
+    }
+
     public Login getLoginSession()
     {
         int loginUserId = sharedPreferences.getInt(SESSION_LOGIN_USER_ID,0);
@@ -97,6 +108,13 @@ public class SessionManagement
     {
         boolean dark_mode = sharedPreferences.getBoolean(SESSION_DARK_MODE, false);
         return new Dark_mode(dark_mode);
+    }
+
+    public Scenario_item getScenarioSession()
+    {
+        int scenarioItemId = sharedPreferences.getInt(SESSION_SCENARIO_ID,0);
+
+        return new Scenario_item(scenarioItemId);
     }
 
     public int getSession()

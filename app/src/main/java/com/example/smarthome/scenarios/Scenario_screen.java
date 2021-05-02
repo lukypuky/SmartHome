@@ -29,6 +29,7 @@ import com.example.smarthome.login.Login_screen;
 import com.example.smarthome.main.Main_screen;
 import com.example.smarthome.R;
 import com.example.smarthome.main.Room_item;
+import com.example.smarthome.main.Room_screen;
 import com.example.smarthome.profile.Profile_screen;
 import com.example.smarthome.settings.Dark_mode;
 import com.example.smarthome.settings.Settings_screen;
@@ -44,7 +45,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class Scenario_screen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
+public class Scenario_screen extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Scenario_adapter.OnScenarioListener
 {
     //menu
     private DrawerLayout drawerLayout;
@@ -123,7 +124,7 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
         mRecyclerView = findViewById(R.id.scenarioRecyclerView);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
-        mAdapter = new Scenario_adapter(scenarioList);
+        mAdapter = new Scenario_adapter(scenarioList,this);
 
         mRecyclerView.setLayoutManager(mLayoutManager);
 //        new ItemTouchHelper(scenarioToRemove).attachToRecyclerView(mRecyclerView);
@@ -219,7 +220,7 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
 
                 for (Scenarios scenario: scenarios)
                 {
-                    scenarioList.add(position, new Scenario_item(R.drawable.scenario_icon, scenario.getScenarioName()));
+                    scenarioList.add(position, new Scenario_item(R.drawable.scenario_icon, scenario.getScenarioName(), scenario.getScenarioID()));
                     mAdapter.notifyItemInserted(position);
                 }
             }
@@ -232,114 +233,23 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
         });
     }
 
-//    //prida scenar na index 0 v arrayliste
-//    public void insertScenario(EditText scenarioName)
-//    {
-//        String name = scenarioName.getText().toString();
-//        int position = 0;
-//
-//        scenarioList.add(position, new Scenario_item(R.drawable.scenario_icon,name));
-//        mAdapter.notifyItemInserted(position);
-//    }
-
-    //metoda na pridanie noveho scenara v domacnosti
-//    public void addScenarioFirstDialog()
-//    {
-//        initializeFirstDialog();
-//
-//        //potvrdenie pridania scenara
-//        nextScenario.setOnClickListener(new View.OnClickListener()
-//        {
-//            @Override
-//            public void onClick(View v)
-//            {
-////                //ak sa nevyplnil nazov scenara -> message
-////                if (scenarioName.getText().toString().isEmpty())
-////                {
-////                    Toast.makeText(Scenario_screen.this, "Zadajte názov pre scenár", Toast.LENGTH_SHORT).show();
-////                }
-////
-////                //ak je vsetko vyplnene, pridaj scenar do arraylistu
-////                else
-////                {
-////                    insertScenario(scenarioName);
-////                    Toast.makeText(Scenario_screen.this, "Scenár pridaný", Toast.LENGTH_SHORT).show();
-////                    dialog.dismiss();
-////                }
-//            }
-//        });
-//
-//        //zrusenie pridania scenara
-//        backScenario.setOnClickListener(new View.OnClickListener()
-//        {
-//            @Override
-//            public void onClick(View v)
-//            {
-//                dialog.dismiss();
-//            }
-//        });
-//    }
-
-//    public void initializeFirstDialog()
-//    {
-//        AlertDialog.Builder addScenarioDialog = new AlertDialog.Builder(Scenario_screen.this);
-//        View contactPopupView = getLayoutInflater().inflate(R.layout.add_scenario_first_screen, null);
-//
-//        nextScenario =  contactPopupView.findViewById(R.id.nextScenarioButton);
-//        backScenario =  contactPopupView.findViewById(R.id.unsaveScenarioButton);
-//
-//        addScenarioDialog.setView(contactPopupView);
-//        dialog = addScenarioDialog.create();
-//        dialog.show();
-//    }
-
-//    //mazanie scenara (with swap right)
-//    ItemTouchHelper.SimpleCallback scenarioToRemove = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT)
-//    {
-//        @Override
-//        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target)
-//        {
-//            return false;
-//        }
-//
-//        @Override
-//        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
-//        {
-//            //builder na potvrdenie zmazania
-//            AlertDialog.Builder builder = new AlertDialog.Builder(Scenario_screen.this);
-//            builder.setCancelable(true);
-//            builder.setMessage("Naozaj chcete odstrániť tento scenár '" + scenarioList.get(viewHolder.getAdapterPosition()).getText().toUpperCase() + "' ?");
-//            builder.setPositiveButton("Áno", new DialogInterface.OnClickListener()
-//            {
-//                @Override
-//                public void onClick(DialogInterface dialog, int which)
-//                {
-//                    scenarioList.remove(viewHolder.getAdapterPosition());
-//                    mAdapter.notifyDataSetChanged();
-//                }
-//            });
-//
-//            builder.setNegativeButton("Nie", new DialogInterface.OnClickListener()
-//            {
-//                @Override
-//                public void onClick(DialogInterface dialog, int which)
-//                {
-//                    dialog.dismiss();
-//                    mAdapter.notifyDataSetChanged();
-//                }
-//            });
-//
-//            AlertDialog dialog = builder.create();
-//            dialog.show();
-//        }
-//    };
-
     public boolean canEdit()
     {
         if (login.getRole() == 1)
             return true;
         else
             return false;
+    }
+
+    @Override
+    public void onScenarioClick(int position)
+    {
+        Scenario_item si = new Scenario_item(scenarioList.get(position).getScenarioId());
+        SessionManagement scenarioSessionManagement = new SessionManagement(Scenario_screen.this);
+        scenarioSessionManagement.saveScenarioSession(si);
+
+        Intent intent = new Intent(this, Scenario_add_screen_two.class);
+        startActivity(intent);
     }
 
     //odhlasenie sa z aplikacie (zrusenie session)

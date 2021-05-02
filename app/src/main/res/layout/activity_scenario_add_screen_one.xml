@@ -75,6 +75,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:text="Ďalej"
+            android:textColor="@color/textColor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -95,7 +96,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <RadioGroup
-            android:id="@+id/radioGroup"
+            android:id="@+id/scenarioOneRadioGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
@@ -132,6 +133,7 @@
             android:layout_marginStart="45dp"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="70dp"
+            android:visibility="invisible"
             app:layout_constraintBottom_toTopOf="@+id/scenarioOneDeviceSpinner"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -144,6 +146,7 @@
             android:layout_marginStart="45dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="70dp"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/scenarioOneRoomSpinner" />
@@ -167,9 +170,10 @@
             android:layout_marginTop="20dp"
             android:text="Výber senzora pre súšťanie scenára"
             android:textSize="16sp"
+            android:visibility="invisible"
             app:layout_constraintBottom_toTopOf="@+id/scenarioOneRoomSpinner"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
+            app:layout_constraintTop_toBottomOf="@+id/scenarioOneRadioGroup" />
 
         <Button
             android:id="@+id/scenarioOneTimeBtn"
@@ -178,6 +182,8 @@
             android:layout_marginStart="45dp"
             android:layout_marginTop="20dp"
             android:text="Zvoľte čas"
+            android:visibility="invisible"
+            android:textColor="@color/textColor"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/scenarioOneDeviceSpinner" />
 
@@ -246,6 +252,7 @@
             android:layout_marginStart="5dp"
             android:layout_marginTop="17dp"
             android:layout_marginEnd="10dp"
+            android:visibility="invisible"
             app:layout_constraintEnd_toStartOf="@+id/scenarioOneValueFrom"
             app:layout_constraintStart_toEndOf="@+id/scenarioOneValueFromTag"
             app:layout_constraintTop_toBottomOf="@+id/scenarioOneSeekBarTag" />
@@ -257,6 +264,7 @@
             android:layout_marginStart="5dp"
             android:layout_marginTop="25dp"
             android:layout_marginEnd="10dp"
+            android:visibility="invisible"
             app:layout_constraintEnd_toStartOf="@+id/scenarioOneValueTo"
             app:layout_constraintStart_toEndOf="@+id/scenarioOneValueToTag"
             app:layout_constraintTop_toBottomOf="@+id/scenarioOneBarFrom" />
@@ -269,6 +277,7 @@
             android:layout_marginTop="20dp"
             android:text="Zvoľte interval, kedy bude scenár zapnutý"
             android:textSize="16sp"
+            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/scenarioOneTimeBtn" />
 
@@ -280,6 +289,7 @@
             android:layout_marginTop="10dp"
             android:text="Od:"
             android:textSize="16sp"
+            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/scenarioOneSeekBarTag" />
 
@@ -291,6 +301,7 @@
             android:layout_marginTop="10dp"
             android:text="Do:"
             android:textSize="16sp"
+            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/scenarioOneValueFromTag" />
 
@@ -299,19 +310,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="30"
+            android:layout_marginEnd="50dp"
             android:textSize="16sp"
-            app:layout_constraintEnd_toStartOf="@+id/scenarioOneUnitFrom"
-            app:layout_constraintTop_toBottomOf="@+id/scenarioOneSeekBarTag" />
-
-        <TextView
-            android:id="@+id/scenarioOneUnitFrom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="45dp"
-            android:text="%"
-            android:textSize="16sp"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/scenarioOneSeekBarTag" />
 
@@ -320,20 +321,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="50"
+            android:layout_marginEnd="50dp"
             android:textSize="16sp"
-            app:layout_constraintEnd_toStartOf="@+id/scenarioOneUnitTo"
-            app:layout_constraintTop_toBottomOf="@+id/scenarioOneValueFromTag" />
-
-        <TextView
-            android:id="@+id/scenarioOneUnitTo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="45dp"
-            android:text="%"
-            android:textSize="16sp"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/scenarioOneValueFromTag" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.drawerlayout.widget.DrawerLayout>

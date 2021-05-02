@@ -93,6 +93,7 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
 
     //dark mode
     private SwitchCompat switchCompat;
+    private Dark_mode darkMode;
 
     //users
     private ArrayList<User_item> userList;
@@ -103,6 +104,7 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
 
     //data z login/main screeny
     private Login login;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -117,36 +119,13 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
         login =  sessionManagement.getLoginSession();
 
         SessionManagement darkModeSessionManagement = new SessionManagement(Settings_screen.this);
-        Dark_mode darkMode = darkModeSessionManagement.getDarkModeSession();
+        darkMode = darkModeSessionManagement.getDarkModeSession();
         ////////////////////////////////////////////////////////////////////////////////////////////
 
         //initialize recyclee view
         mRecyclerView = findViewById(R.id.settingsRecyclerView);
 
-        switchCompat = findViewById(R.id.settings_dark_mode_swtich);
-        if (darkMode.isDark_mode())
-        {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            switchCompat.setChecked(true);
-        }
-
-        switchCompat.setOnCheckedChangeListener((buttonView, isChecked) ->
-        {
-            if (isChecked)
-            {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                switchCompat.setChecked(true);
-                setDarkMode(true);
-            }
-
-            else
-            {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                switchCompat.setChecked(false);
-                setDarkMode(false);
-            }
-        });
-
+        handleDarkMode();
         createUserList();
 
         if (canEdit())
@@ -268,6 +247,33 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
         addUserDialog.setView(contactPopupView);
         dialog = addUserDialog.create();
         dialog.show();
+    }
+
+    public void handleDarkMode()
+    {
+        switchCompat = findViewById(R.id.settings_dark_mode_swtich);
+        if (darkMode.isDark_mode())
+        {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            switchCompat.setChecked(true);
+        }
+
+        switchCompat.setOnCheckedChangeListener((buttonView, isChecked) ->
+        {
+            if (isChecked)
+            {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                switchCompat.setChecked(true);
+                setDarkMode(true);
+            }
+
+            else
+            {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                switchCompat.setChecked(false);
+                setDarkMode(false);
+            }
+        });
     }
 
     public boolean canEdit()
