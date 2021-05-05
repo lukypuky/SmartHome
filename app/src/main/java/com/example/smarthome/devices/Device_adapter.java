@@ -149,6 +149,11 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
                 holder.deviceStatus.setText("Intenzita: ");
             }
 
+            else if (type.equals("socket"))
+            {
+                holder.deviceStatus.setText("Zariadenie zapnuté");
+            }
+
             else
             {
                 if (currentItem.getIsActive() == 1)
@@ -159,18 +164,29 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
 //                    holder.mImageWarning.startAnimation(animation);
                 }
 
-                else
-                    holder.deviceStatus.setText("Zariadenie zapnuté");
+                else if (currentItem.getIsOn() == 1)
+                {
+                    holder.deviceStatus.setText("Senzor je aktívny");
+                    holder.mImageWarning.setVisibility(View.INVISIBLE);
+                }
             }
         }
 
         else
         {
-            holder.deviceUnit.setText("");
-            holder.deviceValue.setText("");
-            holder.deviceStatus.setText("Zariadenie vypnuté");
-        }
+            if (type.equals("alarm") || type.equals("flood_sensor") || type.equals("smoke_sensor"))
+            {
+                holder.deviceStatus.setText("Senzor je neaktívny");
+                holder.mImageWarning.setVisibility(View.INVISIBLE);
+            }
 
+            else
+            {
+                holder.deviceUnit.setText("");
+                holder.deviceValue.setText("");
+                holder.deviceStatus.setText("Zariadenie vypnuté");
+            }
+        }
     }
 
     public String getDeviceUnit(Device_item currentItem)

@@ -392,7 +392,7 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
 
     public void fillDeviceSpinner()
     {
-        Call<List<Devices>> call = api.getSensors(login.getHouseholdId(),selectedRoom, 1); //selectedRoom
+        Call<List<Devices>> call = api.getSensors(login.getHouseholdId(),selectedRoom, 1);
 
         call.enqueue(new Callback<List<Devices>>()
         {

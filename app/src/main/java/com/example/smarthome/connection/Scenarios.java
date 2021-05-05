@@ -31,6 +31,9 @@ public class Scenarios
     @SerializedName("id_household")
     private int householdId;
 
+    @SerializedName("info")
+    private String info;
+
     public int getScenarioID()
     {
         return scenarioID;
@@ -69,5 +72,10 @@ public class Scenarios
     public String getTime()
     {
         return time;
+    }
+
+    public String getInfo()
+    {
+        return info;
     }
 }

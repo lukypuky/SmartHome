@@ -3,7 +3,7 @@ package com.example.smarthome.scenarios;
 public class Scenario_item extends android.app.Activity
 {
     private int mImageResource;
-    private String mtext;
+    private String scenarioName;
     private int scenarioId;
 
     public Scenario_item()
@@ -16,10 +16,10 @@ public class Scenario_item extends android.app.Activity
         this.scenarioId = scenarioId;
     }
 
-    public Scenario_item(int imageResource, String text, int scenarioId)
+    public Scenario_item(int imageResource, String scenarioName, int scenarioId)
     {
         this.mImageResource = imageResource;
-        this.mtext = text;
+        this.scenarioName = scenarioName;
         this.scenarioId = scenarioId;
     }
 
@@ -28,9 +28,9 @@ public class Scenario_item extends android.app.Activity
         return mImageResource;
     }
 
-    public String getText()
+    public String getScenarioName()
     {
-        return mtext;
+        return scenarioName;
     }
 
     public int getScenarioId()

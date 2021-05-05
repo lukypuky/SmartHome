@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,6 +20,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.smarthome.connection.Api;
 import com.example.smarthome.connection.Login;
@@ -127,7 +129,7 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
         mAdapter = new Scenario_adapter(scenarioList,this);
 
         mRecyclerView.setLayoutManager(mLayoutManager);
-//        new ItemTouchHelper(scenarioToRemove).attachToRecyclerView(mRecyclerView);
+        new ItemTouchHelper(scenarioToRemove).attachToRecyclerView(mRecyclerView);
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -239,6 +241,87 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
             return true;
         else
             return false;
+    }
+
+    //mazanie krokov (with swap right)
+    ItemTouchHelper.SimpleCallback scenarioToRemove = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT)
+    {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target)
+        {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
+        {
+
+//            if (canEdit()) //user je admin
+//            {
+            //builder na potvrdenie zmazania
+            AlertDialog.Builder builder = new AlertDialog.Builder(Scenario_screen.this);
+            builder.setCancelable(true);
+            builder.setMessage("Naozaj chcete odstrániť tento scenár '" + scenarioList.get(viewHolder.getAdapterPosition()).getScenarioName().toUpperCase() + "' ?");
+            builder.setPositiveButton("Áno", (dialog, which) ->
+            {
+                int id_scenario = scenarioList.get(viewHolder.getAdapterPosition()).getScenarioId();
+                int position = viewHolder.getAdapterPosition();
+
+                deleteScenario(id_scenario, position);
+            });
+
+            builder.setNegativeButton("Nie", (dialog, which) ->
+            {
+                dialog.dismiss();
+                mAdapter.notifyDataSetChanged();
+            });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+//            }
+//
+//            else // user nie je admin
+//            {
+//                Toast.makeText(Main_screen.this, "Nemáte povolenie odstrániť miestnosť.", Toast.LENGTH_SHORT).show();
+//                mAdapter.notifyDataSetChanged();
+//            }
+
+        }
+    };
+
+    public void deleteScenario(int id_scenario, int position)
+    {
+        Call<Scenarios> call = api.deleteScenario(id_scenario, login.getHouseholdId());
+
+        call.enqueue(new Callback<Scenarios>()
+        {
+            @Override
+            public void onResponse(Call<Scenarios> call, Response<Scenarios> response)
+            {
+                System.out.println("call = " + call + ", response = " + response);
+
+                if (response.body().getInfo().equals("Scenar has steps!"))
+                {
+                    Toast.makeText(Scenario_screen.this, "Pre ostránenie scenára musíte najprv odstŕaniť kroky v scenári", Toast.LENGTH_SHORT).show();
+                    mAdapter.notifyDataSetChanged();
+                }
+
+                else
+                {
+                    //refresh recycleviewra
+                    scenarioList.remove(position);
+                    mAdapter.notifyDataSetChanged();
+                    Toast.makeText(Scenario_screen.this, "Scenár bol úspešne odstráneý", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Scenarios> call, Throwable t)
+            {
+                System.out.println("call = " + call + ", t = " + t);
+            }
+        });
     }
 
     @Override

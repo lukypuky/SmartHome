@@ -19,6 +19,9 @@ public class Devices
     @SerializedName("connectivity")
     private int connectivity;
 
+    @SerializedName("notified")
+    private String notified;
+
     @SerializedName("status_isOn")
     private int isOn;
 
@@ -60,6 +63,11 @@ public class Devices
     public int getConnectivity()
     {
         return connectivity;
+    }
+
+    public String getNotified()
+    {
+        return notified;
     }
 
     public int getIsOn()

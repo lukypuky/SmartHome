@@ -140,31 +140,18 @@
             app:layout_constraintTop_toBottomOf="@+id/scenarioThreeDeviceSpinner" />
 
         <TextView
-            android:id="@+id/scenarioThreeIntensity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="40dp"
-            android:text="TextView"
-            android:textSize="16sp"
-            app:layout_constraintStart_toEndOf="@+id/scenarioThreeIntensityTag"
-            app:layout_constraintTop_toBottomOf="@+id/scenarioThreeSwitch" />
-
-        <TextView
-            android:id="@+id/scenarioThreeIntensityTag"
+            android:id="@+id/scenarioThreeIntensityValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="45dp"
             android:layout_marginTop="40dp"
-            android:text="TextView"
             android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/seekBar"
-            app:layout_constraintEnd_toStartOf="@+id/scenarioThreeIntensity"
+            app:layout_constraintBottom_toTopOf="@+id/scenarioThreeSeekBar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/scenarioThreeSwitch" />
 
         <SeekBar
-            android:id="@+id/seekBar"
+            android:id="@+id/scenarioThreeSeekBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="45dp"
@@ -172,7 +159,7 @@
             android:layout_marginEnd="45dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/scenarioThreeIntensityTag" />
+            app:layout_constraintTop_toBottomOf="@+id/scenarioThreeIntensityValue" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.drawerlayout.widget.DrawerLayout>

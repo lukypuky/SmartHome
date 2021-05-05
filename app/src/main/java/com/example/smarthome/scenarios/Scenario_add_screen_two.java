@@ -2,6 +2,7 @@ package com.example.smarthome.scenarios;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
@@ -17,6 +18,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.smarthome.R;
 import com.example.smarthome.connection.Api;
@@ -91,14 +93,10 @@ public class Scenario_add_screen_two extends AppCompatActivity implements Naviga
         createStepList();
 
         FloatingActionButton addStep = findViewById(R.id.addStep);
-        addStep.setOnClickListener(new View.OnClickListener()
+        addStep.setOnClickListener(v ->
         {
-            @Override
-            public void onClick(View v)
-            {
-                Intent intent = new Intent(Scenario_add_screen_two.this, Scenario_add_screen_three.class);
-                startActivity(intent);
-            }
+            Intent intent = new Intent(Scenario_add_screen_two.this, Scenario_add_screen_three.class);
+            startActivity(intent);
         });
 
         getSteps();
@@ -126,7 +124,7 @@ public class Scenario_add_screen_two extends AppCompatActivity implements Naviga
         mAdapter = new Step_adapter(stepList, this);
 
         mRecyclerView.setLayoutManager(mLayoutManager);
-//        new ItemTouchHelper(roomToRemove).attachToRecyclerView(mRecyclerView);
+        new ItemTouchHelper(stepToRemove).attachToRecyclerView(mRecyclerView);
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -205,7 +203,6 @@ public class Scenario_add_screen_two extends AppCompatActivity implements Naviga
 
     public void getSteps()
     {
-        System.out.println("SCENAR ID " + si.getScenarioId());
         Call<List<Steps>> call = api.getSteps(si.getScenarioId(), login.getHouseholdId());
 
         call.enqueue(new Callback<List<Steps>>()
@@ -224,13 +221,84 @@ public class Scenario_add_screen_two extends AppCompatActivity implements Naviga
 
                 for (Steps step: steps)
                 {
-                    stepList.add(position, new Step_item(step.getStepName()));
+                    stepList.add(position, new Step_item(step.getId_step(), step.getStepName()));
                     mAdapter.notifyItemInserted(position);
                 }
             }
 
             @Override
             public void onFailure(Call<List<Steps>> call, Throwable t)
+            {
+                System.out.println("call = " + call + ", t = " + t);
+            }
+        });
+    }
+
+    //mazanie krokov (with swap right)
+    ItemTouchHelper.SimpleCallback stepToRemove = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT)
+    {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target)
+        {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
+        {
+
+//            if (canEdit()) //user je admin
+//            {
+                //builder na potvrdenie zmazania
+                AlertDialog.Builder builder = new AlertDialog.Builder(Scenario_add_screen_two.this);
+                builder.setCancelable(true);
+                builder.setMessage("Naozaj chcete odstrániť tento krok '" + stepList.get(viewHolder.getAdapterPosition()).getStepName().toUpperCase() + "' ?");
+                builder.setPositiveButton("Áno", (dialog, which) ->
+                {
+                    int id_step = stepList.get(viewHolder.getAdapterPosition()).getId_step();
+
+                    deleteStep(id_step);
+
+                    //refresh recycleviewra
+                    stepList.remove(viewHolder.getAdapterPosition());
+                    mAdapter.notifyDataSetChanged();
+
+                    Toast.makeText(Scenario_add_screen_two.this, "Krok bol úspešne odstráneý", Toast.LENGTH_SHORT).show();
+                });
+
+                builder.setNegativeButton("Nie", (dialog, which) ->
+                {
+                    dialog.dismiss();
+                    mAdapter.notifyDataSetChanged();
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+//            }
+//
+//            else // user nie je admin
+//            {
+//                Toast.makeText(Main_screen.this, "Nemáte povolenie odstrániť miestnosť.", Toast.LENGTH_SHORT).show();
+//                mAdapter.notifyDataSetChanged();
+//            }
+
+        }
+    };
+
+    public void deleteStep(int id_step)
+    {
+        Call<Void> call = api.deleteStep(id_step, si.getScenarioId(), login.getHouseholdId());
+
+        call.enqueue(new Callback<Void>()
+        {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response)
+            {
+                System.out.println("call = " + call + ", response = " + response);
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t)
             {
                 System.out.println("call = " + call + ", t = " + t);
             }
@@ -254,7 +322,8 @@ public class Scenario_add_screen_two extends AppCompatActivity implements Naviga
     }
 
     @Override
-    public void onStepClick(int position) {
+    public void onStepClick(int position)
+    {
 
     }
 }

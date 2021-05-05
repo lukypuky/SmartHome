@@ -62,7 +62,7 @@ public class Scenario_adapter extends RecyclerView.Adapter<Scenario_adapter.Scen
         Scenario_item currentItem = mScenarioList.get(position);
 
         holder.mImageView.setImageResource(currentItem.getImageResource());
-        holder.mTextView.setText(currentItem.getText());
+        holder.mTextView.setText(currentItem.getScenarioName());
     }
 
     @Override
