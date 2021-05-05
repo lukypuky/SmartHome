@@ -123,7 +123,8 @@ public interface Api
             @Field("status_isActive") int isActive,
             @Field("status_humidity") int humidity,
             @Field("status_temperature") double temperature,
-            @Field("connectivity") int connectivity
+            @Field("connectivity") int connectivity,
+            @Field("notified") int notified
     );
 
     //delete zariadenia
@@ -149,7 +150,8 @@ public interface Api
             @Field("status_intensity") int intensity,
             @Field("status_humidity") int humidity,
             @Field("status_temperature") double temperature,
-            @Field("connectivity") int connectivity
+            @Field("connectivity") int connectivity,
+            @Field("notified") int notified
     );
 
     //getne vsetky scenare pre danu domacnost
@@ -189,11 +191,46 @@ public interface Api
             @Field("id_household") int id_household
     );
 
+    //delete scenara
+    @FormUrlEncoded
+    @HTTP(method = "DELETE", path = "scenario.php", hasBody = true)
+    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+    Call<Scenarios> deleteScenario(
+            @Field("id") int id_step,
+            @Field("id_household") int id_household
+    );
+
     //get steps na zakalde scenara
     @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
     @GET("steps.php")
     Call<List<Steps>> getSteps(
             @Query("id_scenar") int id_scenario,
             @Query("id_household") int id_household
+    );
+
+    //insert step
+    @FormUrlEncoded
+    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+    @POST("steps.php")
+    Call<Steps> postSteps(
+            @Field("name") String stepName,
+            @Field("id_scenar") int id_scenario,
+            @Field("deviceId") String id_device,
+            @Field("status_isOn") int isOn,
+            @Field("status_isActive") int isActive,
+            @Field("status_humidity") int humidity,
+            @Field("status_temperature") double temperature,
+            @Field("status_intensity") int intensity,
+            @Field("id_household") int id_household
+    );
+
+    //delete stepu
+    @FormUrlEncoded
+    @HTTP(method = "DELETE", path = "steps.php", hasBody = true)
+    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+    Call<Void> deleteStep(
+            @Field("id") int id_step,
+            @Field("id_scenar") int id_scenar,
+            @Field("id_household") int id_household
     );
 }

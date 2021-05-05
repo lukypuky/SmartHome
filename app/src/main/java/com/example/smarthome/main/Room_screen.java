@@ -68,8 +68,9 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
 
     //ovladanie zariadenia
     private AlertDialog controlDialog;
-    private TextView controlDeviceName, controlDeviceStatusTag, controlDeviceValue, controlDeviceUnit;
-    private Switch controlDeviceSwitch;
+    private TextView controlDeviceName, controlDeviceStatusTag, controlDeviceValue;
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
+    private Switch controlDeviceSwitch, controlDeviceWarningSwitch;
     private SeekBar controlDeviceSeekBar;
     private Button saveControlDevice, unsaveControlDevice;
     private int seekBarValue;
@@ -231,7 +232,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         String name = deviceName.getText().toString();
         String deviceType = setDeviceType(spinDeviceType);
 
-        Call<Devices> call = api.postDevice(deviceType, name, roomId, 0,0,0,0,0.0, 0);
+        Call<Devices> call = api.postDevice(deviceType, name, roomId, 0,0,0,0,0.0, 0,0);
 
         call.enqueue(new Callback<Devices>()
         {
@@ -369,7 +370,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
                 String stringDeviceType = setDeviceType(spinnerDeviceType.getSelectedItem().toString());
                 String stringDeviceName = deviceName.getText().toString();
 
-                Call<Devices> call = api.editDevice(deviceId, stringDeviceType, stringDeviceName, roomId, isOn, isActive, intensity, humidity, temperature, connectivity);
+                Call<Devices> call = api.editDevice(deviceId, stringDeviceType, stringDeviceName, roomId, isOn, isActive, intensity, humidity, temperature, connectivity,0);
 
                 call.enqueue(new Callback<Devices>()
                 {
@@ -409,7 +410,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     {
         String stringDeviceType = deviceList.get(position).getDeviceType();
 
-        if (stringDeviceType.equals("socket"))
+        if (stringDeviceType.equals("socket") || stringDeviceType.equals("alarm") || stringDeviceType.equals("flood_sensor") || stringDeviceType.equals("smoke_sensor"))
             initializeBasicDialog(position);
 
         else
@@ -418,6 +419,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         saveControlDevice.setOnClickListener(v ->
         {
             int isOn;
+            int isActive = 0;
             int intensity = deviceList.get(position).getIntensity();
             double temperature = deviceList.get(position).getTemperature();
 
@@ -427,13 +429,25 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
             else
                 isOn = 0;
 
+            if (stringDeviceType.equals("socket") || stringDeviceType.equals("alarm") || stringDeviceType.equals("flood_sensor") || stringDeviceType.equals("smoke_sensor"))
+            {
+                boolean warningSwtichState = controlDeviceWarningSwitch.isChecked();
+                if (warningSwtichState)
+                {
+                    isActive = 0;
+                    controlDeviceWarningSwitch.setVisibility(View.INVISIBLE);
+                }
+
+                else
+                    isActive = deviceList.get(position).getIsActive();
+            }
+
             if (stringDeviceType.equals("heating"))
                 temperature = seekBarValue;
             else if(stringDeviceType.equals("light") || (stringDeviceType.equals("blinds")))
                 intensity = seekBarValue;
 
             int deviceId = deviceList.get(position).getDeviceId();
-            int isActive = deviceList.get(position).getIsActive();
             int humidity = deviceList.get(position).getHumidity();
             int connectivity = deviceList.get(position).getConnectivity();
             String stringDeviceName = deviceList.get(position).getDeviceName();
@@ -441,7 +455,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
             String deviceType1 = setSpinnerDeviceType(stringDeviceType);
             String deviceType2 = setDeviceType(deviceType1);
 
-            Call<Devices> call = api.editDevice(deviceId, deviceType2, stringDeviceName, roomId, isOn, isActive, intensity, humidity, temperature, connectivity);
+            Call<Devices> call = api.editDevice(deviceId, deviceType2, stringDeviceName, roomId, isOn, isActive, intensity, humidity, temperature, connectivity,0);
 
             call.enqueue(new Callback<Devices>()
             {
@@ -520,6 +534,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         saveControlDevice = contactPopupView.findViewById(R.id.saveControlDeviceButton);
         unsaveControlDevice = contactPopupView.findViewById(R.id.unsaveControlDeviceButton);
         controlDeviceSwitch = contactPopupView.findViewById(R.id.devicePopUpSwitch);
+        controlDeviceWarningSwitch = contactPopupView.findViewById(R.id.devicePopUpWarningSwitch);
 
         setSwitch(position);
 
@@ -553,7 +568,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         {
             case "heating":
                 controlDeviceSeekBar.setMax(30);
-                controlDeviceSeekBar.setMin(19);
+                controlDeviceSeekBar.setMin(18);
                 controlDeviceSeekBar.setProgress((int) deviceList.get(position).getTemperature());
                 controlDeviceStatusTag.setText("Teplota: ");
                 break;
@@ -580,7 +595,15 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     public void setSwitch(int position)
     {
         if (deviceList.get(position).getIsOn() == 1)
+        {
             controlDeviceSwitch.setChecked(true);
+
+            if(deviceList.get(position).getIsActive() == 1)
+            {
+                controlDeviceWarningSwitch.setVisibility(View.VISIBLE);
+                controlDeviceWarningSwitch.setChecked(false);
+            }
+        }
 
         else
             controlDeviceSwitch.setChecked(false);
@@ -785,9 +808,9 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         int isConnected = deviceList.get(position).getConnectivity();
         String type = deviceList.get(position).getDeviceType();
 
-        if (isConnected== 1)
+        if (isConnected == 1)
         {
-            if (type.equals("heating") || type.equals("light") || type.equals("blinds") || type.equals("socket"))
+            if (!type.equals("thermometer")  && !type.equals("hygrometer") && !type.equals("light_sensor"))
                 controlDevice(position);
         }
 

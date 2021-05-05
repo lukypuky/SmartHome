@@ -31,6 +31,9 @@ public class Steps
     @SerializedName("status_intensity")
     private int intensity;
 
+    @SerializedName("status")
+    private int status;
+
     public Steps(String stepName)
     {
         this.stepName = stepName;
@@ -78,5 +81,10 @@ public class Steps
     public int getIntensity()
     {
         return intensity;
+    }
+
+    public int getStatus()
+    {
+        return status;
     }
 }

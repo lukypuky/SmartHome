@@ -447,8 +447,6 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         SessionManagement sessionManagement = new SessionManagement(Main_screen.this);
         sessionManagement.saveRoomSession(ri);
 
-        System.out.println("ROOM CLICKED " + roomList.get(position).getId_room());
-
         Intent intent = new Intent(this, Room_screen.class);
         startActivity(intent);
     }
