@@ -618,7 +618,7 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
 
             }
 
-            else if (deviceTypeSelected.equals("smoke_sensor") || deviceTypeSelected.equals("light_sensor") || deviceTypeSelected.equals("flood_sensor") || deviceTypeSelected.equals("alarm"))
+            else if (deviceTypeSelected.equals("smoke_sensor") || deviceTypeSelected.equals("flood_sensor") || deviceTypeSelected.equals("alarm"))
                 return true;
 
             else

@@ -3,6 +3,7 @@ package com.example.smarthome.scenarios;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,17 +22,30 @@ public class Scenario_adapter extends RecyclerView.Adapter<Scenario_adapter.Scen
     public class ScenarioViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         public ImageView mImageView;
-        public TextView mTextView;
+        public TextView mDeviceName, mDeviceExecutingType, mDeviceExecutable;
+        public Button mExecuteBtn;
         OnScenarioListener onScenarioListener;
 
         public ScenarioViewHolder(@NonNull View itemView, OnScenarioListener onScenarioListener)
         {
             super(itemView);
             mImageView = itemView.findViewById(R.id.scenarioImageView);
-            mTextView = itemView.findViewById(R.id.scenarioTextView);
+            mDeviceName = itemView.findViewById(R.id.scenarioTextView);
+            mDeviceExecutingType = itemView.findViewById(R.id.scenarioType);
+            mDeviceExecutable = itemView.findViewById(R.id.scenarioExecutable);
+            mExecuteBtn = itemView.findViewById(R.id.scenarioExecuteBtn);
             this.onScenarioListener = onScenarioListener;
 
             itemView.setOnClickListener(this);
+
+            mExecuteBtn.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    System.out.println("CLICK " + mDeviceName.getText().toString());
+                }
+            });
         }
 
         public void onClick(View v)
@@ -62,7 +76,9 @@ public class Scenario_adapter extends RecyclerView.Adapter<Scenario_adapter.Scen
         Scenario_item currentItem = mScenarioList.get(position);
 
         holder.mImageView.setImageResource(currentItem.getImageResource());
-        holder.mTextView.setText(currentItem.getScenarioName());
+        holder.mDeviceName.setText(currentItem.getScenarioName());
+        holder.mDeviceExecutingType.setText(setScenarioType(currentItem.getScenarioType()));
+        holder.mDeviceExecutable.setText(setExecutableScenario(currentItem.getScenarioExecutable()));
     }
 
     @Override
@@ -75,5 +91,21 @@ public class Scenario_adapter extends RecyclerView.Adapter<Scenario_adapter.Scen
     public interface OnScenarioListener
     {
         void onScenarioClick(int position); //otvori scenar
+    }
+
+    public String setScenarioType(String type)
+    {
+        if (type.equals("auto"))
+            return "automatický";
+        else
+            return "manuálny";
+    }
+
+    public String setExecutableScenario(int executable)
+    {
+        if (executable == 1)
+            return "Aktívny";
+        else
+            return "Neaktívny";
     }
 }

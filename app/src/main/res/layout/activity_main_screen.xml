@@ -105,6 +105,8 @@
                 android:layout_margin="16dp"
                 android:src="@drawable/add_icon"
                 android:backgroundTint="@color/btns"
+                app:borderWidth="1dp"
+                app:strokeColor="#FFFFFF"
                 app:tint="@color/textColor"/>
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
     </RelativeLayout>

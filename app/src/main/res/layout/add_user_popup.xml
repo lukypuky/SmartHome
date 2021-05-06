@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/navigation">
 
     <EditText
         android:id="@+id/settingsUsername"
@@ -76,6 +77,8 @@
         android:layout_marginBottom="25dp"
         android:text="@string/main_add"
         android:textColor="@color/textColor"
+        app:strokeColor="#FFFFFF"
+        app:strokeWidth="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/unsaveUserButton"
         app:layout_constraintStart_toStartOf="parent"
@@ -91,6 +94,8 @@
         android:layout_marginBottom="25dp"
         android:text="@string/main_back"
         android:textColor="@color/textColor"
+        app:strokeColor="#FFFFFF"
+        app:strokeWidth="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/saveUserButton"

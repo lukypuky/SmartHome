@@ -131,6 +131,8 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
         if (canEdit())
         {
             mRecyclerView.setVisibility(View.VISIBLE);
+            TextView recyclerViewTag = findViewById(R.id.settings_recycleview_tag);
+            recyclerViewTag.setVisibility(View.VISIBLE);
             FloatingActionButton addUser = findViewById(R.id.settings_add_user);
             addUser.setVisibility(View.VISIBLE);
             addUser.setOnClickListener(v -> addUser());

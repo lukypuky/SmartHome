@@ -75,6 +75,9 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:text="Potvrdiť"
+            android:textColor="@color/textColor"
+            app:strokeColor="#FFFFFF"
+            app:strokeWidth="1dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

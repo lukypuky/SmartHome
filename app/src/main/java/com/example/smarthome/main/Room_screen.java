@@ -82,6 +82,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
 
     //zariadenia
     private ArrayList<Device_item> deviceList;
+    private TextView popUpTag;
 
     //api
     private Api api;
@@ -314,6 +315,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     public void addDeviceDialog()
     {
         initializeDialog();
+        popUpTag.setText("Pridanie nového zariadenia");
 
         //potvrdenie pridania zariadenia
         saveDevice.setOnClickListener(v ->
@@ -341,6 +343,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     public void editDeviceDialog(int position)
     {
         initializeDialog();
+        popUpTag.setText("Úprava zariadenia");
 
         String type = setSpinnerDeviceType(deviceList.get(position).getDeviceType());
         deviceName.setText(deviceList.get(position).getDeviceName());
@@ -508,6 +511,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         deviceName = contactPopupView.findViewById(R.id.deviceName);
         saveDevice = contactPopupView.findViewById(R.id.saveDeviceButton);
         unsaveDevice = contactPopupView.findViewById(R.id.unsaveDeviceButton);
+        popUpTag = contactPopupView.findViewById(R.id.devicePopUpTag);
 
         spinnerDeviceType = contactPopupView.findViewById(R.id.deviceType);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(Room_screen.this,

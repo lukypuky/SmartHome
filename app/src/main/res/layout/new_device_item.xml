@@ -57,6 +57,7 @@
             android:layout_marginEnd="5dp"
             android:text="Pripojenie:"
             android:textSize="15sp"
+            android:textColor="@color/textColor2"
             app:layout_constraintEnd_toStartOf="@+id/deviceConnected"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -74,6 +75,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"
+            android:textColor="@color/textColor2"
             app:layout_constraintStart_toEndOf="@+id/deviceValue"
             app:layout_constraintTop_toBottomOf="@+id/deviceTextView" />
 
@@ -83,6 +85,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:textSize="15sp"
+            android:textColor="@color/textColor2"
             app:layout_constraintEnd_toStartOf="@+id/deviceUnit"
             app:layout_constraintStart_toEndOf="@+id/deviceStatusTag"
             app:layout_constraintTop_toBottomOf="@+id/deviceTextView" />
@@ -93,6 +96,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="25dp"
             android:textSize="15sp"
+            android:textColor="@color/textColor2"
             app:layout_constraintEnd_toStartOf="@+id/deviceValue"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/deviceTextView" />

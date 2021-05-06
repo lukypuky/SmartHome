@@ -222,7 +222,7 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
 
                 for (Scenarios scenario: scenarios)
                 {
-                    scenarioList.add(position, new Scenario_item(R.drawable.scenario_icon, scenario.getScenarioName(), scenario.getScenarioID()));
+                    scenarioList.add(position, new Scenario_item(R.drawable.scenario_icon, scenario.getScenarioName(), scenario.getScenarioID(), scenario.getExecutingType(), scenario.getIsExecutable()));
                     mAdapter.notifyItemInserted(position);
                 }
             }
