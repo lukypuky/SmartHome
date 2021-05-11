@@ -14,19 +14,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.smarthome.connection.Api;
+import com.example.smarthome.connection.Devices;
 import com.example.smarthome.connection.Login;
 import com.example.smarthome.connection.Rooms;
 import com.example.smarthome.connection.Scenarios;
 import com.example.smarthome.connection.SessionManagement;
+import com.example.smarthome.devices.Device_item;
 import com.example.smarthome.login.Login_screen;
 import com.example.smarthome.main.Main_screen;
 import com.example.smarthome.R;
@@ -37,7 +41,11 @@ import com.example.smarthome.settings.Dark_mode;
 import com.example.smarthome.settings.Settings_screen;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +69,9 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
 
     //scenare
     private ArrayList<Scenario_item> scenarioList;
-    private List<Scenarios> scenarios;
+    private ArrayList<Room_item> roomList;
+    private ArrayList<Device_item> deviceList;
+    private int selectedRoom;
 
     //api
     private Api api;
@@ -89,6 +99,8 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
         createScenarioList();
+        createRoomList();
+        createDeviceList();
 
         //tlacidlo na pridanie noveho scenara
         FloatingActionButton addScenario = findViewById(R.id.addScenario);
@@ -126,7 +138,7 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
         mRecyclerView = findViewById(R.id.scenarioRecyclerView);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
-        mAdapter = new Scenario_adapter(scenarioList,this);
+        mAdapter = new Scenario_adapter(scenarioList, login,this);
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         new ItemTouchHelper(scenarioToRemove).attachToRecyclerView(mRecyclerView);
@@ -217,12 +229,13 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
                     return;
                 }
 
-                scenarios = response.body();
+                List<Scenarios> scenarios = response.body();
                 final int position = 0;
 
                 for (Scenarios scenario: scenarios)
                 {
-                    scenarioList.add(position, new Scenario_item(R.drawable.scenario_icon, scenario.getScenarioName(), scenario.getScenarioID(), scenario.getExecutingType(), scenario.getIsExecutable()));
+                    scenarioList.add(position, new Scenario_item(R.drawable.scenario_icon, scenario.getScenarioId(), scenario.getScenarioName(), scenario.getExecutingType(), scenario.getId_room(),
+                            scenario.getSensorId(), scenario.getIsExecutable(), scenario.getIsRunning(), scenario.getScenarioStatus(), scenario.getTime()));
                     mAdapter.notifyItemInserted(position);
                 }
             }
@@ -256,38 +269,47 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
         {
 
-//            if (canEdit()) //user je admin
-//            {
-            //builder na potvrdenie zmazania
-            AlertDialog.Builder builder = new AlertDialog.Builder(Scenario_screen.this);
-            builder.setCancelable(true);
-            builder.setMessage("Naozaj chcete odstrániť tento scenár '" + scenarioList.get(viewHolder.getAdapterPosition()).getScenarioName().toUpperCase() + "' ?");
-            builder.setPositiveButton("Áno", (dialog, which) ->
+            if (canEdit()) //user je admin
             {
-                int id_scenario = scenarioList.get(viewHolder.getAdapterPosition()).getScenarioId();
-                int position = viewHolder.getAdapterPosition();
+                //builder na potvrdenie zmazania
+                AlertDialog.Builder builder = new AlertDialog.Builder(Scenario_screen.this);
+                builder.setCancelable(true);
+                builder.setMessage("Naozaj chcete odstrániť tento scenár '" + scenarioList.get(viewHolder.getAdapterPosition()).getScenarioName().toUpperCase() + "' ?");
+                builder.setPositiveButton("Áno", (dialog, which) ->
+                {
+                    int id_scenario = scenarioList.get(viewHolder.getAdapterPosition()).getScenarioId();
+                    int position = viewHolder.getAdapterPosition();
 
-                deleteScenario(id_scenario, position);
-            });
+                    deleteScenario(id_scenario, position);
+                });
 
-            builder.setNegativeButton("Nie", (dialog, which) ->
+                builder.setNegativeButton("Nie", (dialog, which) ->
+                {
+                    dialog.dismiss();
+                    mAdapter.notifyDataSetChanged();
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+
+            else // user nie je admin
             {
-                dialog.dismiss();
+                Toast.makeText(Scenario_screen.this, "Nemáte povolenie odstrániť scenár.", Toast.LENGTH_SHORT).show();
                 mAdapter.notifyDataSetChanged();
-            });
-
-            AlertDialog dialog = builder.create();
-            dialog.show();
-//            }
-//
-//            else // user nie je admin
-//            {
-//                Toast.makeText(Main_screen.this, "Nemáte povolenie odstrániť miestnosť.", Toast.LENGTH_SHORT).show();
-//                mAdapter.notifyDataSetChanged();
-//            }
-
+            }
         }
     };
+
+    public void createRoomList()
+    {
+        roomList = new ArrayList<>();
+    }
+
+    public void createDeviceList()
+    {
+        deviceList = new ArrayList<>();
+    }
 
     public void deleteScenario(int id_scenario, int position)
     {
@@ -313,11 +335,82 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
                     mAdapter.notifyDataSetChanged();
                     Toast.makeText(Scenario_screen.this, "Scenár bol úspešne odstráneý", Toast.LENGTH_SHORT).show();
                 }
-
             }
 
             @Override
             public void onFailure(Call<Scenarios> call, Throwable t)
+            {
+                System.out.println("call = " + call + ", t = " + t);
+            }
+        });
+    }
+
+    public void fillRoomSpinner()
+    {
+        Call<List<Rooms>> call = api.getRoomsWithSensors(login.getHouseholdId(), 1);
+        call.enqueue(new Callback<List<Rooms>>()
+        {
+            @Override
+            public void onResponse(Call<List<Rooms>> call, Response<List<Rooms>> response)
+            {
+                if (!response.isSuccessful())
+                {
+                    System.out.println("call = " + call + ", response = " + response);
+                    return;
+                }
+
+                List<Rooms> rooms = response.body();
+                final int position = 0;
+
+                for (Rooms room: rooms)
+                {
+                    roomList.add(position, new Room_item(room.getRoomName(), room.getRoomId()));
+                }
+
+                fillDeviceSpinner();
+            }
+
+            @Override
+            public void onFailure(Call<List<Rooms>> call, Throwable t)
+            {
+                System.out.println("call = " + call + ", t = " + t);
+            }
+        });
+    }
+
+    public void fillDeviceSpinner()
+    {
+        Call<List<Devices>> call = api.getSensors(login.getHouseholdId(), selectedRoom, 1);
+
+        call.enqueue(new Callback<List<Devices>>()
+        {
+            @Override
+            public void onResponse(Call<List<Devices>> call, Response<List<Devices>> response)
+            {
+                if (!response.isSuccessful())
+                {
+                    System.out.println("call = " + call + ", response = " + response);
+                    return;
+                }
+
+                List<Devices> devices = response.body();
+                final int position = 0;
+
+                deviceList.add(position, new Device_item("Zapnúť na základe času",0,"time/time",0));
+
+                for (Devices device: devices)
+                {
+                    deviceList.add(position, new Device_item(device.getDeviceName(), device.getDeviceId(), device.getDeviceType(), device.getIdRoom()));
+                }
+
+                Intent intent = new Intent(Scenario_screen.this, Scenario_add_screen_one.class);
+                intent.putExtra("room_arraylist", roomList);
+                intent.putExtra("device_arraylist", deviceList);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onFailure(Call<List<Devices>> call, Throwable t)
             {
                 System.out.println("call = " + call + ", t = " + t);
             }
@@ -333,6 +426,19 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
 
         Intent intent = new Intent(this, Scenario_add_screen_two.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void onEditClick(int position)
+    {
+        Scenario_item si = new Scenario_item(scenarioList.get(position).getScenarioId(), scenarioList.get(position).getScenarioName(), scenarioList.get(position).getScenarioType(),
+                scenarioList.get(position).getId_room(), scenarioList.get(position).getSensorId(), scenarioList.get(position).getScenarioExecutable(), scenarioList.get(position).getIsRunning(),
+                scenarioList.get(position).getStatus(), scenarioList.get(position).getTime());
+        SessionManagement scenarioSessionManagement = new SessionManagement(Scenario_screen.this);
+        scenarioSessionManagement.saveScenarioSession(si);
+
+        selectedRoom = scenarioList.get(position).getId_room();
+        fillRoomSpinner();
     }
 
     //odhlasenie sa z aplikacie (zrusenie session)

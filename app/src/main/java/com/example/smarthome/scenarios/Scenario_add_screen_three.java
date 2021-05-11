@@ -364,7 +364,7 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
 
                 for (Devices device: devices)
                 {
-                    deviceList.add(position, new Device_item(device.getDeviceName(), device.getDeviceId(), device.getDeviceType()));
+                    deviceList.add(position, new Device_item(device.getDeviceName(), device.getDeviceId(), device.getDeviceType(), device.getIdRoom()));
                 }
 
 

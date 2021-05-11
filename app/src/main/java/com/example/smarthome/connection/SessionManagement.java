@@ -3,11 +3,18 @@ package com.example.smarthome.connection;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.example.smarthome.main.Room_adapter;
 import com.example.smarthome.main.Room_item;
 import com.example.smarthome.scenarios.Scenario_item;
 import com.example.smarthome.settings.Dark_mode;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SessionManagement
 {
@@ -32,7 +39,15 @@ public class SessionManagement
     String SESSION_ROOM_ID = "id_room";
 
     //scenario_item
-    String SESSION_SCENARIO_ID = "id_scenario";
+    String SESSION_SCENARIO_ID = "scenario_id";
+    String SESSION_SCENARIO_NAME = "scenario_name";
+    String SESSION_SCENARIO_EXECTURING_TYPE = "scenario_executing_type";
+    String SESSION_SCENARIO_ROOM_ID = "scenario_room_id";
+    String SESSION_SCENARIO_SENSOR_ID = "scenario_sensor_id";
+    String SESSION_SCENARIO_IS_EXECUTABLE = "scenario_is_executable";
+    String SESSION_SCENARIO_IS_RUNNING = "scenario_is_running";
+    String SESSION_SCENARIO_STATUS = "scenario_status";
+    String SESSION_SCENARIO_TIME = "scenario_time";
 
     @SuppressLint("CommitPrefEdits")
     public SessionManagement(Context context)
@@ -79,9 +94,55 @@ public class SessionManagement
     public void saveScenarioSession(Scenario_item si)
     {
         int scenarioId = si.getScenarioId();
+        String scenarioName = si.getScenarioName();
+        String scenarioExecutingType = si.getScenarioType();
+        int scenarioRoomId = si.getId_room();
+        String scenarioSensorId = si.getSensorId();
+        int scenarioIsExecutable = si.getScenarioExecutable();
+        int scenarioIsRunning = si.getIsRunning();
+        String scenarioStatus = si.getStatus();
+        String scenarioTime = si.getTime();
 
         editor.putInt(SESSION_SCENARIO_ID, scenarioId).commit();
+        editor.putString(SESSION_SCENARIO_NAME, scenarioName).commit();
+        editor.putString(SESSION_SCENARIO_EXECTURING_TYPE, scenarioExecutingType).commit();
+        editor.putInt(SESSION_SCENARIO_ROOM_ID, scenarioRoomId).commit();
+        editor.putString(SESSION_SCENARIO_SENSOR_ID, scenarioSensorId).commit();
+        editor.putInt(SESSION_SCENARIO_IS_EXECUTABLE, scenarioIsExecutable).commit();
+        editor.putInt(SESSION_SCENARIO_IS_RUNNING, scenarioIsRunning).commit();
+        editor.putString(SESSION_SCENARIO_STATUS, scenarioStatus).commit();
+        editor.putString(SESSION_SCENARIO_TIME, scenarioTime).commit();
     }
+
+//    public static void saveRoomArrayList(Context context, List<Room_item> ri)
+//    {
+//        Gson gson = new Gson();
+//        String jsonString = gson.toJson(ri);
+//
+//        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+//        SharedPreferences.Editor editorPref = pref.edit();
+//
+//        editorPref.putString("room_list", jsonString);
+//        editorPref.apply();
+//    }
+//
+//    public static List<Room_item> getRoomArrayList(Context context)
+//    {
+//        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+//        String jsonString = pref.getString("room_list", "");
+//
+//        Gson gson = new Gson();
+//        Type type = new TypeToken<ArrayList<Room_item>>() {}.getType();
+//        List<Room_item> room = gson.fromJson(jsonString, type);
+//
+////        ArrayList<Room_item> ri;
+////        Gson gson = new Gson();
+////        String json = sharedPreferences.getString("room_list", null);
+////        Type type = new TypeToken<ArrayList<Room_item>>() {}.getType();
+////
+////        ri = gson.fromJson(json,type);
+//        return room;
+//    }
 
     public Login getLoginSession()
     {
@@ -113,14 +174,34 @@ public class SessionManagement
     public Scenario_item getScenarioSession()
     {
         int scenarioItemId = sharedPreferences.getInt(SESSION_SCENARIO_ID,0);
+        String scenarioItemName = sharedPreferences.getString(SESSION_SCENARIO_NAME, "");
+        String scenarioItemType = sharedPreferences.getString(SESSION_SCENARIO_EXECTURING_TYPE, "");
+        int scenarioItemRoomId = sharedPreferences.getInt(SESSION_SCENARIO_ROOM_ID,0);
+        String scenarioItemSensorId = sharedPreferences.getString(SESSION_SCENARIO_SENSOR_ID, "");
+        int scenarioItemIsExecutable = sharedPreferences.getInt(SESSION_SCENARIO_IS_EXECUTABLE,0);
+        int scenarioItemIsRunning = sharedPreferences.getInt(SESSION_SCENARIO_IS_RUNNING,0);
+        String scenarioItemStatus = sharedPreferences.getString(SESSION_SCENARIO_STATUS,"");
+        String scenarioItemTime = sharedPreferences.getString(SESSION_SCENARIO_TIME,"");
 
-        return new Scenario_item(scenarioItemId);
+        return new Scenario_item(scenarioItemId, scenarioItemName, scenarioItemType, scenarioItemRoomId, scenarioItemSensorId, scenarioItemIsExecutable, scenarioItemIsRunning, scenarioItemStatus, scenarioItemTime);
     }
 
     public int getSession()
     {
         //vrat pouzivatela ktory ma ulozenu session
         return sharedPreferences.getInt(SESSION_LOGIN_USER_ID, 0);
+    }
+
+    public void removeScenarioSession()
+    {
+        editor.putInt(SESSION_SCENARIO_ID, 0).commit();
+        editor.putString(SESSION_SCENARIO_NAME, "").commit();
+        editor.putString(SESSION_SCENARIO_EXECTURING_TYPE, "").commit();
+        editor.putString(SESSION_SCENARIO_SENSOR_ID, "").commit();
+        editor.putInt(SESSION_SCENARIO_IS_EXECUTABLE, 0).commit();
+        editor.putInt(SESSION_SCENARIO_IS_RUNNING, 0).commit();
+        editor.putString(SESSION_SCENARIO_STATUS, "").commit();
+        editor.putString(SESSION_SCENARIO_TIME, "").commit();
     }
 
     public void removeSession()

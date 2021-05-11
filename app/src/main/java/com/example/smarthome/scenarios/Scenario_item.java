@@ -3,8 +3,8 @@ package com.example.smarthome.scenarios;
 public class Scenario_item extends android.app.Activity
 {
     private int mImageResource;
-    private String scenarioName, scenarioType;
-    private int scenarioId, scenarioExecutable;
+    private String scenarioName, scenarioType, sensorId, status, time;
+    private int scenarioId, scenarioExecutable, isRunning, id_room;;
 
     public Scenario_item()
     {
@@ -16,13 +16,31 @@ public class Scenario_item extends android.app.Activity
         this.scenarioId = scenarioId;
     }
 
-    public Scenario_item(int imageResource, String scenarioName, int scenarioId, String scenarioType, int scenarioExecutable)
+    public Scenario_item(int scenarioId, String scenarioName, String scenarioType, int id_room, String sensorId, int scenarioExecutable, int isRunning, String status, String time)
+    {
+        this.scenarioId = scenarioId;
+        this.scenarioName = scenarioName;
+        this.scenarioType = scenarioType;
+        this.id_room = id_room;
+        this.sensorId = sensorId;
+        this.scenarioExecutable = scenarioExecutable;
+        this.isRunning = isRunning;
+        this.status = status;
+        this.time = time;
+    }
+
+    public Scenario_item(int imageResource, int scenarioId, String scenarioName, String scenarioType, int id_room, String sensorId, int scenarioExecutable, int isRunning, String status, String time)
     {
         this.mImageResource = imageResource;
-        this.scenarioName = scenarioName;
         this.scenarioId = scenarioId;
+        this.scenarioName = scenarioName;
         this.scenarioType = scenarioType;
+        this.id_room = id_room;
+        this.sensorId = sensorId;
         this.scenarioExecutable = scenarioExecutable;
+        this.isRunning = isRunning;
+        this.status = status;
+        this.time = time;
     }
 
     public int getImageResource()
@@ -45,8 +63,33 @@ public class Scenario_item extends android.app.Activity
         return scenarioType;
     }
 
+    public int getId_room()
+    {
+        return id_room;
+    }
+
     public int getScenarioExecutable()
     {
         return scenarioExecutable;
+    }
+
+    public String getSensorId()
+    {
+        return sensorId;
+    }
+
+    public String getStatus()
+    {
+        return status;
+    }
+
+    public String getTime()
+    {
+        return time;
+    }
+
+    public int getIsRunning()
+    {
+        return isRunning;
     }
 }

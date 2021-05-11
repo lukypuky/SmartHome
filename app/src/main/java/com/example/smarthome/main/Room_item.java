@@ -1,6 +1,8 @@
 package com.example.smarthome.main;
 
-public class Room_item extends android.app.Activity
+import java.io.Serializable;
+
+public class Room_item extends android.app.Activity implements Serializable
 {
     private int imageResource;
     private String roomName, roomType;

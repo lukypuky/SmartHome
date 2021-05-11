@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smarthome.R;
+import com.example.smarthome.connection.Login;
 
 import java.util.ArrayList;
 
@@ -18,10 +19,11 @@ public class Scenario_adapter extends RecyclerView.Adapter<Scenario_adapter.Scen
 {
     private final ArrayList<Scenario_item> mScenarioList;
     private final OnScenarioListener mOnScenarioListener;
+    private final Login login;
 
     public class ScenarioViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
-        public ImageView mImageView;
+        public ImageView mImageView, mImageEdit;
         public TextView mDeviceName, mDeviceExecutingType, mDeviceExecutable;
         public Button mExecuteBtn;
         OnScenarioListener onScenarioListener;
@@ -30,6 +32,7 @@ public class Scenario_adapter extends RecyclerView.Adapter<Scenario_adapter.Scen
         {
             super(itemView);
             mImageView = itemView.findViewById(R.id.scenarioImageView);
+            mImageEdit = itemView.findViewById(R.id.scenarioEdit);
             mDeviceName = itemView.findViewById(R.id.scenarioTextView);
             mDeviceExecutingType = itemView.findViewById(R.id.scenarioType);
             mDeviceExecutable = itemView.findViewById(R.id.scenarioExecutable);
@@ -46,6 +49,22 @@ public class Scenario_adapter extends RecyclerView.Adapter<Scenario_adapter.Scen
                     System.out.println("CLICK " + mDeviceName.getText().toString());
                 }
             });
+
+            if (canEdit())
+            {
+                mImageEdit.setOnClickListener(v ->
+                {
+                    if (onScenarioListener != null)
+                    {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION)
+                            onScenarioListener.onEditClick(position);
+                    }
+                });
+            }
+
+            else    // ak user nema admin rolu, ikona editu je invisible
+                mImageEdit.setVisibility(View.INVISIBLE);
         }
 
         public void onClick(View v)
@@ -55,9 +74,10 @@ public class Scenario_adapter extends RecyclerView.Adapter<Scenario_adapter.Scen
     }
 
     //konstruktor
-    public Scenario_adapter(ArrayList<Scenario_item> scenarioList, OnScenarioListener onScenarioListener)
+    public Scenario_adapter(ArrayList<Scenario_item> scenarioList, Login login, OnScenarioListener onScenarioListener)
     {
         this.mScenarioList = scenarioList;
+        this.login = login;
         this.mOnScenarioListener = onScenarioListener;
     }
 
@@ -78,7 +98,17 @@ public class Scenario_adapter extends RecyclerView.Adapter<Scenario_adapter.Scen
         holder.mImageView.setImageResource(currentItem.getImageResource());
         holder.mDeviceName.setText(currentItem.getScenarioName());
         holder.mDeviceExecutingType.setText(setScenarioType(currentItem.getScenarioType()));
-        holder.mDeviceExecutable.setText(setExecutableScenario(currentItem.getScenarioExecutable()));
+
+        if (currentItem.getScenarioType().equals("auto"))
+            holder.mDeviceExecutable.setText(setExecutableScenario(currentItem.getScenarioExecutable()));
+    }
+
+    public boolean canEdit()
+    {
+        if (login.getRole() == 1)
+            return true;
+        else
+            return false;
     }
 
     @Override
@@ -91,6 +121,7 @@ public class Scenario_adapter extends RecyclerView.Adapter<Scenario_adapter.Scen
     public interface OnScenarioListener
     {
         void onScenarioClick(int position); //otvori scenar
+        void onEditClick(int position);
     }
 
     public String setScenarioType(String type)
@@ -104,8 +135,8 @@ public class Scenario_adapter extends RecyclerView.Adapter<Scenario_adapter.Scen
     public String setExecutableScenario(int executable)
     {
         if (executable == 1)
-            return "Aktívny";
+            return "(Aktívny)";
         else
-            return "Neaktívny";
+            return "(Neaktívny)";
     }
 }

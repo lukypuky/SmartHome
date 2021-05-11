@@ -71,8 +71,9 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
     private Spinner roomSpinner, deviceSpinner;
     private ArrayList<Room_item> roomList;
     private ArrayList<Device_item> deviceList;
-    private int selectedRoom;
+    private int selectedRoom, editSelectedRoom = 0;
     private String selectedDevice, deviceTypeSelected;
+    private String editRoom = "", editDevice = "";
 
     //seekBars
     private SeekBar fromSeekBar, toSeekBar;
@@ -91,6 +92,10 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
 
     //api
     private Api api;
+    private int scenar_id;
+
+    private SessionManagement sessionManagementEdit;
+    private Scenario_item editScenario;
 
     //data z login/main screeny
     private Login login;
@@ -108,19 +113,32 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
         SessionManagement sessionManagement = new SessionManagement(Scenario_add_screen_one.this);
         login =  sessionManagement.getLoginSession();
 
+        sessionManagementEdit = new SessionManagement(Scenario_add_screen_one.this);
+        editScenario =  sessionManagementEdit.getScenarioSession();
+
         SessionManagement darkModeSessionManagement = new SessionManagement(Scenario_add_screen_one.this);
         Dark_mode darkMode = darkModeSessionManagement.getDarkModeSession();
         ////////////////////////////////////////////////////////////////////////////////////////////
+
+        createRoomList();
+        createDeviceList();
 
         if (darkMode.isDark_mode())
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
         initializeScreen();
 
+        if (editScenario.getScenarioId() != 0)
+        {
+            setScreenValues();
+            createRoomList();
+            fillRoomSpinner();
+        }
+
+
         //nastavenie obrazovky podla zvoleneho typu ovladania scenara
         radioGroup.setOnCheckedChangeListener((group, checkedId) ->
         {
-
             if (checkedId == R.id.scenarioOneAutoBtn)
             {
                 showObjects();
@@ -137,16 +155,18 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
             {
-                getSelectedRoomId();
+                if (editSelectedRoom == 0)
+                    getSelectedRoomId();
+
                 createDeviceList();
                 fillDeviceSpinner();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent)
-            {
-                return;
-            }
+                {
+                    return;
+                }
         });
 
         deviceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
@@ -162,10 +182,11 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
 
             @Override
             public void onNothingSelected(AdapterView<?> parent)
-            {
-                return;
-            }
+                {
+                    return;
+                }
         });
+
 
         //vyber casu
         timeBtn.setOnClickListener(v ->
@@ -180,12 +201,12 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
             boolean success = validate();
             if (success)
             {
-//                saveScenario();
+                saveScenario();
 
-//                Scenario_item si = new Scenario_item(DOPLNIT ID);
-//                SessionManagement scenarioSessionManagement = new SessionManagement(Scenario_add_screen_one.this);
-//                scenarioSessionManagement.saveScenarioSession(si);
-//
+                Scenario_item si = new Scenario_item(scenar_id);
+                SessionManagement scenarioSessionManagement = new SessionManagement(Scenario_add_screen_one.this);
+                scenarioSessionManagement.saveScenarioSession(si);
+
                 Intent intent = new Intent(Scenario_add_screen_one.this, Scenario_add_screen_two.class);
                 startActivity(intent);
             }
@@ -239,7 +260,12 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
             drawerLayout.closeDrawer((GravityCompat.START));
 
         else
+        {
             super.onBackPressed();
+            System.out.println("BBBBBBBBB"); // zmazat session
+
+            sessionManagementEdit.removeScenarioSession();
+        }
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -250,20 +276,25 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
             case R.id.mainScreen:
                 Intent main_intent = new Intent(Scenario_add_screen_one.this, Main_screen.class);
                 startActivity(main_intent);
+                sessionManagementEdit.removeScenarioSession();
                 break;
             case R.id.profile:
                 Intent profile_intent = new Intent(Scenario_add_screen_one.this, Profile_screen.class);
                 startActivity(profile_intent);
+                sessionManagementEdit.removeScenarioSession();
                 break;
             case R.id.scenario:
                 Intent scenario_intent = new Intent(Scenario_add_screen_one.this, Scenario_screen.class);
                 startActivity(scenario_intent);
+                sessionManagementEdit.removeScenarioSession();
                 break;
             case R.id.settings:
                 Intent settings_intent = new Intent(Scenario_add_screen_one.this, Settings_screen.class);
                 startActivity(settings_intent);
+                sessionManagementEdit.removeScenarioSession();
                 break;
             case R.id.logout:
+                sessionManagementEdit.removeScenarioSession();
                 logout();
                 break;
         }
@@ -379,7 +410,12 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
                         android.R.layout.simple_spinner_item, roomList);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
+                System.out.println("EDIT ROOM " + editRoom);
+
                 roomSpinner.setAdapter(adapter);
+
+                if (!editRoom.equals(""))
+                    roomSpinner.setSelection(getIndexOfSpinner(roomSpinner, editRoom));
             }
 
             @Override
@@ -392,7 +428,16 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
 
     public void fillDeviceSpinner()
     {
-        Call<List<Devices>> call = api.getSensors(login.getHouseholdId(),selectedRoom, 1);
+        Call<List<Devices>> call;
+
+        if (editSelectedRoom != 0)
+        {
+            call = api.getSensors(login.getHouseholdId(), editSelectedRoom, 1);
+            editSelectedRoom = 0;
+        }
+
+        else
+            call = api.getSensors(login.getHouseholdId(),selectedRoom, 1);
 
         call.enqueue(new Callback<List<Devices>>()
         {
@@ -408,19 +453,24 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
                 List<Devices> devices = response.body();
                 final int position = 0;
 
-                deviceList.add(position, new Device_item("Zapnúť na základe času",0,"time/time"));
+                deviceList.add(position, new Device_item("Zapnúť na základe času",0,"time/time",0));
 
                 for (Devices device: devices)
                 {
-                    deviceList.add(position, new Device_item(device.getDeviceName(), device.getDeviceId(), device.getDeviceType()));
+                    deviceList.add(position, new Device_item(device.getDeviceName(), device.getDeviceId(), device.getDeviceType(), device.getIdRoom()));
                 }
-
 
                 ArrayAdapter<Device_item> adapter = new ArrayAdapter<Device_item>(Scenario_add_screen_one.this,
                         android.R.layout.simple_spinner_item, deviceList);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
                 deviceSpinner.setAdapter(adapter);
+
+                System.out.println("EDIT DEVICE " + editDevice);
+
+                if (!editDevice.equals(""))
+                    deviceSpinner.setSelection(getIndexOfSpinner(deviceSpinner, editDevice));
+
             }
 
             @Override
@@ -452,7 +502,15 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
                 timeBtn.setVisibility(View.VISIBLE);
 
             else
+            {
                 timeBtn.setVisibility(View.INVISIBLE);
+                pickedTime.setVisibility(View.INVISIBLE);
+                hourValue.setVisibility(View.INVISIBLE);
+                hourTag.setVisibility(View.INVISIBLE);
+                minuteValue.setVisibility(View.INVISIBLE);
+                minuteTag.setVisibility(View.INVISIBLE);
+            }
+
 
             seekBarTag.setVisibility(View.INVISIBLE);
             valueFromTag.setVisibility(View.INVISIBLE);
@@ -550,18 +608,16 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
         String time = hourValue.getText().toString() + ":" + minuteValue.getText().toString();
 
         if (radioButtonManual.isChecked())
-        {
-            call = api.postScenario(stringScenarioName, "manual", "0",0, "0", "0", login.getHouseholdId());
-        }
+            call = api.postScenario(stringScenarioName, "manual", selectedRoom, "0",0, 0, "0", "0", login.getHouseholdId());
 
         else
         {
             if (deviceTypeSelected.equals("time"))
-                call = api.postScenario(stringScenarioName, "auto", deviceTypeSelected,0, "0", time, login.getHouseholdId());
+                call = api.postScenario(stringScenarioName, "auto", selectedRoom, deviceTypeSelected,0, 0, "0", time, login.getHouseholdId());
             else if(deviceTypeSelected.equals("smoke_sensor") || deviceTypeSelected.equals("flood_sensor") || deviceTypeSelected.equals("alarm"))
-                call = api.postScenario(stringScenarioName, "auto", selectedDevice,0, "1","0", login.getHouseholdId());
+                call = api.postScenario(stringScenarioName, "auto", selectedRoom, selectedDevice,0, 0, "1","0", login.getHouseholdId());
             else
-                call = api.postScenario(stringScenarioName, "auto", selectedDevice,0, status,"0", login.getHouseholdId());
+                call = api.postScenario(stringScenarioName, "auto", selectedRoom, selectedDevice,0, 0, status,"0", login.getHouseholdId());
         }
 
         call.enqueue(new Callback<Scenarios>()
@@ -574,7 +630,8 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
                     System.out.println("call = " + call + ", response = " + response);
                 }
 
-//                if (response.body().getScenarioStatus() == 1)
+                if (response.body().getScenarioStatus().equals("1"))
+                    scenar_id = response.body().getScenar_id();
 //                    Toast.makeText(Scenario_add_screen_one.this, "Scenár bol pridaný", Toast.LENGTH_SHORT).show();
             }
 
@@ -634,6 +691,84 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
             }
         }
         return false;
+    }
+
+    public void setScreenValues()
+    {
+        scenarioName.setText(editScenario.getScenarioName());
+
+        if (editScenario.getScenarioType().equals("auto"))
+        {
+            radioButtonAuto.setChecked(true);
+            radioButtonManual.setChecked(false);
+            showObjects();
+
+            roomList = (ArrayList<Room_item>) getIntent().getSerializableExtra("room_arraylist");
+            deviceList = (ArrayList<Device_item>) getIntent().getSerializableExtra("device_arraylist");
+
+
+            if (editScenario.getSensorId().equals("time"))
+            {
+                editDevice = "Zapnúť na základe času";
+                String[] parserArray = editScenario.getTime().split(":", 2);
+                hourValue.setText(parserArray[0]);
+                minuteValue.setText(parserArray[1]);
+
+                pickedTime.setVisibility(View.VISIBLE);
+                hourValue.setVisibility(View.VISIBLE);
+                hourTag.setVisibility(View.VISIBLE);
+                minuteValue.setVisibility(View.VISIBLE);
+                minuteTag.setVisibility(View.VISIBLE);
+            }
+
+            else
+            {
+                for(int x = 0; x < deviceList.size(); x++)
+                {
+                    if (deviceList.get(x).getDeviceId() == Integer.parseInt(editScenario.getSensorId()))
+                    {
+                        editSelectedRoom = deviceList.get(x).getDeviceRoomId();
+                        editDevice = deviceList.get(x).getDeviceName();
+                        break;
+                    }
+                }
+
+                if (editScenario.getStatus().contains("-"))
+                {
+                    String[] parserArray = editScenario.getStatus().split("-", 2);
+                    valueFrom.setText(parserArray[0]);
+                    fromSeekBar.setProgress(Integer.parseInt(parserArray[0]));
+                    toSeekBar.setProgress(Integer.parseInt(parserArray[1]));
+                    valueTo.setText(parserArray[1]);
+                }
+            }
+
+            for(int x = 0; x < roomList.size(); x++)
+            {
+                if (roomList.get(x).getId_room() == editScenario.getId_room())
+                {
+                    editRoom = roomList.get(x).getRoomName();
+                    break;
+                }
+            }
+        }
+
+        else
+        {
+            radioButtonAuto.setChecked(false);
+            radioButtonManual.setChecked(true);
+        }
+    }
+
+    private int getIndexOfSpinner(Spinner spinner, String myString)
+    {
+        for (int i=0; i<spinner.getCount(); i++)
+        {
+            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString))
+                return i;
+        }
+
+        return 0;
     }
 
     //odhlasenie sa z aplikacie (zrusenie session)

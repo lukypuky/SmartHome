@@ -26,11 +26,13 @@ import android.widget.Toast;
 
 import com.example.smarthome.connection.Api;
 import com.example.smarthome.connection.Login;
+import com.example.smarthome.connection.Rooms;
 import com.example.smarthome.connection.SessionManagement;
 import com.example.smarthome.connection.Users;
 import com.example.smarthome.login.Login_screen;
 import com.example.smarthome.main.Main_screen;
 import com.example.smarthome.R;
+import com.example.smarthome.main.Room_item;
 import com.example.smarthome.scenarios.Scenario_screen;
 import com.example.smarthome.settings.Dark_mode;
 import com.example.smarthome.settings.Settings_screen;
@@ -38,6 +40,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -57,6 +60,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     private int intRole, userId, userHouseholdId;
     private Spinner profileRole;
     private List<Users> users;
+    private ArrayList<Room_item> roomList;
 
     //api
     private Api api;

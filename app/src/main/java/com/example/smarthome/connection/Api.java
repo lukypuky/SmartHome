@@ -184,7 +184,9 @@ public interface Api
     Call<Scenarios> postScenario(
             @Field("name") String scenarioName,
             @Field("executingType") String executingType,
+            @Field("id_room") int id_room,
             @Field("sensorId") String id_sensor,
+            @Field("isExecutable") int isExecutable,
             @Field("isRunning") int isRunning,
             @Field("status") String status,
             @Field("time") String time,

@@ -5,10 +5,10 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bg"
     android:elevation="2dp"
     android:fitsSystemWindows="true"
     tools:context=".main.Main_screen"
-    android:background="@color/bg"
     tools:openDrawer="start">
 
     <com.google.android.material.navigation.NavigationView
@@ -16,9 +16,9 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:background="@color/navigation"
         app:headerLayout="@layout/header"
-        app:menu="@menu/main_menu"
-        android:background="@color/navigation"/>
+        app:menu="@menu/main_menu" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -63,16 +63,16 @@
 
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/mainHomeName" />
+            <!--            app:layout_constraintEnd_toStartOf="@+id/imageView"-->
 
-<!--            app:layout_constraintEnd_toStartOf="@+id/imageView"-->
-<!--            <ImageView-->
-<!--                android:id="@+id/imageView"-->
-<!--                android:layout_width="132dp"-->
-<!--                android:layout_height="94dp"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintStart_toEndOf="@+id/mainHomeName"-->
-<!--                app:layout_constraintTop_toBottomOf="@+id/toolbar"-->
-<!--                app:srcCompat="@drawable/home" />-->
+            <!--            <ImageView-->
+            <!--                android:id="@+id/imageView"-->
+            <!--                android:layout_width="132dp"-->
+            <!--                android:layout_height="94dp"-->
+            <!--                app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                app:layout_constraintStart_toEndOf="@+id/mainHomeName"-->
+            <!--                app:layout_constraintTop_toBottomOf="@+id/toolbar"-->
+            <!--                app:srcCompat="@drawable/smarthome_picture" />-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
@@ -103,11 +103,11 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|right"
                 android:layout_margin="16dp"
-                android:src="@drawable/add_icon"
                 android:backgroundTint="@color/btns"
+                android:src="@drawable/add_icon"
                 app:borderWidth="1dp"
                 app:strokeColor="#FFFFFF"
-                app:tint="@color/textColor"/>
+                app:tint="@color/textColor" />
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
     </RelativeLayout>
 </androidx.drawerlayout.widget.DrawerLayout>

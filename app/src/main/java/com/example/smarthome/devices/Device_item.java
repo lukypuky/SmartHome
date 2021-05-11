@@ -1,10 +1,12 @@
 package com.example.smarthome.devices;
 
-public class Device_item extends android.app.Activity
+import java.io.Serializable;
+
+public class Device_item extends android.app.Activity implements Serializable
 {
     private int imageResource;
     private String deviceName, deviceType;
-    private int deviceId, isActive, isConnectedImage, intensity, humidity, isOn, connectivity;
+    private int deviceId, isActive, isConnectedImage, intensity, humidity, isOn, connectivity, deviceRoomId;
     private double temperature;
 
     public Device_item()
@@ -12,11 +14,12 @@ public class Device_item extends android.app.Activity
 
     }
 
-    public Device_item(String deviceName, int deviceId, String deviceType)
+    public Device_item(String deviceName, int deviceId, String deviceType, int deviceRoomId)
     {
         this.deviceName = deviceName;
         this.deviceId = deviceId;
         this.deviceType = deviceType;
+        this.deviceRoomId = deviceRoomId;
     }
 
     public Device_item(int imageResource, String deviceName, String deviceType, int deviceId, int isOn, int connectivity, int isActive, int isConnectedImage, int intensity, int humidity, double temperature)
@@ -93,5 +96,10 @@ public class Device_item extends android.app.Activity
     public double getTemperature()
     {
         return temperature;
+    }
+
+    public int getDeviceRoomId()
+    {
+        return deviceRoomId;
     }
 }
