@@ -10,6 +10,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -70,6 +72,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
 
     //miestnosti
     private ArrayList<Room_item> roomList;
+    private TextView popUpTag;
 
     //api
     private Api api;
@@ -250,6 +253,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         roomName = contactPopupView.findViewById(R.id.roomName);
         saveRoom = contactPopupView.findViewById(R.id.saveRoomButton);
         unsaveRoom = contactPopupView.findViewById(R.id.unsaveRoomButton);
+        popUpTag = contactPopupView.findViewById(R.id.mainPopUpTag);
 
         roomType = contactPopupView.findViewById(R.id.roomType);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(Main_screen.this,
@@ -269,6 +273,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     public void addRoomDialog()
     {
         initializeDialog();
+        popUpTag.setText("Pridanie novej miestnosti");
 
         //potvrdenie pridania miestnosti
         saveRoom.setOnClickListener(v ->
@@ -297,6 +302,7 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
     public void editRoomDialog(int position)
     {
         initializeDialog();
+        popUpTag.setText("Úprava miestnosti");
 
         String type = roomList.get(position).getRoomType();
         roomName.setText(roomList.get(position).getRoomName()); //set room name

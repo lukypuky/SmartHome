@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatDelegate;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -14,12 +13,9 @@ import android.widget.Toast;
 
 import com.example.smarthome.R;
 import com.example.smarthome.connection.Api;
-import com.example.smarthome.connection.Login;
 import com.example.smarthome.connection.Registration;
 import com.example.smarthome.connection.SessionManagement;
 import com.example.smarthome.login.Login_screen;
-import com.example.smarthome.main.Main_screen;
-import com.example.smarthome.profile.Profile_screen;
 import com.example.smarthome.settings.Dark_mode;
 
 import retrofit2.Call;
@@ -27,11 +23,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.Field;
 
 public class Registration_screen extends AppCompatActivity
 {
-    private EditText rName, rHomeName, rEmail, rPass, rConfPass;
+    private EditText rName, rHomeName, rEmail, rPhone, rPass, rConfPass;
 
     //api
     private Api api;
@@ -63,15 +58,16 @@ public class Registration_screen extends AppCompatActivity
         {
             String username = rName.getText().toString();
             String email = rEmail.getText().toString();
+            String phone = rPhone.getText().toString();
             String householdname = rHomeName.getText().toString();
             String password = rPass.getText().toString();
             String confPassword = rConfPass.getText().toString();
             boolean success;
 
-            success = validate(username, email, householdname, password, confPassword);
+            success = validate(username, email, phone, householdname, password, confPassword);
 
             if (success)
-                registrateToDatabase(username, email, householdname, password);
+                registrateToDatabase(username, email, phone, householdname, password);
         });
 
         rLogin.setOnClickListener(v -> moveToLoginScreen());
@@ -95,9 +91,9 @@ public class Registration_screen extends AppCompatActivity
     }
 
     //POST registration
-    public void registrateToDatabase(String username, String email, String householdname, String password)
+    public void registrateToDatabase(String username, String email, String phone, String householdname, String password)
     {
-        Call<Registration> call = api.postUser(username, email, householdname, password);
+        Call<Registration> call = api.postUser(username, email, phone, householdname, password);
 
         call.enqueue(new Callback<Registration>()
         {
@@ -135,12 +131,13 @@ public class Registration_screen extends AppCompatActivity
         rName = findViewById(R.id.registerName);
         rHomeName = findViewById(R.id.registerHomeName);
         rEmail = findViewById(R.id.registerEmail);
+        rPhone = findViewById(R.id.registerPhone);
         rPass = findViewById(R.id.registerPass);
         rConfPass = findViewById(R.id.registerConfPass);
     }
 
     //registration screen handling
-    public boolean validate(String username, String email, String householdname, String password, String confPass)
+    public boolean validate(String username, String email, String phone, String householdname, String password, String confPass)
     {
         if (TextUtils.isEmpty(username))
         {
@@ -148,15 +145,21 @@ public class Registration_screen extends AppCompatActivity
             return false;
         }
 
-        if (TextUtils.isEmpty(email))
+        if (TextUtils.isEmpty(householdname))
+        {
+            rHomeName.setError("Povinné pole");
+            return false;
+        }
+
+        if (TextUtils.isEmpty(phone))
         {
             rEmail.setError("Povinné pole");
             return false;
         }
 
-        if (TextUtils.isEmpty(householdname))
+        if (TextUtils.isEmpty(email))
         {
-            rHomeName.setError("Povinné pole");
+            rEmail.setError("Povinné pole");
             return false;
         }
 

@@ -16,13 +16,15 @@ public interface Api
 {
     @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
     @GET("users.php")
-    Call<List<Users>> getUser(@Query("id") int userId,
-                              @Query("id_household") int id_household
+    Call<List<Users>> getUser(
+            @Query("id") int userId,
+            @Query("id_household") int id_household
     );
 
     @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
     @GET("users.php")
-    Call<List<Users>> getUsers(@Query("id_household") int id_household
+    Call<List<Users>> getUsers(
+            @Query("id_household") int id_household
     );
 
     //edit profilu
@@ -33,6 +35,7 @@ public interface Api
             @Field("id") int id_user,
             @Field("username") String userName,
             @Field("email") String email,
+            @Field("phone") String phone,
             @Field("password") String password,
             @Field("role") int role,
             @Field("id_household") int id_household
@@ -41,7 +44,8 @@ public interface Api
     //getne vsetky miestnosti na zaklade ID domacnosti
     @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
     @GET("rooms.php")
-    Call<List<Rooms>> getRooms(@Query("id_household") int id_household);
+    Call<List<Rooms>> getRooms(
+            @Query("id_household") int id_household);
 
     //insert miestnosti
     @FormUrlEncoded
@@ -89,6 +93,7 @@ public interface Api
     Call<Registration> postUser(
             @Field("username") String userName,
             @Field("email") String email,
+            @Field("phone") String phone,
             @Field("household_name") String householdName,
             @Field("password") String password
     );
@@ -100,6 +105,7 @@ public interface Api
     Call<Users> postUserByAdmin(
             @Field("username") String userName,
             @Field("email") String email,
+            @Field("phone") String phone,
             @Field("password") String password,
             @Field("role") int role,
             @Field("id_household") int id_household
@@ -108,7 +114,16 @@ public interface Api
     //getne vsetky devices pre danu miestnost
     @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
     @GET("devices.php")
-    Call<List<Devices>> getDevices(@Query("id_room") int id_room);
+    Call<List<Devices>> getDevices(
+            @Query("id_room") int id_room);
+
+    //getne konkretne device
+    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+    @GET("devices.php")
+    Call<List<Devices>> getDevice(
+            @Query("id_room") int id_room,
+            @Query("id") int id_device
+    );
 
     //insert zariadenia
     @FormUrlEncoded
@@ -122,7 +137,7 @@ public interface Api
             @Field("status_intensity") int intensity,
             @Field("status_isActive") int isActive,
             @Field("status_humidity") int humidity,
-            @Field("status_temperature") double temperature,
+            @Field("status_temperature") float temperature,
             @Field("connectivity") int connectivity,
             @Field("notified") int notified
     );
@@ -149,9 +164,8 @@ public interface Api
             @Field("status_isActive") int isActive,
             @Field("status_intensity") int intensity,
             @Field("status_humidity") int humidity,
-            @Field("status_temperature") double temperature,
-            @Field("connectivity") int connectivity,
-            @Field("notified") int notified
+            @Field("status_temperature") float temperature,
+            @Field("connectivity") int connectivity
     );
 
     //getne vsetky scenare pre danu domacnost
@@ -184,9 +198,28 @@ public interface Api
     Call<Scenarios> postScenario(
             @Field("name") String scenarioName,
             @Field("executingType") String executingType,
+            @Field("id_room") int id_room,
             @Field("sensorId") String id_sensor,
+            @Field("isExecutable") int isExecutable,
             @Field("isRunning") int isRunning,
-            @Field("status") String status,
+            @Field("value") String status,
+            @Field("time") String time,
+            @Field("id_household") int id_household
+    );
+
+    //edit scenara
+    @FormUrlEncoded
+    @HTTP(method = "PUT", path = "scenario.php", hasBody = true)
+    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+    Call<Scenarios> editScenario(
+            @Field("id") int id_scenario,
+            @Field("name") String scenarioName,
+            @Field("executingType") String executingType,
+            @Field("id_room") int id_room,
+            @Field("sensorId") String id_sensor,
+            @Field("isExecutable") int isExecutable,
+            @Field("isRunning") int isRunning,
+            @Field("value") String status,
             @Field("time") String time,
             @Field("id_household") int id_household
     );
@@ -216,10 +249,29 @@ public interface Api
             @Field("name") String stepName,
             @Field("id_scenar") int id_scenario,
             @Field("deviceId") String id_device,
+            @Field("id_room") int id_room,
             @Field("status_isOn") int isOn,
             @Field("status_isActive") int isActive,
             @Field("status_humidity") int humidity,
-            @Field("status_temperature") double temperature,
+            @Field("status_temperature") float temperature,
+            @Field("status_intensity") int intensity,
+            @Field("id_household") int id_household
+    );
+
+    //edit stepu
+    @FormUrlEncoded
+    @HTTP(method = "PUT", path = "steps.php", hasBody = true)
+    @Headers({"auth-key: d4e2ad09-b1c3-4d70-9a9a-0e6149302486"})
+    Call<Steps> editSteps(
+            @Field("id") int id_step,
+            @Field("name") String stepName,
+            @Field("id_scenar") int id_scenario,
+            @Field("deviceId") String id_device,
+            @Field("id_room") int id_room,
+            @Field("status_isOn") int isOn,
+            @Field("status_isActive") int isActive,
+            @Field("status_humidity") int humidity,
+            @Field("status_temperature") float temperature,
             @Field("status_intensity") int intensity,
             @Field("id_household") int id_household
     );

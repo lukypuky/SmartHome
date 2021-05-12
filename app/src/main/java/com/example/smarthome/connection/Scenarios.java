@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 public class Scenarios
 {
     @SerializedName("id")
-    private int scenarioID;
+    private int scenarioId;
 
     @SerializedName("name")
     private String scenarioName;
@@ -19,11 +19,14 @@ public class Scenarios
     @SerializedName("isExecutable")
     private int isExecutable;
 
+    @SerializedName("id_room")
+    private int id_room;
+
     @SerializedName("isRunning")
     private int isRunning;
 
-    @SerializedName("status")
-    private String scenarioStatus;
+    @SerializedName("value")
+    private String scenarioValue;
 
     @SerializedName("time")
     private String time;
@@ -34,9 +37,15 @@ public class Scenarios
     @SerializedName("info")
     private String info;
 
-    public int getScenarioID()
+    @SerializedName("scenar_id")
+    private int scenar_id;
+
+    @SerializedName("status")
+    private int status;
+
+    public int getScenarioId()
     {
-        return scenarioID;
+        return scenarioId;
     }
 
     public String getScenarioName()
@@ -47,6 +56,11 @@ public class Scenarios
     public String getExecutingType()
     {
         return executingType;
+    }
+
+    public int getId_room()
+    {
+        return id_room;
     }
 
     public String getSensorId()
@@ -64,9 +78,9 @@ public class Scenarios
         return isRunning;
     }
 
-    public String getScenarioStatus()
+    public String getScenarioValue()
     {
-        return scenarioStatus;
+        return scenarioValue;
     }
 
     public String getTime()
@@ -77,5 +91,15 @@ public class Scenarios
     public String getInfo()
     {
         return info;
+    }
+
+    public int getScenar_id()
+    {
+        return scenar_id;
+    }
+
+    public int getStatus()
+    {
+        return status;
     }
 }

@@ -80,14 +80,14 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
 
     //pridanie usera
     private Button saveUser, unsaveUser;
-    private EditText userName, email, password, confPassword;
+    private EditText userName, email, phone, password, confPassword;
     private AlertDialog dialog;
 
     //edit usera
     private AlertDialog.Builder editUserDialog;
-    private EditText editUserName, editEmail, editPassword;
+    private EditText editUserName, editEmail, editPhone, editPassword;
     private Spinner editRole;
-    private String stringUserName, stringEmail, stringPassword;
+    private String stringUserName, stringEmail, stringPhone, stringPassword;
     private int intRole, userId;
     private AlertDialog editDialog;
 
@@ -131,6 +131,8 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
         if (canEdit())
         {
             mRecyclerView.setVisibility(View.VISIBLE);
+            TextView recyclerViewTag = findViewById(R.id.settings_recycleview_tag);
+            recyclerViewTag.setVisibility(View.VISIBLE);
             FloatingActionButton addUser = findViewById(R.id.settings_add_user);
             addUser.setVisibility(View.VISIBLE);
             addUser.setOnClickListener(v -> addUser());
@@ -239,6 +241,7 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
 
         userName = contactPopupView.findViewById(R.id.settingsUsername);
         email = contactPopupView.findViewById(R.id.settingsEmail);
+        phone = contactPopupView.findViewById(R.id.settingsPhone);
         password = contactPopupView.findViewById(R.id.settingsPass);
         confPassword = contactPopupView.findViewById(R.id.settingsConfPass);
         saveUser = contactPopupView.findViewById(R.id.saveUserButton);
@@ -292,21 +295,22 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
         {
             String username = userName.getText().toString();
             String userEmail = email.getText().toString();
+            String userPhone = phone.getText().toString();
             int householdId = login.getHouseholdId();
             String userPassword = password.getText().toString();
             String userConfPassword = confPassword.getText().toString();
             boolean success;
 
-            success = validate(username, userEmail, userPassword, userConfPassword);
+            success = validate(username, userEmail, userPhone, userPassword, userConfPassword);
 
             if (success)
-                addUsertoDatabase(username, userEmail, householdId, userPassword);
+                addUsertoDatabase(username, userEmail, userPhone, householdId, userPassword);
         });
 
         unsaveUser.setOnClickListener(v -> dialog.dismiss());
     }
 
-    public boolean validate(String username, String userEmail, String userPassword, String userConfPassword)
+    public boolean validate(String username, String userEmail, String userPhone, String userPassword, String userConfPassword)
     {
         if (TextUtils.isEmpty(username))
         {
@@ -315,6 +319,12 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
         }
 
         if (TextUtils.isEmpty(userEmail))
+        {
+            email.setError("Povinné pole");
+            return false;
+        }
+
+        if (TextUtils.isEmpty(userPhone))
         {
             email.setError("Povinné pole");
             return false;
@@ -335,9 +345,9 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
         return true;
     }
 
-    public void addUsertoDatabase(String username, String userEmail, int householdId, String userPassword)
+    public void addUsertoDatabase(String username, String userEmail, String userPhone, int householdId, String userPassword)
     {
-        Call<Users> call = api.postUserByAdmin(username, userEmail, userPassword, 2, householdId);
+        Call<Users> call = api.postUserByAdmin(username, userEmail, userPhone, userPassword, 2, householdId);
 
         call.enqueue(new Callback<Users>()
         {
@@ -394,7 +404,7 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
         {
             getValuesFromUser(position);
 
-            Call<Users> call = api.editProfile(userId, stringUserName, stringEmail, stringPassword, intRole, login.getHouseholdId());
+            Call<Users> call = api.editProfile(userId, stringUserName, stringEmail, stringPhone, stringPassword, intRole, login.getHouseholdId());
 
             call.enqueue(new Callback<Users>()
             {
@@ -412,7 +422,7 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
 
                     if (userId == login.getUserId()) // len ked menim aktualne prihlaseneho usera
                     {
-                        Login newLogin = new Login(userId, stringUserName, stringEmail, login.getHouseholdId(), login.getHouseholdName(), intRole);
+                        Login newLogin = new Login(userId, stringUserName, stringEmail, stringPhone, login.getHouseholdId(), login.getHouseholdName(), intRole);
                         SessionManagement sessionManagement = new SessionManagement(Settings_screen.this);
                         sessionManagement.saveLoginSession(newLogin);
                     }
@@ -438,6 +448,7 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
     {
         editUserName.setText(userList.get(position).getSettingsUserName());
         editEmail.setText(userList.get(position).getSettingsUserEmail());
+        editPhone.setText(userList.get(position).getSettingsPhone());
         editPassword.setText(userList.get(position).getSettingsUserPassword());
 
         String stringRole = getRole(userList.get(position).getSettingsUserRole());
@@ -452,6 +463,7 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
         saveUser.setVisibility(View.INVISIBLE);
         editUserName.setEnabled(false);
         editEmail.setEnabled(false);
+        editPhone.setEnabled(false);
         editPassword.setEnabled(false);
         editRole.setEnabled(false);
 
@@ -464,8 +476,9 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
         View contactPopupView = getLayoutInflater().inflate(R.layout.edit_user_popup,null);
 
         editUserName = contactPopupView.findViewById(R.id.profileName);
-        editEmail = contactPopupView.findViewById(R.id.profileEmail);;
-        editPassword = contactPopupView.findViewById(R.id.profilePassword);;
+        editEmail = contactPopupView.findViewById(R.id.profileEmail);
+        editPhone = contactPopupView.findViewById(R.id.profilePhone);
+        editPassword = contactPopupView.findViewById(R.id.profilePassword);
         editRole = contactPopupView.findViewById(R.id.profileRole);
 
         saveUser = contactPopupView.findViewById(R.id.saveUserButton);
@@ -504,7 +517,7 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
                 {
                     if (!user.getUserEmail().equals(login.getUserEmail()))
                     {
-                        userList.add(position, new User_item(user.getUserId(), user.getUserName(), user.getUserEmail(), user.getUserPassword(), user.getUserRole()));
+                        userList.add(position, new User_item(user.getUserId(), user.getUserName(), user.getUserEmail(), user.getPhone(), user.getUserPassword(), user.getUserRole()));
                         mAdapter.notifyItemInserted(position);
                     }
                 }
@@ -544,6 +557,7 @@ public class Settings_screen extends AppCompatActivity implements NavigationView
         userId = userList.get(position).getSettingUserId();
         stringUserName = editUserName.getText().toString();
         stringEmail = editEmail.getText().toString();
+        stringPhone = editPhone.getText().toString();
         stringPassword = editPassword.getText().toString();
 
         String tmpRoleString = editRole.getSelectedItem().toString();

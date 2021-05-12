@@ -38,6 +38,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -52,8 +53,8 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     private DrawerLayout drawerLayout;
 
     //udaje o userovi
-    private EditText userName, householdName, email, password;
-    private String stringUserName, stringEmail, stringPassword, stringHouseholdName;
+    private EditText userName, householdName, email, phone, password;
+    private String stringUserName, stringEmail, stringPhone, stringPassword, stringHouseholdName;
     private int intRole, userId, userHouseholdId;
     private Spinner profileRole;
     private List<Users> users;
@@ -209,6 +210,9 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
         email = findViewById(R.id.profileEmail);
         email.setText(stringEmail);
 
+        phone = findViewById(R.id.profilePhone);
+        phone.setText(stringPhone);
+
         profileRole = findViewById(R.id.profileRole);
 
         profileRole = findViewById(R.id.profileRole);
@@ -225,6 +229,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
         userName.setEnabled(false);
         householdName.setEnabled(false);
         email.setEnabled(false);
+        phone.setEnabled(false);
         password.setEnabled(false);
         profileRole.setEnabled(false);
     }
@@ -250,6 +255,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
                 {
                     stringUserName = user.getUserName();
                     stringEmail = user.getUserEmail();
+                    stringPhone = user.getPhone();
                     stringPassword = user.getUserPassword();
                     intRole = user.getUserRole();
 
@@ -279,6 +285,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     {
         stringUserName = userName.getText().toString();
         stringEmail = email.getText().toString();
+        stringPhone = phone.getText().toString();
         stringPassword = password.getText().toString();
 
         String tmpRoleString = profileRole.getSelectedItem().toString();
@@ -304,6 +311,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     {
         userName.setEnabled(false);
         email.setEnabled(false);
+        phone.setEnabled(false);
         password.setEnabled(false);
         profileRole.setEnabled(false);
 
@@ -327,6 +335,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     {
         userName.setEnabled(true);
         email.setEnabled(true);
+        phone.setEnabled(true);
         password.setEnabled(true);
 
         saveProfile.startAnimation(fabOpen);
@@ -344,7 +353,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     public void editUserProfile()
     {
         getValuesFromUser();
-        Call<Users> call = api.editProfile(userId, stringUserName, stringEmail, stringPassword, intRole, userHouseholdId);
+        Call<Users> call = api.editProfile(userId, stringUserName, stringEmail, stringPhone, stringPassword, intRole, userHouseholdId);
 
         call.enqueue(new Callback<Users>()
         {
@@ -360,7 +369,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
                 if (response.body().getUserStatus() == 1)
                     Toast.makeText(Profile_screen.this, "Profil bol zmenený", Toast.LENGTH_SHORT).show();
 
-                Login login = new Login(userId, stringUserName, stringEmail, userHouseholdId, stringHouseholdName, intRole);
+                Login login = new Login(userId, stringUserName, stringEmail, stringPhone, userHouseholdId, stringHouseholdName, intRole);
                 SessionManagement sessionManagement = new SessionManagement(Profile_screen.this);
                 sessionManagement.saveLoginSession(login);
 

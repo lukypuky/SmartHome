@@ -2,9 +2,11 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/navigation">
 
     <TextView
         android:id="@+id/settingAddUserHeading"
@@ -72,7 +74,7 @@
         android:text="Heslo"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileEmail" />
+        app:layout_constraintTop_toBottomOf="@+id/profilePhone" />
 
     <EditText
         android:id="@+id/profilePassword"
@@ -115,6 +117,8 @@
         android:layout_marginBottom="25dp"
         android:text="@string/main_add"
         android:textColor="@color/textColor"
+        app:strokeColor="#FFFFFF"
+        app:strokeWidth="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/unsaveUserButton"
         app:layout_constraintStart_toStartOf="parent"
@@ -130,8 +134,31 @@
         android:layout_marginBottom="25dp"
         android:text="@string/main_back"
         android:textColor="@color/textColor"
+        app:strokeColor="#FFFFFF"
+        app:strokeWidth="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/saveUserButton"
         app:layout_constraintTop_toBottomOf="@+id/profileRole" />
+
+    <TextView
+        android:id="@+id/profilePhoneTag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="15dp"
+        android:text="Tel. číslo"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileEmail" />
+
+    <EditText
+        android:id="@+id/profilePhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:background="@null"
+        android:inputType="phone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profilePhoneTag" />
 </androidx.constraintlayout.widget.ConstraintLayout>

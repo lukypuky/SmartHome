@@ -115,7 +115,7 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
         {
             if (type.equals("heating") || type.equals("thermometer"))
             {
-                String stringValue= Double.toString(currentItem.getTemperature());
+                String stringValue= Float.toString(currentItem.getTemperature());
                 unit = getDeviceUnit(currentItem);
                 holder.deviceUnit.setText(unit);
                 holder.deviceValue.setText(stringValue);
@@ -124,7 +124,7 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
 
             else if (type.equals("hygrometer"))
             {
-                String stringValue= Double.toString(currentItem.getHumidity());
+                String stringValue= Float.toString(currentItem.getHumidity());
                 unit = getDeviceUnit(currentItem);
                 holder.deviceUnit.setText(unit);
                 holder.deviceValue.setText(stringValue);
@@ -133,7 +133,7 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
 
             else if (type.equals("blinds"))
             {
-                String stringValue= Double.toString(currentItem.getIntensity());
+                String stringValue= Float.toString(currentItem.getIntensity());
                 unit = getDeviceUnit(currentItem);
                 holder.deviceUnit.setText(unit);
                 holder.deviceValue.setText(stringValue);
@@ -142,7 +142,7 @@ public class Device_adapter extends RecyclerView.Adapter<Device_adapter.DeviceVi
 
             else if (type.equals("light") || type.equals("light_sensor"))
             {
-                String stringValue= Double.toString(currentItem.getIntensity());
+                String stringValue= Float.toString(currentItem.getIntensity());
                 unit = getDeviceUnit(currentItem);
                 holder.deviceUnit.setText(unit);
                 holder.deviceValue.setText(stringValue);

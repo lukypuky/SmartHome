@@ -6,13 +6,15 @@ public class User_item
     private final String settingsUserName;
     private final String settingsUserEmail;
     private final String settingsUserPassword;
+    private final String settingsPhone;
     private final int settingsUserRole;
 
-    public User_item(int settingUserId,String settingsUserName, String settingsUserEmail, String settingsUserPassword, int settingsUserRole)
+    public User_item(int settingUserId, String settingsUserName, String settingsUserEmail, String settingsPhone, String settingsUserPassword, int settingsUserRole)
     {
         this.settingUserId = settingUserId;
         this.settingsUserName = settingsUserName;
         this.settingsUserEmail = settingsUserEmail;
+        this.settingsPhone = settingsPhone;
         this.settingsUserPassword = settingsUserPassword;
         this.settingsUserRole = settingsUserRole;
     }
@@ -30,6 +32,11 @@ public class User_item
     public String getSettingsUserEmail()
     {
         return settingsUserEmail;
+    }
+
+    public String getSettingsPhone()
+    {
+        return settingsPhone;
     }
 
     public String getSettingsUserPassword()

@@ -82,6 +82,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
 
     //zariadenia
     private ArrayList<Device_item> deviceList;
+    private TextView popUpTag;
 
     //api
     private Api api;
@@ -232,7 +233,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         String name = deviceName.getText().toString();
         String deviceType = setDeviceType(spinDeviceType);
 
-        Call<Devices> call = api.postDevice(deviceType, name, roomId, 0,0,0,0,0.0, 0,0);
+        Call<Devices> call = api.postDevice(deviceType, name, roomId, 0,0,0,0,0.0f, 0,0);
 
         call.enqueue(new Callback<Devices>()
         {
@@ -314,6 +315,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     public void addDeviceDialog()
     {
         initializeDialog();
+        popUpTag.setText("Pridanie nového zariadenia");
 
         //potvrdenie pridania zariadenia
         saveDevice.setOnClickListener(v ->
@@ -341,6 +343,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     public void editDeviceDialog(int position)
     {
         initializeDialog();
+        popUpTag.setText("Úprava zariadenia");
 
         String type = setSpinnerDeviceType(deviceList.get(position).getDeviceType());
         deviceName.setText(deviceList.get(position).getDeviceName());
@@ -365,12 +368,12 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
                 int isOn = deviceList.get(position).getIsOn();
                 int intensity = deviceList.get(position).getIntensity();
                 int humidity = deviceList.get(position).getHumidity();
-                double temperature = deviceList.get(position).getTemperature();
+                float temperature = deviceList.get(position).getTemperature();
                 int connectivity = deviceList.get(position).getConnectivity();
                 String stringDeviceType = setDeviceType(spinnerDeviceType.getSelectedItem().toString());
                 String stringDeviceName = deviceName.getText().toString();
 
-                Call<Devices> call = api.editDevice(deviceId, stringDeviceType, stringDeviceName, roomId, isOn, isActive, intensity, humidity, temperature, connectivity,0);
+                Call<Devices> call = api.editDevice(deviceId, stringDeviceType, stringDeviceName, roomId, isOn, isActive, intensity, humidity, temperature, connectivity);
 
                 call.enqueue(new Callback<Devices>()
                 {
@@ -421,7 +424,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
             int isOn;
             int isActive = 0;
             int intensity = deviceList.get(position).getIntensity();
-            double temperature = deviceList.get(position).getTemperature();
+            float temperature = deviceList.get(position).getTemperature();
 
             boolean switchState = controlDeviceSwitch.isChecked();
             if (switchState)
@@ -455,7 +458,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
             String deviceType1 = setSpinnerDeviceType(stringDeviceType);
             String deviceType2 = setDeviceType(deviceType1);
 
-            Call<Devices> call = api.editDevice(deviceId, deviceType2, stringDeviceName, roomId, isOn, isActive, intensity, humidity, temperature, connectivity,0);
+            Call<Devices> call = api.editDevice(deviceId, deviceType2, stringDeviceName, roomId, isOn, isActive, intensity, humidity, temperature, connectivity);
 
             call.enqueue(new Callback<Devices>()
             {
@@ -508,6 +511,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         deviceName = contactPopupView.findViewById(R.id.deviceName);
         saveDevice = contactPopupView.findViewById(R.id.saveDeviceButton);
         unsaveDevice = contactPopupView.findViewById(R.id.unsaveDeviceButton);
+        popUpTag = contactPopupView.findViewById(R.id.devicePopUpTag);
 
         spinnerDeviceType = contactPopupView.findViewById(R.id.deviceType);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(Room_screen.this,

@@ -40,5 +40,61 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/scenarioImageView" />
 
+        <Button
+            android:id="@+id/scenarioExecuteBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:text="De/aktivovať scenár"
+            android:textColor="@color/textColor"
+            app:layout_constraintStart_toEndOf="@+id/scenarioImageView"
+            app:layout_constraintTop_toTopOf="parent"
+            app:strokeColor="#FFFFFF"
+            app:strokeWidth="1dp" />
+
+        <TextView
+            android:id="@+id/scenarioTypeTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="25dp"
+            android:text="Typ scenára: "
+            android:textSize="15sp"
+            android:textColor="@color/textColor2"
+            app:layout_constraintEnd_toStartOf="@+id/scenarioType"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/scenarioTextView" />
+
+        <TextView
+            android:id="@+id/scenarioType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:textColor="@color/textColor2"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toStartOf="@+id/scenarioExecutable"
+            app:layout_constraintStart_toEndOf="@+id/scenarioTypeTag"
+            app:layout_constraintTop_toBottomOf="@+id/scenarioTextView" />
+
+        <TextView
+            android:id="@+id/scenarioExecutable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:textColor="@color/textColor2"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@+id/scenarioType"
+            app:layout_constraintTop_toBottomOf="@+id/scenarioTextView" />
+
+        <ImageView
+            android:id="@+id/scenarioEdit"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/edit_icon"
+            app:tint="@color/textColor"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

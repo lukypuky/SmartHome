@@ -19,7 +19,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -61,7 +60,7 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
 
     //screen {
     private EditText stepName;
-    private TextView seekBarValue;
+    private TextView seekBarValue, heading;
     private int intSeekBarValue;
     private String[] parserArray;
     private int checked = 0;
@@ -70,8 +69,9 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
     private Spinner roomSpinner, deviceSpinner;
     private ArrayList<Room_item> roomList;
     private ArrayList<Device_item> deviceList;
-    private int selectedRoom;
+    private int selectedRoom, editSelectedRoom = 0;
     private String selectedDevice, deviceTypeSelected;
+    private String editRoom = "", editDevice = "";
 
     //switch
     @SuppressLint("UseSwitchCompatOrMaterialCode")
@@ -81,11 +81,15 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
     private SeekBar deviceValue;
 
     //button
-    private Button saveBtn;
+    private Button saveBtn, backBtn;
     //screen }
 
     //api
     private Api api;
+
+    //edit sessions
+    private SessionManagement sessionManagementEdit, sessionManagementDeviceType;
+    private Step_item editStep;
 
     //data z login/main screeny
     private Login login;
@@ -109,6 +113,11 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
         SessionManagement scenarioSessionManagement = new SessionManagement(Scenario_add_screen_three.this);
         si =  scenarioSessionManagement.getScenarioSession();
 
+        sessionManagementEdit = new SessionManagement(Scenario_add_screen_three.this);
+        editStep = sessionManagementEdit.getStepSession();
+
+        sessionManagementDeviceType = new SessionManagement(Scenario_add_screen_three.this);
+
         SessionManagement darkModeSessionManagement = new SessionManagement(Scenario_add_screen_three.this);
         Dark_mode darkMode = darkModeSessionManagement.getDarkModeSession();
         ////////////////////////////////////////////////////////////////////////////////////////////
@@ -116,10 +125,23 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
         if (darkMode.isDark_mode())
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
-        initializeScreen();
         createRoomList();
+        createDeviceList();
+
+        initializeScreen();
+
+
         fillRoomSpinner();
         hideObjects();
+
+        if (editStep.getId_step() != 0)
+        {
+            setScreenValues();
+            heading.setText("Úprava kroku");
+        }
+
+        else
+            heading.setText("Vytvorenie kroku");
 
         roomSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
@@ -161,7 +183,7 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
                 if (!parserArray[0].equals("2") && !deviceTypeSelected.equals("socket"))
                 {
                     showObjects();
-                    controlSeekBar();
+                    controlSeekBar(deviceTypeSelected);
                 }
             }
 
@@ -172,21 +194,29 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
             }
         });
 
-        saveBtn.setOnClickListener(new View.OnClickListener()
+        saveBtn.setOnClickListener(v ->
         {
-            @Override
-            public void onClick(View v)
-            {
-                boolean success;
-                success = validate();
+            boolean success = validate();
 
+            if (editStep.getId_step() != 0) //edit
+            {
                 if (success)
-                {
-                    postStep();
-                    Intent intent = new Intent(Scenario_add_screen_three.this, Scenario_add_screen_two.class);
-                    startActivity(intent);
-                }
+                    editStep();
             }
+
+            else
+            {
+                if (success) //new step
+                    postStep();
+            }
+        });
+
+        backBtn.setOnClickListener(v ->
+        {
+            sessionManagementEdit.removeStepSession();
+            sessionManagementDeviceType.removeStepDeviceSession();
+            Intent intent = new Intent(Scenario_add_screen_three.this, Scenario_add_screen_two.class);
+            startActivity(intent);
         });
 
         setNavigationView();
@@ -237,7 +267,11 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
             drawerLayout.closeDrawer((GravityCompat.START));
 
         else
+        {
             super.onBackPressed();
+            sessionManagementEdit.removeStepSession();
+            sessionManagementDeviceType.removeStepDeviceSession();
+        }
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -249,21 +283,31 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
             case R.id.mainScreen:
                 Intent main_intent = new Intent(Scenario_add_screen_three.this, Main_screen.class);
                 startActivity(main_intent);
+                sessionManagementEdit.removeStepSession();
+                sessionManagementDeviceType.removeStepDeviceSession();
                 break;
             case R.id.profile:
                 Intent profile_intent = new Intent(Scenario_add_screen_three.this, Profile_screen.class);
                 startActivity(profile_intent);
+                sessionManagementEdit.removeStepSession();
+                sessionManagementDeviceType.removeStepDeviceSession();
                 break;
             case R.id.scenario:
                 Intent scenario_intent = new Intent(Scenario_add_screen_three.this, Scenario_screen.class);
                 startActivity(scenario_intent);
+                sessionManagementEdit.removeStepSession();
+                sessionManagementDeviceType.removeStepDeviceSession();
                 break;
             case R.id.settings:
                 Intent settings_intent = new Intent(Scenario_add_screen_three.this, Settings_screen.class);
                 startActivity(settings_intent);
+                sessionManagementEdit.removeStepSession();
+                sessionManagementDeviceType.removeStepDeviceSession();
                 break;
             case R.id.logout:
                 logout();
+                sessionManagementEdit.removeStepSession();
+                sessionManagementDeviceType.removeStepDeviceSession();
                 break;
         }
 
@@ -280,7 +324,9 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
         seekBarValue = findViewById(R.id.scenarioThreeIntensityValue);
         deviceValue = findViewById(R.id.scenarioThreeSeekBar);
 
-        saveBtn = findViewById(R.id.saveStepButton);
+        heading = findViewById(R.id.scenarioThreeHeading);
+        saveBtn = findViewById(R.id.scenarioThreeSaveButton);
+        backBtn = findViewById(R.id.scenarioThreeBackButton);
     }
 
     public void showObjects()
@@ -324,6 +370,8 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
                 List<Rooms> rooms = response.body();
                 final int position = 0;
 
+                System.out.println("EDIT ROOM " + editRoom );
+
                 for (Rooms room: rooms)
                 {
                     roomList.add(position, new Room_item(room.getRoomName(), room.getRoomId()));
@@ -334,6 +382,9 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
                 roomSpinner.setAdapter(adapter);
+
+                if (!editRoom.equals(""))
+                    roomSpinner.setSelection(getIndexOfSpinner(roomSpinner, editRoom));
             }
 
             @Override
@@ -346,7 +397,16 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
 
     public void fillDeviceSpinner()
     {
-        Call<List<Devices>> call = api.getSensors(login.getHouseholdId(),selectedRoom, 0);
+        Call<List<Devices>> call;
+
+        if (editSelectedRoom != 0)
+        {
+            call = api.getSensors(login.getHouseholdId(), editSelectedRoom, 0);
+            editSelectedRoom = 0;
+        }
+
+        else
+            call = api.getSensors(login.getHouseholdId(), selectedRoom, 0);
 
         call.enqueue(new Callback<List<Devices>>()
         {
@@ -364,15 +424,17 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
 
                 for (Devices device: devices)
                 {
-                    deviceList.add(position, new Device_item(device.getDeviceName(), device.getDeviceId(), device.getDeviceType()));
+                    deviceList.add(position, new Device_item(device.getDeviceName(), device.getDeviceId(), device.getDeviceType(), device.getIdRoom()));
                 }
-
 
                 ArrayAdapter<Device_item> adapter = new ArrayAdapter<Device_item>(Scenario_add_screen_three.this,
                         android.R.layout.simple_spinner_item, deviceList);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
                 deviceSpinner.setAdapter(adapter);
+
+                if (!editDevice.equals(""))
+                    deviceSpinner.setSelection(getIndexOfSpinner(deviceSpinner, editDevice));
             }
 
             @Override
@@ -381,6 +443,17 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
                 System.out.println("call = " + call + ", t = " + t);
             }
         });
+    }
+
+    private int getIndexOfSpinner(Spinner spinner, String myString)
+    {
+        for (int i=0; i<spinner.getCount(); i++)
+        {
+            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString))
+                return i;
+        }
+
+        return 0;
     }
 
     public void getSelectedRoomId()
@@ -403,17 +476,17 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
         else if (checked == 1)
         {
             showObjects();
-            controlSeekBar();
+            controlSeekBar(deviceTypeSelected);
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void controlSeekBar()
+    public void controlSeekBar(String type)
     {
         String unit;
         intSeekBarValue = 0;
 
-        if (deviceTypeSelected.equals("heating"))
+        if (type.equals("heating"))
         {
             deviceValue.setMax(30);
             deviceValue.setMin(18);
@@ -426,7 +499,6 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
             deviceValue.setMin(0);
             unit = "%";
         }
-
 
         deviceValue.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
         {
@@ -462,20 +534,12 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
     {
         Call<Steps> call;
 
-        System.out.println("DEVICE " + deviceTypeSelected);
-        System.out.println("NAME " + stepName.getText().toString());
-        System.out.println("SCENAR ID " + si.getScenarioId());
-        System.out.println("SELECTED DEVICE " + selectedDevice);
-        System.out.println("SWITCH " + checked);
-        System.out.println("HODNOTA " + intSeekBarValue);
-        System.out.println("HOUSE ID " + login.getHouseholdId());
-
         if (deviceTypeSelected.equals("heating"))
-           call = api.postSteps(stepName.getText().toString(), si.getScenarioId(), selectedDevice, checked, 0,0, intSeekBarValue, 0, login.getHouseholdId());
+           call = api.postSteps(stepName.getText().toString(), si.getScenarioId(),  selectedDevice, selectedRoom, checked, 0,0, (float)intSeekBarValue, 0, login.getHouseholdId());
         else if(deviceTypeSelected.equals("socket") || deviceTypeSelected.equals("alarm"))
-            call = api.postSteps(stepName.getText().toString(), si.getScenarioId(), selectedDevice, checked, 0,0, 0, 0, login.getHouseholdId());
+            call = api.postSteps(stepName.getText().toString(), si.getScenarioId(), selectedDevice, selectedRoom, checked, 0,0, 0, 0, login.getHouseholdId());
         else
-            call = api.postSteps(stepName.getText().toString(), si.getScenarioId(), selectedDevice, checked, 0,0, 0, intSeekBarValue, login.getHouseholdId());
+            call = api.postSteps(stepName.getText().toString(), si.getScenarioId(), selectedDevice, selectedRoom, checked, 0,0, 0, intSeekBarValue, login.getHouseholdId());
 
         call.enqueue(new Callback<Steps>()
         {
@@ -489,7 +553,12 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
                 }
 
                 if (response.body().getStatus() == 1)
+                {
                     Toast.makeText(Scenario_add_screen_three.this, "Krok bol pridaný do scenára", Toast.LENGTH_SHORT).show();
+
+                    Intent intent = new Intent(Scenario_add_screen_three.this, Scenario_add_screen_two.class);
+                    startActivity(intent);
+                }
             }
 
             @Override
@@ -498,6 +567,111 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
                 System.out.println("call = " + call + ", t = " + t);
             }
         });
+    }
+
+    public void editStep()
+    {
+        Call<Steps> call;
+
+        System.out.println("ID " + editStep.getId_step());
+        System.out.println("NAME " + stepName.getText().toString());
+        System.out.println("SCENAR ID " + si.getScenarioId());
+        System.out.println("ID DEVICE " + selectedDevice);
+        System.out.println("ID ROOM " + selectedRoom);
+        System.out.println("IS ON " + checked);
+        System.out.println("VALUE " + intSeekBarValue);
+
+        if (parserArray[1].equals("heating"))
+            call = api.editSteps(editStep.getId_step(), stepName.getText().toString(), si.getScenarioId(),  selectedDevice, selectedRoom, checked, 0,0, (float)intSeekBarValue, 0, login.getHouseholdId());
+        else if(parserArray[1].equals("socket") || parserArray[1].equals("alarm"))
+            call = api.editSteps(editStep.getId_step(), stepName.getText().toString(), si.getScenarioId(), selectedDevice, selectedRoom, checked, 0,0, 0, 0, login.getHouseholdId());
+        else
+            call = api.editSteps(editStep.getId_step(), stepName.getText().toString(), si.getScenarioId(), selectedDevice, selectedRoom, checked, 0,0, 0, intSeekBarValue, login.getHouseholdId());
+
+        call.enqueue(new Callback<Steps>()
+        {
+            @Override
+            public void onResponse(Call<Steps> call, Response<Steps> response)
+            {
+                if (!response.isSuccessful())
+                {
+                    System.out.println("call = " + call + ", response = " + response);
+                    return;
+                }
+
+                if (response.body().getStatus() == 1)
+                {
+                    Toast.makeText(Scenario_add_screen_three.this, "Krok bol pridaný do scenára", Toast.LENGTH_SHORT).show();
+
+                    Intent intent = new Intent(Scenario_add_screen_three.this, Scenario_add_screen_two.class);
+                    startActivity(intent);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Steps> call, Throwable t)
+            {
+                System.out.println("call = " + call + ", t = " + t);
+            }
+        });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void setScreenValues()
+    {
+        stepName.setText(editStep.getStepName());
+
+        String deviceType = sessionManagementDeviceType.getStepDeviceSession();
+        parserArray = deviceType.split("/", 2);
+
+        roomList = (ArrayList<Room_item>) getIntent().getSerializableExtra("room_steparraylist");
+        deviceList = (ArrayList<Device_item>) getIntent().getSerializableExtra("device_steparraylist");
+
+        for(int x = 0; x < deviceList.size(); x++)
+        {
+            if (deviceList.get(x).getDeviceId() == editStep.getId_device())
+            {
+                editSelectedRoom = deviceList.get(x).getDeviceRoomId();
+                editDevice = deviceList.get(x).getDeviceName();
+                break;
+            }
+        }
+
+        for(int x = 0; x < roomList.size(); x++)
+        {
+            if (roomList.get(x).getId_room() == editStep.getId_room())
+            {
+                editRoom = roomList.get(x).getRoomName();
+                break;
+            }
+        }
+
+        if (editStep.getIsOn() == 1)
+            onOffSwtich.setChecked(true);
+        else
+            onOffSwtich.setChecked(false);
+
+        if(onOffSwtich.isChecked())
+        {
+            showObjects();
+
+            if(parserArray[1].equals("light") || parserArray[1].equals("blinds"))
+            {
+                seekBarValue.setText(String.valueOf(editStep.getIntensity()));
+                deviceValue.setProgress(editStep.getIntensity());
+                controlSeekBar(parserArray[1]);
+            }
+
+            else if(parserArray[1].equals("heating"))
+            {
+                seekBarValue.setText(String.valueOf(editStep.getTemperature()));
+                deviceValue.setProgress((int)editStep.getTemperature());
+                controlSeekBar(parserArray[1]);
+            }
+        }
+
+        else
+            hideObjects();
     }
 
     //odhlasenie sa z aplikacie (zrusenie session)

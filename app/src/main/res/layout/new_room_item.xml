@@ -46,6 +46,7 @@
             android:fontFamily="@font/baloo"
             android:text="Počet zariadení:"
             android:textSize="15sp"
+            android:textColor="@color/textColor2"
             app:layout_constraintEnd_toStartOf="@+id/roomCountNumber"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/roomTextView" />
@@ -67,6 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:textSize="15sp"
+            android:textColor="@color/textColor2"
             app:layout_constraintStart_toEndOf="@+id/roomCountTag"
             app:layout_constraintTop_toBottomOf="@+id/roomTextView" />
     </androidx.constraintlayout.widget.ConstraintLayout>
