@@ -8,13 +8,16 @@ public class Steps
     private int id_step;
 
     @SerializedName("name")
-    private final String stepName;
+    private String stepName;
 
     @SerializedName("id_scenar")
     private int id_scenario;
 
     @SerializedName("deviceId")
     private int id_device;
+
+    @SerializedName("id_room")
+    private int id_room;
 
     @SerializedName("status_isOn")
     private int isOn;
@@ -26,7 +29,7 @@ public class Steps
     private int humidity;
 
     @SerializedName("status_temperature")
-    private double temperature;
+    private float temperature;
 
     @SerializedName("status_intensity")
     private int intensity;
@@ -34,10 +37,10 @@ public class Steps
     @SerializedName("status")
     private int status;
 
-    public Steps(String stepName)
-    {
-        this.stepName = stepName;
-    }
+//    public Steps(String stepName)
+//    {
+//        this.stepName = stepName;
+//    }
 
     public int getId_step() {
         return id_step;
@@ -58,6 +61,11 @@ public class Steps
         return id_device;
     }
 
+    public int getId_room()
+    {
+        return id_room;
+    }
+
     public int getIsOn()
     {
         return isOn;
@@ -73,7 +81,7 @@ public class Steps
         return humidity;
     }
 
-    public double getTemperature()
+    public float getTemperature()
     {
         return temperature;
     }

@@ -63,8 +63,7 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
     private Toolbar toolbar;
 
     //screen {
-    private TextView spinnerTag, seekBarTag, valueFromTag, valueFrom;
-    private TextView valueToTag, valueTo;
+    private TextView spinnerTag, seekBarTag, valueFromTag, valueFrom, valueToTag, valueTo, heading;
     private EditText scenarioName;
 
     //spinners
@@ -84,7 +83,7 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
     private RadioButton radioButtonManual, radioButtonAuto;
 
     //buttons
-    private Button nextBtn, timeBtn;
+    private Button nextBtn, timeBtn, backBtn;
 
     //time picker
     private TextView hourValue, hourTag, minuteValue, minuteTag, pickedTime;
@@ -94,6 +93,7 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
     private Api api;
     private int scenar_id;
 
+    //edit sessions
     private SessionManagement sessionManagementEdit;
     private Scenario_item editScenario;
 
@@ -120,9 +120,6 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
         Dark_mode darkMode = darkModeSessionManagement.getDarkModeSession();
         ////////////////////////////////////////////////////////////////////////////////////////////
 
-        createRoomList();
-        createDeviceList();
-
         if (darkMode.isDark_mode())
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
@@ -133,8 +130,11 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
             setScreenValues();
             createRoomList();
             fillRoomSpinner();
+            heading.setText("Úprava scenára");
         }
 
+        else
+            heading.setText("Vytvorenie scenára");
 
         //nastavenie obrazovky podla zvoleneho typu ovladania scenara
         radioGroup.setOnCheckedChangeListener((group, checkedId) ->
@@ -199,17 +199,25 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
         nextBtn.setOnClickListener(v ->
         {
             boolean success = validate();
-            if (success)
+
+            if (editScenario.getScenarioId() != 0) //edit
             {
-                saveScenario();
-
-                Scenario_item si = new Scenario_item(scenar_id);
-                SessionManagement scenarioSessionManagement = new SessionManagement(Scenario_add_screen_one.this);
-                scenarioSessionManagement.saveScenarioSession(si);
-
-                Intent intent = new Intent(Scenario_add_screen_one.this, Scenario_add_screen_two.class);
-                startActivity(intent);
+                if (success)
+                    editScenario();
             }
+
+            else // new scenario
+            {
+                if (success)
+                    postScenario();
+            }
+        });
+
+        backBtn.setOnClickListener(v ->
+        {
+            sessionManagementEdit.removeScenarioSession();
+            Intent intent = new Intent(Scenario_add_screen_one.this, Scenario_screen.class);
+            startActivity(intent);
         });
 
         setNavigationView();
@@ -262,8 +270,6 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
         else
         {
             super.onBackPressed();
-            System.out.println("BBBBBBBBB"); // zmazat session
-
             sessionManagementEdit.removeScenarioSession();
         }
     }
@@ -326,7 +332,9 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
         toSeekBar = findViewById(R.id.scenarioOneBarTo);
         valueTo = findViewById(R.id.scenarioOneValueTo);
 
-        nextBtn = findViewById(R.id.nextScenarioButton);
+        heading = findViewById(R.id.scenarioOneHeading);
+        nextBtn = findViewById(R.id.scenarioOneSaveButton);
+        backBtn = findViewById(R.id.scenarioOneBackButton);
     }
 
     public void showObjects()
@@ -410,8 +418,6 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
                         android.R.layout.simple_spinner_item, roomList);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-                System.out.println("EDIT ROOM " + editRoom);
-
                 roomSpinner.setAdapter(adapter);
 
                 if (!editRoom.equals(""))
@@ -465,8 +471,6 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
                 deviceSpinner.setAdapter(adapter);
-
-                System.out.println("EDIT DEVICE " + editDevice);
 
                 if (!editDevice.equals(""))
                     deviceSpinner.setSelection(getIndexOfSpinner(deviceSpinner, editDevice));
@@ -600,7 +604,7 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
         });
     }
 
-    public void saveScenario()
+    public void postScenario()
     {
         Call<Scenarios> call;
         String stringScenarioName = scenarioName.getText().toString();
@@ -630,9 +634,67 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
                     System.out.println("call = " + call + ", response = " + response);
                 }
 
-                if (response.body().getScenarioStatus().equals("1"))
+                if (response.body().getStatus() == 1)
+                {
                     scenar_id = response.body().getScenar_id();
-//                    Toast.makeText(Scenario_add_screen_one.this, "Scenár bol pridaný", Toast.LENGTH_SHORT).show();
+
+                    Scenario_item si = new Scenario_item(scenar_id);
+                    SessionManagement scenarioSessionManagement = new SessionManagement(Scenario_add_screen_one.this);
+                    scenarioSessionManagement.saveScenarioSession(si);
+
+                    Toast.makeText(Scenario_add_screen_one.this, "Scenár bol pridaný", Toast.LENGTH_SHORT).show();
+
+
+                    Intent intent = new Intent(Scenario_add_screen_one.this, Scenario_add_screen_two.class);
+                    startActivity(intent);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Scenarios> call, Throwable t)
+            {
+                System.out.println("call = " + call + ", t = " + t);
+            }
+        });
+    }
+
+    public void editScenario()
+    {
+        Call<Scenarios> call;
+        String stringScenarioName = scenarioName.getText().toString();
+        String status = seekBarFromValue + "-" + seekBarToValue;
+        String time = hourValue.getText().toString() + ":" + minuteValue.getText().toString();
+
+        if (radioButtonManual.isChecked())
+            call = api.editScenario(editScenario.getScenarioId(), stringScenarioName, "manual", selectedRoom, "0",0, 0, "0", "0", login.getHouseholdId());
+
+        else
+        {
+            if (deviceTypeSelected.equals("time"))
+                call = api.editScenario(editScenario.getScenarioId(), stringScenarioName, "auto", selectedRoom, deviceTypeSelected,0, 0, "0", time, login.getHouseholdId());
+            else if(deviceTypeSelected.equals("smoke_sensor") || deviceTypeSelected.equals("flood_sensor") || deviceTypeSelected.equals("alarm"))
+                call = api.editScenario(editScenario.getScenarioId(), stringScenarioName, "auto", selectedRoom, selectedDevice,0, 0, "1","0", login.getHouseholdId());
+            else
+                call = api.editScenario(editScenario.getScenarioId(), stringScenarioName, "auto", selectedRoom, selectedDevice,0, 0, status,"0", login.getHouseholdId());
+        }
+
+        call.enqueue(new Callback<Scenarios>()
+        {
+            @Override
+            public void onResponse(Call<Scenarios> call, Response<Scenarios> response)
+            {
+                if (!response.isSuccessful())
+                {
+                    System.out.println("call = " + call + ", response = " + response);
+                }
+
+                if (response.body().getStatus() == 1)
+                {
+                    Toast.makeText(Scenario_add_screen_one.this, "Scenár bol zmenený", Toast.LENGTH_SHORT).show();
+
+                    Intent intent = new Intent(Scenario_add_screen_one.this, Scenario_screen.class);
+                    startActivity(intent);
+                }
             }
 
             @Override
@@ -733,9 +795,9 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
                     }
                 }
 
-                if (editScenario.getStatus().contains("-"))
+                if (editScenario.getValue().contains("-"))
                 {
-                    String[] parserArray = editScenario.getStatus().split("-", 2);
+                    String[] parserArray = editScenario.getValue().split("-", 2);
                     valueFrom.setText(parserArray[0]);
                     fromSeekBar.setProgress(Integer.parseInt(parserArray[0]));
                     toSeekBar.setProgress(Integer.parseInt(parserArray[1]));

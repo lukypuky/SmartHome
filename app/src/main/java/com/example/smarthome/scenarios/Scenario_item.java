@@ -3,7 +3,7 @@ package com.example.smarthome.scenarios;
 public class Scenario_item extends android.app.Activity
 {
     private int mImageResource;
-    private String scenarioName, scenarioType, sensorId, status, time;
+    private String scenarioName, scenarioType, sensorId, value, time;
     private int scenarioId, scenarioExecutable, isRunning, id_room;;
 
     public Scenario_item()
@@ -16,7 +16,7 @@ public class Scenario_item extends android.app.Activity
         this.scenarioId = scenarioId;
     }
 
-    public Scenario_item(int scenarioId, String scenarioName, String scenarioType, int id_room, String sensorId, int scenarioExecutable, int isRunning, String status, String time)
+    public Scenario_item(int scenarioId, String scenarioName, String scenarioType, int id_room, String sensorId, int scenarioExecutable, int isRunning, String value, String time)
     {
         this.scenarioId = scenarioId;
         this.scenarioName = scenarioName;
@@ -25,7 +25,7 @@ public class Scenario_item extends android.app.Activity
         this.sensorId = sensorId;
         this.scenarioExecutable = scenarioExecutable;
         this.isRunning = isRunning;
-        this.status = status;
+        this.value = value;
         this.time = time;
     }
 
@@ -39,7 +39,7 @@ public class Scenario_item extends android.app.Activity
         this.sensorId = sensorId;
         this.scenarioExecutable = scenarioExecutable;
         this.isRunning = isRunning;
-        this.status = status;
+        this.value = status;
         this.time = time;
     }
 
@@ -78,9 +78,9 @@ public class Scenario_item extends android.app.Activity
         return sensorId;
     }
 
-    public String getStatus()
+    public String getValue()
     {
-        return status;
+        return value;
     }
 
     public String getTime()

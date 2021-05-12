@@ -19,17 +19,21 @@ public class Login
     @SerializedName("email")
     private String userEmail;
 
+    @SerializedName("phone")
+    private String phone;
+
     @SerializedName("id_household")
     private final int householdId;
 
     @SerializedName("household_name")
     private final String householdName;
 
-    public Login(int userId, String username, String userEmail, int householdId, String householdName, int role)
+    public Login(int userId, String username, String userEmail, String phone, int householdId, String householdName, int role)
     {
         this.userId = userId;
         this.username = username;
         this.userEmail = userEmail;
+        this.phone = phone;
         this.householdId = householdId;
         this.householdName = householdName;
         this.role = role;
@@ -68,5 +72,10 @@ public class Login
     public String getUserEmail()
     {
         return userEmail;
+    }
+
+    public String getPhone()
+    {
+        return phone;
     }
 }

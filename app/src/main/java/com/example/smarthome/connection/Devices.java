@@ -35,7 +35,7 @@ public class Devices
     private int humidity;
 
     @SerializedName("status_temperature")
-    private double temperature;
+    private float temperature;
 
     @SerializedName("status")
     private int deviceStatus;
@@ -90,7 +90,7 @@ public class Devices
         return humidity;
     }
 
-    public double getTemperature()
+    public float getTemperature()
     {
         return temperature;
     }

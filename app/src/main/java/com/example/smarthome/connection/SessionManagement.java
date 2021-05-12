@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.example.smarthome.devices.Device_item;
 import com.example.smarthome.main.Room_adapter;
 import com.example.smarthome.main.Room_item;
 import com.example.smarthome.scenarios.Scenario_item;
+import com.example.smarthome.scenarios.Step_item;
 import com.example.smarthome.settings.Dark_mode;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -26,6 +28,7 @@ public class SessionManagement
     String SESSION_LOGIN_USER_ID = "user_id";
     String SESSION_LOGIN_NAME = "user_name";
     String SESSION_LOGIN_EMAIL = "user_email";
+    String SESSION_LOGIN_PHONE = "user_phone";
     String SESSION_LOGIN_HOUSEHOLD_ID = "household_id";
     String SESSION_LOGIN_HOUSEHOLD_NAME = "household_name";
     String SESSION_LOGIN_ROLE = "user_role";
@@ -46,8 +49,22 @@ public class SessionManagement
     String SESSION_SCENARIO_SENSOR_ID = "scenario_sensor_id";
     String SESSION_SCENARIO_IS_EXECUTABLE = "scenario_is_executable";
     String SESSION_SCENARIO_IS_RUNNING = "scenario_is_running";
-    String SESSION_SCENARIO_STATUS = "scenario_status";
+    String SESSION_SCENARIO_VALUE = "scenario_value";
     String SESSION_SCENARIO_TIME = "scenario_time";
+
+    //step_item
+    String SESSION_STEP_ID = "step_id";
+    String SESSION_STEP_NAME = "step_name";
+    String SESSION_STEP_SCENARIO_ID = "step_scenario_id";
+    String SESSION_STEP_DEVICE_ID = "step_device_id";
+    String SESSION_STEP_ROOM_ID = "step_room_id";
+    String SESSION_STEP_IS_ON = "step_is_on";
+    String SESSION_STEP_IS_ACTIVE = "step_is_active";
+    String SESSION_STEP_HUMIDITY = "step_humidity";
+    String SESSION_STEP_TEMPERATURE = "step_temperature";
+    String SESSION_STEP_INTENSITY = "step_intensity";
+
+    String SESSION_STEP_DEVICE = "step_device";
 
     @SuppressLint("CommitPrefEdits")
     public SessionManagement(Context context)
@@ -61,6 +78,7 @@ public class SessionManagement
         int userId = login.getUserId();
         String userName = login.getUsername();
         String userEmail = login.getUserEmail();
+        String userPhone = login.getPhone();
         int householdId = login.getHouseholdId();
         String householdName = login.getHouseholdName();
         int userRole = login.getRole();
@@ -68,6 +86,7 @@ public class SessionManagement
         editor.putInt(SESSION_LOGIN_USER_ID, userId).commit();
         editor.putString(SESSION_LOGIN_NAME, userName).commit();
         editor.putString(SESSION_LOGIN_EMAIL, userEmail).commit();
+        editor.putString(SESSION_LOGIN_PHONE, userPhone).commit();
         editor.putInt(SESSION_LOGIN_HOUSEHOLD_ID, householdId).commit();
         editor.putString(SESSION_LOGIN_HOUSEHOLD_NAME, householdName).commit();
         editor.putInt(SESSION_LOGIN_ROLE, userRole).commit();
@@ -100,7 +119,7 @@ public class SessionManagement
         String scenarioSensorId = si.getSensorId();
         int scenarioIsExecutable = si.getScenarioExecutable();
         int scenarioIsRunning = si.getIsRunning();
-        String scenarioStatus = si.getStatus();
+        String scenarioValue = si.getValue();
         String scenarioTime = si.getTime();
 
         editor.putInt(SESSION_SCENARIO_ID, scenarioId).commit();
@@ -110,50 +129,52 @@ public class SessionManagement
         editor.putString(SESSION_SCENARIO_SENSOR_ID, scenarioSensorId).commit();
         editor.putInt(SESSION_SCENARIO_IS_EXECUTABLE, scenarioIsExecutable).commit();
         editor.putInt(SESSION_SCENARIO_IS_RUNNING, scenarioIsRunning).commit();
-        editor.putString(SESSION_SCENARIO_STATUS, scenarioStatus).commit();
+        editor.putString(SESSION_SCENARIO_VALUE, scenarioValue).commit();
         editor.putString(SESSION_SCENARIO_TIME, scenarioTime).commit();
     }
 
-//    public static void saveRoomArrayList(Context context, List<Room_item> ri)
-//    {
-//        Gson gson = new Gson();
-//        String jsonString = gson.toJson(ri);
-//
-//        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-//        SharedPreferences.Editor editorPref = pref.edit();
-//
-//        editorPref.putString("room_list", jsonString);
-//        editorPref.apply();
-//    }
-//
-//    public static List<Room_item> getRoomArrayList(Context context)
-//    {
-//        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-//        String jsonString = pref.getString("room_list", "");
-//
-//        Gson gson = new Gson();
-//        Type type = new TypeToken<ArrayList<Room_item>>() {}.getType();
-//        List<Room_item> room = gson.fromJson(jsonString, type);
-//
-////        ArrayList<Room_item> ri;
-////        Gson gson = new Gson();
-////        String json = sharedPreferences.getString("room_list", null);
-////        Type type = new TypeToken<ArrayList<Room_item>>() {}.getType();
-////
-////        ri = gson.fromJson(json,type);
-//        return room;
-//    }
+    public void saveStepSession(Step_item si)
+    {
+        int stepId = si.getId_step();
+        String stepName = si.getStepName();
+        int stepScenarioId = si.getId_scenario();
+        int stepDeviceId = si.getId_device();
+        int stepRoomId = si.getId_room();
+        int stepIsOn = si.getIsOn();
+        int stepIsActive = si.getIsActive();
+        int stepHumidity = si.getHumidity();
+        float stepTemperature = si.getTemperature();
+        int stepIntensity = si.getIntensity();
+
+        editor.putInt(SESSION_STEP_ID, stepId).commit();
+        editor.putString(SESSION_STEP_NAME, stepName).commit();
+        editor.putInt(SESSION_STEP_SCENARIO_ID, stepScenarioId).commit();
+        editor.putInt(SESSION_STEP_DEVICE_ID, stepDeviceId).commit();
+        editor.putInt(SESSION_STEP_ROOM_ID, stepRoomId).commit();
+        editor.putInt(SESSION_STEP_IS_ON, stepIsOn).commit();
+        editor.putInt(SESSION_STEP_IS_ACTIVE, stepIsActive).commit();
+        editor.putInt(SESSION_STEP_HUMIDITY, stepHumidity).commit();
+        editor.putFloat(SESSION_STEP_TEMPERATURE, stepTemperature).commit();
+        editor.putInt(SESSION_STEP_INTENSITY, stepIntensity).commit();
+    }
+
+    public void saveStepDeviceSession(String sd)
+    {
+        String stepDeviceType = sd;
+        editor.putString(SESSION_STEP_DEVICE, stepDeviceType).commit();
+    }
 
     public Login getLoginSession()
     {
         int loginUserId = sharedPreferences.getInt(SESSION_LOGIN_USER_ID,0);
         String loginUserName = sharedPreferences.getString(SESSION_LOGIN_NAME,"");
         String loginEmail = sharedPreferences.getString(SESSION_LOGIN_EMAIL,"");
+        String loginPhone = sharedPreferences.getString(SESSION_LOGIN_PHONE,"");
         int loginHouseholdId = sharedPreferences.getInt(SESSION_LOGIN_HOUSEHOLD_ID,0);
         String loginHouseholdName = sharedPreferences.getString(SESSION_LOGIN_HOUSEHOLD_NAME,"");
         int loginRole = sharedPreferences.getInt(SESSION_LOGIN_ROLE,0);
 
-        return new Login(loginUserId, loginUserName, loginEmail, loginHouseholdId, loginHouseholdName, loginRole );
+        return new Login(loginUserId, loginUserName, loginEmail, loginPhone, loginHouseholdId, loginHouseholdName, loginRole );
     }
 
     public Room_item getRoomSession()
@@ -180,10 +201,32 @@ public class SessionManagement
         String scenarioItemSensorId = sharedPreferences.getString(SESSION_SCENARIO_SENSOR_ID, "");
         int scenarioItemIsExecutable = sharedPreferences.getInt(SESSION_SCENARIO_IS_EXECUTABLE,0);
         int scenarioItemIsRunning = sharedPreferences.getInt(SESSION_SCENARIO_IS_RUNNING,0);
-        String scenarioItemStatus = sharedPreferences.getString(SESSION_SCENARIO_STATUS,"");
+        String scenarioItemValue = sharedPreferences.getString(SESSION_SCENARIO_VALUE,"");
         String scenarioItemTime = sharedPreferences.getString(SESSION_SCENARIO_TIME,"");
 
-        return new Scenario_item(scenarioItemId, scenarioItemName, scenarioItemType, scenarioItemRoomId, scenarioItemSensorId, scenarioItemIsExecutable, scenarioItemIsRunning, scenarioItemStatus, scenarioItemTime);
+        return new Scenario_item(scenarioItemId, scenarioItemName, scenarioItemType, scenarioItemRoomId, scenarioItemSensorId, scenarioItemIsExecutable, scenarioItemIsRunning, scenarioItemValue, scenarioItemTime);
+    }
+
+    public Step_item getStepSession()
+    {
+        int stepItemId = sharedPreferences.getInt(SESSION_STEP_ID, 0);
+        String stepItemName = sharedPreferences.getString(SESSION_STEP_NAME, "");
+        int stepItemScenarioId = sharedPreferences.getInt(SESSION_STEP_SCENARIO_ID, 0);
+        int stepItemDeviceId = sharedPreferences.getInt(SESSION_STEP_DEVICE_ID, 0);
+        int stepItemRoomId = sharedPreferences.getInt(SESSION_STEP_ROOM_ID, 0);
+        int stepItemIsOn = sharedPreferences.getInt(SESSION_STEP_IS_ON, 0);
+        int stepItemIsActive = sharedPreferences.getInt(SESSION_STEP_IS_ACTIVE, 0);
+        int stepItemHumidity = sharedPreferences.getInt(SESSION_STEP_HUMIDITY,0);
+        float stepItemTemperature = sharedPreferences.getFloat(SESSION_STEP_TEMPERATURE, 0.0f);
+        int stepItemIntensity = sharedPreferences.getInt(SESSION_STEP_INTENSITY, 0);
+
+        return new Step_item(stepItemId, stepItemName, stepItemScenarioId, stepItemDeviceId, stepItemRoomId, stepItemIsOn, stepItemIsActive, stepItemHumidity, stepItemTemperature, stepItemIntensity);
+    }
+
+    public String getStepDeviceSession()
+    {
+        String stepItemDeviceType = sharedPreferences.getString(SESSION_STEP_DEVICE, "");
+        return stepItemDeviceType;
     }
 
     public int getSession()
@@ -200,8 +243,27 @@ public class SessionManagement
         editor.putString(SESSION_SCENARIO_SENSOR_ID, "").commit();
         editor.putInt(SESSION_SCENARIO_IS_EXECUTABLE, 0).commit();
         editor.putInt(SESSION_SCENARIO_IS_RUNNING, 0).commit();
-        editor.putString(SESSION_SCENARIO_STATUS, "").commit();
+        editor.putString(SESSION_SCENARIO_VALUE, "").commit();
         editor.putString(SESSION_SCENARIO_TIME, "").commit();
+    }
+
+    public void removeStepSession()
+    {
+        editor.putInt(SESSION_STEP_ID, 0).commit();
+        editor.putString(SESSION_STEP_NAME, "").commit();
+        editor.putInt(SESSION_STEP_SCENARIO_ID, 0).commit();
+        editor.putInt(SESSION_STEP_DEVICE_ID, 0).commit();
+        editor.putInt(SESSION_STEP_ROOM_ID, 0).commit();
+        editor.putInt(SESSION_STEP_IS_ON, 0).commit();
+        editor.putInt(SESSION_STEP_IS_ACTIVE, 0).commit();
+        editor.putInt(SESSION_STEP_HUMIDITY, 0).commit();
+        editor.putFloat(SESSION_STEP_TEMPERATURE, 0.0f).commit();
+        editor.putInt(SESSION_STEP_INTENSITY, 0).commit();
+    }
+
+    public void removeStepDeviceSession()
+    {
+        editor.putString(SESSION_STEP_DEVICE, "").commit();
     }
 
     public void removeSession()

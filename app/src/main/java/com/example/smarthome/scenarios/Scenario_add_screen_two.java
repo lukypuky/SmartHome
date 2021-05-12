@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,11 +25,13 @@ import com.example.smarthome.R;
 import com.example.smarthome.connection.Api;
 import com.example.smarthome.connection.Devices;
 import com.example.smarthome.connection.Login;
+import com.example.smarthome.connection.Rooms;
 import com.example.smarthome.connection.SessionManagement;
 import com.example.smarthome.connection.Steps;
 import com.example.smarthome.devices.Device_item;
 import com.example.smarthome.login.Login_screen;
 import com.example.smarthome.main.Main_screen;
+import com.example.smarthome.main.Room_item;
 import com.example.smarthome.profile.Profile_screen;
 import com.example.smarthome.settings.Dark_mode;
 import com.example.smarthome.settings.Settings_screen;
@@ -56,8 +59,11 @@ public class Scenario_add_screen_two extends AppCompatActivity implements Naviga
     private RecyclerView.Adapter mAdapter; // bridge medzi datami a recycler view
     private RecyclerView.LayoutManager mLayoutManager;
 
-    //miestnosti
+    //kroky
     private ArrayList<Step_item> stepList;
+    private ArrayList<Room_item> roomList;
+    private ArrayList<Device_item> deviceList;
+    private int selectedRoom;
 
     //api
     private Api api;
@@ -99,6 +105,13 @@ public class Scenario_add_screen_two extends AppCompatActivity implements Naviga
             startActivity(intent);
         });
 
+        Button backBtn = findViewById(R.id.scenarioTwoBackButton);
+        backBtn.setOnClickListener(v ->
+        {
+            Intent intent = new Intent(Scenario_add_screen_two.this, Scenario_screen.class);
+            startActivity(intent);
+        });
+
         getSteps();
         setRecyclerView();
         setNavigationView();
@@ -121,7 +134,7 @@ public class Scenario_add_screen_two extends AppCompatActivity implements Naviga
         mRecyclerView = findViewById(R.id.scenarioTwoRecyclerView);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
-        mAdapter = new Step_adapter(stepList, this);
+        mAdapter = new Step_adapter(stepList, login, this);
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         new ItemTouchHelper(stepToRemove).attachToRecyclerView(mRecyclerView);
@@ -169,7 +182,6 @@ public class Scenario_add_screen_two extends AppCompatActivity implements Naviga
         else
             super.onBackPressed();
     }
-
 
     @SuppressLint("NonConstantResourceId")
     public boolean onNavigationItemSelected(@NonNull MenuItem item)
@@ -221,7 +233,9 @@ public class Scenario_add_screen_two extends AppCompatActivity implements Naviga
 
                 for (Steps step: steps)
                 {
-                    stepList.add(position, new Step_item(step.getId_step(), step.getStepName()));
+                    stepList.add(position, new Step_item(step.getId_step(), step.getStepName(), step.getId_scenario(), step.getId_device(), step.getId_room(), step.getIsOn(),
+                            step.getIs_active(), step.getHumidity(), step.getTemperature(), step.getIntensity()));
+
                     mAdapter.notifyItemInserted(position);
                 }
             }
@@ -246,9 +260,8 @@ public class Scenario_add_screen_two extends AppCompatActivity implements Naviga
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
         {
-
-//            if (canEdit()) //user je admin
-//            {
+            if (canEdit()) //user je admin
+            {
                 //builder na potvrdenie zmazania
                 AlertDialog.Builder builder = new AlertDialog.Builder(Scenario_add_screen_two.this);
                 builder.setCancelable(true);
@@ -263,7 +276,7 @@ public class Scenario_add_screen_two extends AppCompatActivity implements Naviga
                     stepList.remove(viewHolder.getAdapterPosition());
                     mAdapter.notifyDataSetChanged();
 
-                    Toast.makeText(Scenario_add_screen_two.this, "Krok bol úspešne odstráneý", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Scenario_add_screen_two.this, "Krok bol úspešne odstránený", Toast.LENGTH_SHORT).show();
                 });
 
                 builder.setNegativeButton("Nie", (dialog, which) ->
@@ -274,16 +287,24 @@ public class Scenario_add_screen_two extends AppCompatActivity implements Naviga
 
                 AlertDialog dialog = builder.create();
                 dialog.show();
-//            }
-//
-//            else // user nie je admin
-//            {
-//                Toast.makeText(Main_screen.this, "Nemáte povolenie odstrániť miestnosť.", Toast.LENGTH_SHORT).show();
-//                mAdapter.notifyDataSetChanged();
-//            }
+            }
+
+            else // user nie je admin
+            {
+                Toast.makeText(Scenario_add_screen_two.this, "Nemáte povolenie odstrániť krok scenára", Toast.LENGTH_SHORT).show();
+                mAdapter.notifyDataSetChanged();
+            }
 
         }
     };
+
+    public boolean canEdit()
+    {
+        if (login.getRole() == 1)
+            return true;
+        else
+            return false;
+    }
 
     public void deleteStep(int id_step)
     {
@@ -305,6 +326,142 @@ public class Scenario_add_screen_two extends AppCompatActivity implements Naviga
         });
     }
 
+    @Override
+    public void onStepClick(int position)
+    {
+        //nothing to do
+    }
+
+    public void fillRoomSpinner()
+    {
+        Call<List<Rooms>> call = api.getRoomsWithSensors(login.getHouseholdId(), 0);
+        call.enqueue(new Callback<List<Rooms>>()
+        {
+            @Override
+            public void onResponse(Call<List<Rooms>> call, Response<List<Rooms>> response)
+            {
+                if (!response.isSuccessful())
+                {
+                    System.out.println("call = " + call + ", response = " + response);
+                    return;
+                }
+
+                List<Rooms> rooms = response.body();
+                final int position = 0;
+
+                for (Rooms room: rooms)
+                {
+                    roomList.add(position, new Room_item(room.getRoomName(), room.getRoomId()));
+                }
+
+                fillDeviceSpinner();
+            }
+
+            @Override
+            public void onFailure(Call<List<Rooms>> call, Throwable t)
+            {
+                System.out.println("call = " + call + ", t = " + t);
+            }
+        });
+    }
+
+    public void fillDeviceSpinner()
+    {
+        Call<List<Devices>> call = api.getSensors(login.getHouseholdId(), selectedRoom, 0);
+
+        call.enqueue(new Callback<List<Devices>>()
+        {
+            @Override
+            public void onResponse(Call<List<Devices>> call, Response<List<Devices>> response)
+            {
+                if (!response.isSuccessful())
+                {
+                    System.out.println("call = " + call + ", response = " + response);
+                    return;
+                }
+
+                List<Devices> devices = response.body();
+                final int position = 0;
+
+                for (Devices device: devices)
+                {
+                    deviceList.add(position, new Device_item(device.getDeviceName(), device.getDeviceId(), device.getDeviceType(), device.getIdRoom()));
+                }
+
+                Intent intent = new Intent(Scenario_add_screen_two.this, Scenario_add_screen_three.class);
+                intent.putExtra("room_steparraylist", roomList);
+                intent.putExtra("device_steparraylist", deviceList);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onFailure(Call<List<Devices>> call, Throwable t)
+            {
+                System.out.println("call = " + call + ", t = " + t);
+            }
+        });
+    }
+
+    public void createRoomList()
+    {
+        roomList = new ArrayList<>();
+    }
+
+    public void createDeviceList()
+    {
+        deviceList = new ArrayList<>();
+    }
+
+    public void getDeviceType(int roomId, int deviceId)
+    {
+        Call<List<Devices>> call = api.getDevice(roomId, deviceId);
+
+        call.enqueue(new Callback<List<Devices>>()
+        {
+            @Override
+            public void onResponse(Call<List<Devices>> call, Response<List<Devices>> response)
+            {
+                if (!response.isSuccessful())
+                {
+                    System.out.println("call = " + call + ", response = " + response);
+                    return;
+                }
+
+                List<Devices> devices = response.body();
+                final int position = 0;
+
+                for (Devices device: devices)
+                {
+                    SessionManagement stepDeviceTypeManagement = new SessionManagement(Scenario_add_screen_two.this);
+                    stepDeviceTypeManagement.saveStepDeviceSession(device.getDeviceType());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Devices>> call, Throwable t)
+            {
+                System.out.println("call = " + call + ", t = " + t);
+            }
+        });
+    }
+
+    @Override
+    public void onEditClick(int position)
+    {
+        Step_item step_item = new Step_item(stepList.get(position).getId_step(), stepList.get(position).getStepName(), stepList.get(position).getId_scenario(), stepList.get(position).getId_device(),
+                stepList.get(position).getId_room(), stepList.get(position).getIsOn(), stepList.get(position).getIsActive(), stepList.get(position).getHumidity(), stepList.get(position).getTemperature(),
+                stepList.get(position).getIntensity());
+
+        SessionManagement stepSessionManagement = new SessionManagement(Scenario_add_screen_two.this);
+        stepSessionManagement.saveStepSession(step_item);
+
+        selectedRoom = stepList.get(position).getId_room();
+        createRoomList();
+        createDeviceList();
+        getDeviceType(stepList.get(position).getId_room(), stepList.get(position).getId_device());
+        fillRoomSpinner();
+    }
+
     //odhlasenie sa z aplikacie (zrusenie session)
     public void logout()
     {
@@ -319,11 +476,5 @@ public class Scenario_add_screen_two extends AppCompatActivity implements Naviga
         Intent intent = new Intent(Scenario_add_screen_two.this, Login_screen.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
-    }
-
-    @Override
-    public void onStepClick(int position)
-    {
-
     }
 }

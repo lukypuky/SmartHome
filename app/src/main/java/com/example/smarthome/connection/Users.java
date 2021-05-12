@@ -13,6 +13,9 @@ public class Users
     @SerializedName("email")
     private final String userEmail;
 
+    @SerializedName("phone")
+    private final String phone;
+
     @SerializedName("password")
     private final String userPassword;
 
@@ -25,11 +28,12 @@ public class Users
     @SerializedName("status")
     private int userStatus;
 
-    public Users(int userId, String userName, String userEmail, String userPassword, int userRole, int userHouseholdId)
+    public Users(int userId, String userName, String userEmail, String phone, String userPassword, int userRole, int userHouseholdId)
     {
         this.userId = userId;
         this.userName = userName;
         this.userEmail = userEmail;
+        this.phone = phone;
         this.userPassword = userPassword;
         this.userRole = userRole;
         this.userHouseholdId = userHouseholdId;
@@ -53,6 +57,11 @@ public class Users
 
     public String getUserEmail() {
         return userEmail;
+    }
+
+    public String getPhone()
+    {
+        return phone;
     }
 
     public String getUserPassword() {

@@ -27,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="70dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="150dp"
         android:layout_marginEnd="70dp"
         android:ems="10"
         android:hint="Meno používateľa"
@@ -37,7 +37,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.489"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/registerHomeName"
@@ -47,10 +47,9 @@
         android:layout_marginTop="15dp"
         android:layout_marginEnd="70dp"
         android:ems="10"
-        android:maxLength="20"
         android:hint="Názov domácnosti"
         android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/registerEmail"
+        android:maxLength="20"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/registerName" />
@@ -110,18 +109,21 @@
         app:layout_constraintBottom_toTopOf="@+id/registerPass"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registerHomeName" />
+        app:layout_constraintTop_toBottomOf="@+id/registerPhone" />
 
-    <ImageView
-        android:id="@+id/imageView2"
+    <EditText
+        android:id="@+id/registerPhone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="70dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="15dp"
         android:layout_marginEnd="70dp"
+        android:ems="10"
+        android:hint="Tel. číslo"
+        android:inputType="phone"
+        app:layout_constraintBottom_toTopOf="@+id/registerEmail"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/smarthome_picture" />
+        app:layout_constraintTop_toBottomOf="@+id/registerHomeName" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -233,7 +233,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
         String name = deviceName.getText().toString();
         String deviceType = setDeviceType(spinDeviceType);
 
-        Call<Devices> call = api.postDevice(deviceType, name, roomId, 0,0,0,0,0.0, 0,0);
+        Call<Devices> call = api.postDevice(deviceType, name, roomId, 0,0,0,0,0.0f, 0,0);
 
         call.enqueue(new Callback<Devices>()
         {
@@ -368,12 +368,12 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
                 int isOn = deviceList.get(position).getIsOn();
                 int intensity = deviceList.get(position).getIntensity();
                 int humidity = deviceList.get(position).getHumidity();
-                double temperature = deviceList.get(position).getTemperature();
+                float temperature = deviceList.get(position).getTemperature();
                 int connectivity = deviceList.get(position).getConnectivity();
                 String stringDeviceType = setDeviceType(spinnerDeviceType.getSelectedItem().toString());
                 String stringDeviceName = deviceName.getText().toString();
 
-                Call<Devices> call = api.editDevice(deviceId, stringDeviceType, stringDeviceName, roomId, isOn, isActive, intensity, humidity, temperature, connectivity,0);
+                Call<Devices> call = api.editDevice(deviceId, stringDeviceType, stringDeviceName, roomId, isOn, isActive, intensity, humidity, temperature, connectivity);
 
                 call.enqueue(new Callback<Devices>()
                 {
@@ -424,7 +424,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
             int isOn;
             int isActive = 0;
             int intensity = deviceList.get(position).getIntensity();
-            double temperature = deviceList.get(position).getTemperature();
+            float temperature = deviceList.get(position).getTemperature();
 
             boolean switchState = controlDeviceSwitch.isChecked();
             if (switchState)
@@ -458,7 +458,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
             String deviceType1 = setSpinnerDeviceType(stringDeviceType);
             String deviceType2 = setDeviceType(deviceType1);
 
-            Call<Devices> call = api.editDevice(deviceId, deviceType2, stringDeviceName, roomId, isOn, isActive, intensity, humidity, temperature, connectivity,0);
+            Call<Devices> call = api.editDevice(deviceId, deviceType2, stringDeviceName, roomId, isOn, isActive, intensity, humidity, temperature, connectivity);
 
             call.enqueue(new Callback<Devices>()
             {

@@ -99,8 +99,6 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
         createScenarioList();
-        createRoomList();
-        createDeviceList();
 
         //tlacidlo na pridanie noveho scenara
         FloatingActionButton addScenario = findViewById(R.id.addScenario);
@@ -235,7 +233,7 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
                 for (Scenarios scenario: scenarios)
                 {
                     scenarioList.add(position, new Scenario_item(R.drawable.scenario_icon, scenario.getScenarioId(), scenario.getScenarioName(), scenario.getExecutingType(), scenario.getId_room(),
-                            scenario.getSensorId(), scenario.getIsExecutable(), scenario.getIsRunning(), scenario.getScenarioStatus(), scenario.getTime()));
+                            scenario.getSensorId(), scenario.getIsExecutable(), scenario.getIsRunning(), scenario.getScenarioValue(), scenario.getTime()));
                     mAdapter.notifyItemInserted(position);
                 }
             }
@@ -433,11 +431,13 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
     {
         Scenario_item si = new Scenario_item(scenarioList.get(position).getScenarioId(), scenarioList.get(position).getScenarioName(), scenarioList.get(position).getScenarioType(),
                 scenarioList.get(position).getId_room(), scenarioList.get(position).getSensorId(), scenarioList.get(position).getScenarioExecutable(), scenarioList.get(position).getIsRunning(),
-                scenarioList.get(position).getStatus(), scenarioList.get(position).getTime());
+                scenarioList.get(position).getValue(), scenarioList.get(position).getTime());
         SessionManagement scenarioSessionManagement = new SessionManagement(Scenario_screen.this);
         scenarioSessionManagement.saveScenarioSession(si);
 
         selectedRoom = scenarioList.get(position).getId_room();
+        createRoomList();
+        createDeviceList();
         fillRoomSpinner();
     }
 

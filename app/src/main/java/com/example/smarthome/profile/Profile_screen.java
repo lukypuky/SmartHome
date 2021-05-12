@@ -26,13 +26,11 @@ import android.widget.Toast;
 
 import com.example.smarthome.connection.Api;
 import com.example.smarthome.connection.Login;
-import com.example.smarthome.connection.Rooms;
 import com.example.smarthome.connection.SessionManagement;
 import com.example.smarthome.connection.Users;
 import com.example.smarthome.login.Login_screen;
 import com.example.smarthome.main.Main_screen;
 import com.example.smarthome.R;
-import com.example.smarthome.main.Room_item;
 import com.example.smarthome.scenarios.Scenario_screen;
 import com.example.smarthome.settings.Dark_mode;
 import com.example.smarthome.settings.Settings_screen;
@@ -55,12 +53,11 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     private DrawerLayout drawerLayout;
 
     //udaje o userovi
-    private EditText userName, householdName, email, password;
-    private String stringUserName, stringEmail, stringPassword, stringHouseholdName;
+    private EditText userName, householdName, email, phone, password;
+    private String stringUserName, stringEmail, stringPhone, stringPassword, stringHouseholdName;
     private int intRole, userId, userHouseholdId;
     private Spinner profileRole;
     private List<Users> users;
-    private ArrayList<Room_item> roomList;
 
     //api
     private Api api;
@@ -213,6 +210,9 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
         email = findViewById(R.id.profileEmail);
         email.setText(stringEmail);
 
+        phone = findViewById(R.id.profilePhone);
+        phone.setText(stringPhone);
+
         profileRole = findViewById(R.id.profileRole);
 
         profileRole = findViewById(R.id.profileRole);
@@ -229,6 +229,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
         userName.setEnabled(false);
         householdName.setEnabled(false);
         email.setEnabled(false);
+        phone.setEnabled(false);
         password.setEnabled(false);
         profileRole.setEnabled(false);
     }
@@ -254,6 +255,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
                 {
                     stringUserName = user.getUserName();
                     stringEmail = user.getUserEmail();
+                    stringPhone = user.getPhone();
                     stringPassword = user.getUserPassword();
                     intRole = user.getUserRole();
 
@@ -283,6 +285,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     {
         stringUserName = userName.getText().toString();
         stringEmail = email.getText().toString();
+        stringPhone = phone.getText().toString();
         stringPassword = password.getText().toString();
 
         String tmpRoleString = profileRole.getSelectedItem().toString();
@@ -308,6 +311,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     {
         userName.setEnabled(false);
         email.setEnabled(false);
+        phone.setEnabled(false);
         password.setEnabled(false);
         profileRole.setEnabled(false);
 
@@ -331,6 +335,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     {
         userName.setEnabled(true);
         email.setEnabled(true);
+        phone.setEnabled(true);
         password.setEnabled(true);
 
         saveProfile.startAnimation(fabOpen);
@@ -348,7 +353,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
     public void editUserProfile()
     {
         getValuesFromUser();
-        Call<Users> call = api.editProfile(userId, stringUserName, stringEmail, stringPassword, intRole, userHouseholdId);
+        Call<Users> call = api.editProfile(userId, stringUserName, stringEmail, stringPhone, stringPassword, intRole, userHouseholdId);
 
         call.enqueue(new Callback<Users>()
         {
@@ -364,7 +369,7 @@ public class Profile_screen extends AppCompatActivity implements NavigationView.
                 if (response.body().getUserStatus() == 1)
                     Toast.makeText(Profile_screen.this, "Profil bol zmenený", Toast.LENGTH_SHORT).show();
 
-                Login login = new Login(userId, stringUserName, stringEmail, userHouseholdId, stringHouseholdName, intRole);
+                Login login = new Login(userId, stringUserName, stringEmail, stringPhone, userHouseholdId, stringHouseholdName, intRole);
                 SessionManagement sessionManagement = new SessionManagement(Profile_screen.this);
                 sessionManagement.saveLoginSession(login);
 

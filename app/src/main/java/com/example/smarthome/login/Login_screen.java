@@ -38,7 +38,7 @@ public class Login_screen extends AppCompatActivity
     //api
     private Api api;
     private int status, householdId, userId, role;
-    private String householdName, userEmail, userName;
+    private String householdName, userEmail, userName, phone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -118,7 +118,7 @@ public class Login_screen extends AppCompatActivity
     //ulozenie session
     public void makeSession()
     {
-        Login login = new Login(userId, userName, userEmail, householdId, householdName, role);
+        Login login = new Login(userId, userName, userEmail, phone, householdId, householdName, role);
         SessionManagement sessionManagement = new SessionManagement(Login_screen.this);
         sessionManagement.saveLoginSession(login);
     }
@@ -145,6 +145,7 @@ public class Login_screen extends AppCompatActivity
                 userId = response.body().getUserId();
                 userName = response.body().getUsername();
                 userEmail = response.body().getUserEmail();
+                phone = response.body().getPhone();
                 role = response.body().getRole();
 
                 if (status == 1)

@@ -7,11 +7,16 @@ public class Device_item extends android.app.Activity implements Serializable
     private int imageResource;
     private String deviceName, deviceType;
     private int deviceId, isActive, isConnectedImage, intensity, humidity, isOn, connectivity, deviceRoomId;
-    private double temperature;
+    private float temperature;
 
     public Device_item()
     {
 
+    }
+
+    public Device_item(String deviceType)
+    {
+        this.deviceType = deviceType;
     }
 
     public Device_item(String deviceName, int deviceId, String deviceType, int deviceRoomId)
@@ -22,7 +27,7 @@ public class Device_item extends android.app.Activity implements Serializable
         this.deviceRoomId = deviceRoomId;
     }
 
-    public Device_item(int imageResource, String deviceName, String deviceType, int deviceId, int isOn, int connectivity, int isActive, int isConnectedImage, int intensity, int humidity, double temperature)
+    public Device_item(int imageResource, String deviceName, String deviceType, int deviceId, int isOn, int connectivity, int isActive, int isConnectedImage, int intensity, int humidity, float temperature)
     {
         this.imageResource = imageResource;
         this.deviceName = deviceName;
@@ -93,7 +98,7 @@ public class Device_item extends android.app.Activity implements Serializable
         return humidity;
     }
 
-    public double getTemperature()
+    public float getTemperature()
     {
         return temperature;
     }

@@ -39,17 +39,18 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:navigationIcon="@drawable/menu" />
+                app:navigationIcon="@drawable/menu"
+                app:tint="@color/textColor"/>
 
             <TextView
                 android:id="@+id/mainHomeName"
                 android:layout_width="0dp"
                 android:layout_height="30dp"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="0dp"
                 android:fontFamily="@font/baloo"
+                android:text="ssssssssssssssssss"
                 android:textSize="22sp"
-
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
@@ -59,8 +60,9 @@
                 android:layout_height="24dp"
                 android:layout_marginStart="24dp"
                 android:fontFamily="@font/baloo"
-                android:textSize="16sp"
+                android:text="aaaaaaaa"
 
+                android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/mainHomeName" />
             <!--            app:layout_constraintEnd_toStartOf="@+id/imageView"-->
@@ -85,7 +87,7 @@
             android:id="@+id/mainRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="155dp"
+            android:layout_marginTop="110dp"
             android:padding="10dp"
             android:scrollbars="vertical"
             app:layout_constraintBottom_toBottomOf="parent"

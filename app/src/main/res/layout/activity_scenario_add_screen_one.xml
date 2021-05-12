@@ -37,27 +37,27 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:navigationIcon="@drawable/menu" />
+                app:navigationIcon="@drawable/menu"
+                app:tint="@color/textColor" />
 
             <ImageView
                 android:id="@+id/imageView7"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:layout_marginStart="15dp"
-                android:layout_marginTop="20dp"
                 android:padding="5dp"
-                app:layout_constraintEnd_toStartOf="@+id/textView3"
+                app:layout_constraintEnd_toStartOf="@+id/scenarioThreeHeading"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/toolbar"
-                app:srcCompat="@drawable/scenario_icon" />
+                app:srcCompat="@drawable/scenario_icon"
+                app:tint="@color/textColor" />
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/scenarioOneHeading"
                 android:layout_width="0dp"
                 android:layout_height="45dp"
-                android:layout_marginTop="20dp"
                 android:fontFamily="@font/baloo"
-                android:text="Vytvorenie scenára 1/3"
+                android:text=""
                 android:textSize="30sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/imageView7"
@@ -70,15 +70,15 @@
         android:layout_height="match_parent">
 
         <Button
-            android:id="@+id/nextScenarioButton"
+            android:id="@+id/scenarioOneSaveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="57dp"
-            android:layout_marginBottom="17dp"
+            android:layout_marginStart="100dp"
+            android:layout_marginTop="45dp"
+            android:layout_marginEnd="15dp"
             android:text="Potvrdiť"
             android:textColor="@color/textColor"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/scenarioOneBackButton"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/scenarioOneBarTo"
             app:strokeColor="#FFFFFF"
@@ -89,7 +89,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="70dp"
-            android:layout_marginTop="150dp"
+            android:layout_marginTop="120dp"
             android:layout_marginEnd="70dp"
             android:ems="10"
             android:hint="Názov scenára"
@@ -186,12 +186,12 @@
             android:layout_marginStart="45dp"
             android:layout_marginTop="20dp"
             android:text="Zvoľte čas"
-            android:visibility="invisible"
             android:textColor="@color/textColor"
-            app:strokeColor="#FFFFFF"
-            app:strokeWidth="1dp"
+            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/scenarioOneDeviceSpinner" />
+            app:layout_constraintTop_toBottomOf="@+id/scenarioOneDeviceSpinner"
+            app:strokeColor="#FFFFFF"
+            app:strokeWidth="1dp" />
 
         <TextView
             android:id="@+id/scenarioOneHour"
@@ -332,6 +332,21 @@
             android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/scenarioOneValueFromTag" />
+
+        <Button
+            android:id="@+id/scenarioOneBackButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="45dp"
+            android:layout_marginEnd="100dp"
+            android:text="Späť"
+            android:textColor="@color/textColor"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/scenarioOneSaveButton"
+            app:layout_constraintTop_toBottomOf="@+id/scenarioOneBarTo"
+            app:strokeColor="#FFFFFF"
+            app:strokeWidth="1dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.drawerlayout.widget.DrawerLayout>

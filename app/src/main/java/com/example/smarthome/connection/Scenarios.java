@@ -25,8 +25,8 @@ public class Scenarios
     @SerializedName("isRunning")
     private int isRunning;
 
-    @SerializedName("status")
-    private String scenarioStatus;
+    @SerializedName("value")
+    private String scenarioValue;
 
     @SerializedName("time")
     private String time;
@@ -39,6 +39,9 @@ public class Scenarios
 
     @SerializedName("scenar_id")
     private int scenar_id;
+
+    @SerializedName("status")
+    private int status;
 
     public int getScenarioId()
     {
@@ -75,9 +78,9 @@ public class Scenarios
         return isRunning;
     }
 
-    public String getScenarioStatus()
+    public String getScenarioValue()
     {
-        return scenarioStatus;
+        return scenarioValue;
     }
 
     public String getTime()
@@ -93,5 +96,10 @@ public class Scenarios
     public int getScenar_id()
     {
         return scenar_id;
+    }
+
+    public int getStatus()
+    {
+        return status;
     }
 }
