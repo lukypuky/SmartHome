@@ -230,10 +230,15 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
     //prida zariadenie na index 0 v arrayliste
     public void insertDevice(EditText deviceName, String spinDeviceType)
     {
+        Call<Devices> call;
         String name = deviceName.getText().toString();
         String deviceType = setDeviceType(spinDeviceType);
 
-        Call<Devices> call = api.postDevice(deviceType, name, roomId, 0,0,0,0,0.0f, 0,0);
+        if (deviceType.charAt(0) == '1')
+            call = api.postDevice(deviceType, name, roomId, 1,0,0,0,0.0f, 0,0);
+
+        else
+            call = api.postDevice(deviceType, name, roomId, 0,0,0,0,0.0f, 0,0);
 
         call.enqueue(new Callback<Devices>()
         {
