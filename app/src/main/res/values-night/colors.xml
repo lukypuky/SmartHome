@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#000000</color>
 
-    <color name="textColor">#FFFFFF</color>
+    <color name="textColor">#FFE4E4E4</color>
     <color name="textColor2">#ACACAC</color>
     <color name="navigation">#1B1B1B</color>
     <color name="bg">#000000</color>

@@ -5,7 +5,7 @@
         <item name="colorAccent">@color/colorPrimary</item>
 
         <item name="android:textColor">@color/textColor</item>
-        <item name="android:strokeColor">#FFFFFF</item>
+        <item name="android:strokeColor">#FFE4E4E4</item>
         <item name="fontFamily">@font/baloo_paaji</item>
     </style>
 </resources>

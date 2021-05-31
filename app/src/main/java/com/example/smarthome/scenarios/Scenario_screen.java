@@ -93,7 +93,7 @@ public class Scenario_screen extends AppCompatActivity implements NavigationView
 
         SessionManagement darkModeSessionManagement = new SessionManagement(Scenario_screen.this);
         Dark_mode darkMode = darkModeSessionManagement.getDarkModeSession();
-        ////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////
 
         if (darkMode.isDark_mode())
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);

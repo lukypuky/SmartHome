@@ -99,11 +99,17 @@ public class Scenario_add_screen_two extends AppCompatActivity implements Naviga
         createStepList();
 
         FloatingActionButton addStep = findViewById(R.id.addStep);
-        addStep.setOnClickListener(v ->
+        if (canEdit())
         {
-            Intent intent = new Intent(Scenario_add_screen_two.this, Scenario_add_screen_three.class);
-            startActivity(intent);
-        });
+            addStep.setOnClickListener(v ->
+            {
+                Intent intent = new Intent(Scenario_add_screen_two.this, Scenario_add_screen_three.class);
+                startActivity(intent);
+            });
+        }
+
+        else
+            addStep.setVisibility(View.INVISIBLE);
 
         Button backBtn = findViewById(R.id.scenarioTwoBackButton);
         backBtn.setOnClickListener(v ->

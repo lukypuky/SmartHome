@@ -130,7 +130,6 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
 
         initializeScreen();
 
-
         fillRoomSpinner();
         hideObjects();
 
@@ -180,10 +179,13 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
             if (isChecked)
             {
                 checked = 1;
-                if (!parserArray[0].equals("2") && !deviceTypeSelected.equals("socket"))
+                if (!(parserArray == null))
                 {
-                    showObjects();
-                    controlSeekBar(deviceTypeSelected);
+                    if (!parserArray[0].equals("2") && !deviceTypeSelected.equals("socket"))
+                    {
+                        showObjects();
+                        controlSeekBar(deviceTypeSelected);
+                    }
                 }
             }
 
@@ -369,8 +371,6 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
 
                 List<Rooms> rooms = response.body();
                 final int position = 0;
-
-                System.out.println("EDIT ROOM " + editRoom );
 
                 for (Rooms room: rooms)
                 {
@@ -573,14 +573,6 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
     {
         Call<Steps> call;
 
-        System.out.println("ID " + editStep.getId_step());
-        System.out.println("NAME " + stepName.getText().toString());
-        System.out.println("SCENAR ID " + si.getScenarioId());
-        System.out.println("ID DEVICE " + selectedDevice);
-        System.out.println("ID ROOM " + selectedRoom);
-        System.out.println("IS ON " + checked);
-        System.out.println("VALUE " + intSeekBarValue);
-
         if (parserArray[1].equals("heating"))
             call = api.editSteps(editStep.getId_step(), stepName.getText().toString(), si.getScenarioId(),  selectedDevice, selectedRoom, checked, 0,0, (float)intSeekBarValue, 0, login.getHouseholdId());
         else if(parserArray[1].equals("socket") || parserArray[1].equals("alarm"))
@@ -601,7 +593,7 @@ public class Scenario_add_screen_three extends AppCompatActivity implements Navi
 
                 if (response.body().getStatus() == 1)
                 {
-                    Toast.makeText(Scenario_add_screen_three.this, "Krok bol pridaný do scenára", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Scenario_add_screen_three.this, "Krok bol upravený", Toast.LENGTH_SHORT).show();
 
                     Intent intent = new Intent(Scenario_add_screen_three.this, Scenario_add_screen_two.class);
                     startActivity(intent);

@@ -440,7 +440,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
             if (stringDeviceType.equals("socket") || stringDeviceType.equals("alarm") || stringDeviceType.equals("flood_sensor") || stringDeviceType.equals("smoke_sensor"))
             {
                 boolean warningSwtichState = controlDeviceWarningSwitch.isChecked();
-                if (warningSwtichState)
+                if (!warningSwtichState)
                 {
                     isActive = 0;
                     controlDeviceWarningSwitch.setVisibility(View.INVISIBLE);
@@ -610,7 +610,7 @@ public class Room_screen extends AppCompatActivity implements NavigationView.OnN
             if(deviceList.get(position).getIsActive() == 1)
             {
                 controlDeviceWarningSwitch.setVisibility(View.VISIBLE);
-                controlDeviceWarningSwitch.setChecked(false);
+                controlDeviceWarningSwitch.setChecked(true);
             }
         }
 

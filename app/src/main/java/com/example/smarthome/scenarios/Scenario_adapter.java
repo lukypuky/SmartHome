@@ -115,7 +115,17 @@ public class Scenario_adapter extends RecyclerView.Adapter<Scenario_adapter.Scen
         holder.mDeviceExecutingType.setText(setScenarioType(currentItem.getScenarioType()));
 
         if (currentItem.getScenarioType().equals("auto"))
+        {
             holder.mDeviceExecutable.setText(setExecutableScenario(currentItem.getScenarioExecutable()));
+            if (currentItem.getScenarioExecutable() == 1)
+                holder.mExecuteBtn.setText("Deaktivovať scenár");
+            else
+                holder.mExecuteBtn.setText("Aktivovať scenár");
+        }
+
+        else
+            holder.mExecuteBtn.setText("Aktivovať scenár");
+
     }
 
     //pripojenie sa na api
@@ -196,7 +206,7 @@ public class Scenario_adapter extends RecyclerView.Adapter<Scenario_adapter.Scen
 
                 if (response.body().getStatus() == 1)
                 {
-                    Toast.makeText(context, "Scenár bol zmenený", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Scenár bol nastavený", Toast.LENGTH_SHORT).show();
 
                     Intent intent = new Intent(context, Scenario_screen.class);
                     context.startActivity(intent);

@@ -22,6 +22,9 @@ public class Rooms
     @SerializedName("devicesCount")
     private int devicesCount;
 
+    @SerializedName("info")
+    private String info;
+
 //    public Rooms(String roomName, String roomType, int idHousehold)
 //    {
 //        this.roomName = roomName;
@@ -57,5 +60,10 @@ public class Rooms
     public int getDevicesCount()
     {
         return devicesCount;
+    }
+
+    public String getInfo()
+    {
+        return info;
     }
 }

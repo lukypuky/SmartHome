@@ -396,14 +396,9 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
                 {
                     int id_household = roomList.get(viewHolder.getAdapterPosition()).getId_household();
                     int id_room = roomList.get(viewHolder.getAdapterPosition()).getId_room();
+                    int position = viewHolder.getAdapterPosition();
 
-                    deleteRoom(id_room, id_household);
-
-                    //refresh recycleviewra
-                    roomList.remove(viewHolder.getAdapterPosition());
-                    mAdapter.notifyDataSetChanged();
-
-                    Toast.makeText(Main_screen.this, "Miestnosť bola úspešne odstránená.", Toast.LENGTH_SHORT).show();
+                    deleteRoom(id_room, id_household, position);
                 });
 
                 builder.setNegativeButton("Nie", (dialog, which) ->
@@ -425,20 +420,34 @@ public class Main_screen extends AppCompatActivity implements NavigationView.OnN
         }
     };
 
-    public void deleteRoom(int id_room, int id_household)
+    public void deleteRoom(int id_room, int id_household, int position)
     {
-        Call<Void> call = api.deleteRoom(id_room, id_household);
+        Call<Rooms> call = api.deleteRoom(id_room, id_household);
 
-        call.enqueue(new Callback<Void>()
+        call.enqueue(new Callback<Rooms>()
         {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response)
+            public void onResponse(Call<Rooms> call, Response<Rooms> response)
             {
                 System.out.println("call = " + call + ", response = " + response);
+
+                if (response.body().getInfo().equals("Room has devices!"))
+                {
+                    Toast.makeText(Main_screen.this, "Pre ostránenie miestnosti musíte najprv odstŕaniť zariadenia v miestnosti", Toast.LENGTH_SHORT).show();
+                    mAdapter.notifyDataSetChanged();
+                }
+
+                else
+                {
+                    //refresh recycleviewra
+                    roomList.remove(position);
+                    mAdapter.notifyDataSetChanged();
+                    Toast.makeText(Main_screen.this, "Miestnosť bola úspešne odstránená.", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t)
+            public void onFailure(Call<Rooms> call, Throwable t)
             {
                 System.out.println("call = " + call + ", t = " + t);
             }

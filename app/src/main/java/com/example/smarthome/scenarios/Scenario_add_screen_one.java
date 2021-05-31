@@ -768,7 +768,6 @@ public class Scenario_add_screen_one extends AppCompatActivity implements Naviga
             roomList = (ArrayList<Room_item>) getIntent().getSerializableExtra("room_arraylist");
             deviceList = (ArrayList<Device_item>) getIntent().getSerializableExtra("device_arraylist");
 
-
             if (editScenario.getSensorId().equals("time"))
             {
                 editDevice = "Zapnúť na základe času";
